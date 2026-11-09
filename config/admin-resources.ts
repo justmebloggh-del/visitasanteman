@@ -40,6 +40,7 @@ export interface ResourceDef {
   approverOnly?: boolean;                           // whole section: only regional editors and admins may change it
   revisions?: boolean;                              // show revision history on the edit page
   area?: boolean;                                   // has administrative_area_id (checked before publishing)
+  noCreatedBy?: boolean;                            // table has no created_by column
 }
 
 const statusOptions = [
@@ -323,7 +324,7 @@ const activeField: FieldDef = { name: "is_active", label: "Active", type: "check
 
 resources.push(
   {
-    key: "regions", table: "regions", label: "Regions", singular: "region", titleField: "name", hasSlug: true, approverOnly: true,
+    noCreatedBy: true, key: "regions", table: "regions", label: "Regions", singular: "region", titleField: "name", hasSlug: true, approverOnly: true,
     hasStatus: false, hasCover: false, seo: false, softDelete: false, orderBy: { column: "name", ascending: true },
     listColumns: [{ name: "name", label: "Name" }, { name: "country_code", label: "Country" }, { name: "is_active", label: "Active" }],
     fields: [
@@ -333,7 +334,7 @@ resources.push(
     ],
   },
   {
-    key: "administrative-areas", table: "administrative_areas", label: "Districts and municipalities", singular: "administrative area", titleField: "name", hasSlug: true, approverOnly: true,
+    noCreatedBy: true, key: "administrative-areas", table: "administrative_areas", label: "Districts and municipalities", singular: "administrative area", titleField: "name", hasSlug: true, approverOnly: true,
     hasStatus: false, hasCover: true, seo: false, softDelete: false, orderBy: { column: "name", ascending: true },
     listColumns: [{ name: "name", label: "Name" }, { name: "kind", label: "Type" }, { name: "is_active", label: "Active" }, { name: "verified_at", label: "Source checked" }],
     publicPath: (r) => `/districts/${r.slug}`,
@@ -383,7 +384,7 @@ resources.push(
     ],
   },
   {
-    key: "localities", table: "localities", label: "Localities", singular: "locality", titleField: "name", hasSlug: true,
+    noCreatedBy: true, key: "localities", table: "localities", label: "Localities", singular: "locality", titleField: "name", hasSlug: true,
     hasStatus: false, hasCover: false, seo: false, softDelete: false, orderBy: { column: "name", ascending: true },
     listColumns: [{ name: "name", label: "Name" }, { name: "updated_at", label: "Updated" }],
     fields: [

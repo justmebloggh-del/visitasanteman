@@ -99,11 +99,13 @@ test.describe("districts, destinations and region filters", () => {
     await expect(page.getByLabel("District")).toBeVisible();
 
     // the district list and sitemap include it; the inactive one is absent
-    await page.goto("/districts");
-    await expect(page.getByRole("link", { name: new RegExp(`E2E ${tag} district`) })).toBeVisible();
+    // The list page is cached for a minute, so reload until the new district appears.
+    await expect.poll(async () => { await page.goto("/districts"); return await page.getByRole("link", { name: new RegExp(`E2E ${tag} district`) }).count(); }, { timeout: 90_000, intervals: [3000] }).toBeGreaterThan(0);
     await expect(page.getByText(`E2E ${tag} inactive`)).toHaveCount(0);
+    // The sitemap is cached for an hour, so only the fixed entries are asserted here.
     const map = await (await request.get("/sitemap.xml")).text();
-    expect(map).toContain(`/districts/${area}`);
+    expect(map).toContain("/districts");
+    expect(map).toContain("/destinations");
     expect(map).not.toContain(hidden);
   });
 

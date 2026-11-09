@@ -43,7 +43,7 @@ export async function saveResource(resourceKey: string, id: string | null, _prev
     if (!data?.length) return { ok: false, message: "That item no longer exists or you cannot edit it." };
   } else {
     if (def.key === "pages") return { ok: false, message: "Pages cannot be created here." };
-    const { data, error } = await supabase.from(def.table).insert({ ...values, created_by: user.id }).select("id").single();
+    const { data, error } = await supabase.from(def.table).insert(def.noCreatedBy ? values : { ...values, created_by: user.id }).select("id").single();
     if (error) return friendly(error);
     savedId = data.id;
   }

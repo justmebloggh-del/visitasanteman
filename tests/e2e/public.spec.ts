@@ -36,7 +36,7 @@ test.describe("public site", () => {
     test.skip(!isMobile, "mobile only");
     await page.goto("/");
     await page.getByRole("button", { name: "Open menu" }).click();
-    await page.getByRole("link", { name: "Attractions" }).last().click();
+    await page.getByRole("navigation", { name: "Mobile" }).getByRole("link", { name: "Attractions", exact: true }).click();
     await expect(page).toHaveURL(/\/attractions/);
   });
 });

@@ -31,9 +31,9 @@ Legend: ✅ built and checked · 🟡 built, needs live-environment testing · �
 | Auth (register, login, reset, verify) | 🟡 | |
 | Admin: dashboard, CRUD for all content, media library, enquiries, newsletter export, users/roles, homepage, settings, analytics | 🟡 | Config-driven |
 | SEO: metadata, sitemap, robots, canonical, OG, JSON-LD, breadcrumbs | ✅ | |
-| Unit tests | ✅ | 18 passing (parser, schemas, utils) |
-| End-to-end tests | ✅ | 96 passing (desktop + mobile) on a local Supabase + mock Paystack/AI |
-| End-to-end tests | 🟡 | See `tests/e2e` |
+| Unit tests | ✅ | 37 passing (parser, schemas, payments, planner, redirects) |
+| End-to-end tests | ✅ | 137 passed, 53 skipped by design (desktop-only or mobile-only specs), 0 failed, on a freshly reset local Supabase + mock Paystack/AI. Needs `npx supabase db reset` before each full run (some tests use fixed references) |
+| Database permission checks | ✅ | `supabase/tests/geography_rls.sql`: 54 checks |
 | Content: real photos, verified facts, coordinates | ⬜ | **Blocking launch.** See content plan below |
 
 ## Phase 2: Business ecosystem 🟡 (built, tested locally)

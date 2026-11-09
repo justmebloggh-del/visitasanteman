@@ -96,6 +96,9 @@ export function parseResourceForm(def: ResourceDef, fd: FormData, o: { isAdmin: 
     else values[f.name] = r.value;
   }
 
+  // sort_order is NOT NULL in the database; a blank field means the default.
+  if ("sort_order" in values && values.sort_order == null) values.sort_order = 0;
+
   // Only check the pair when both parsed cleanly, so a range error is not hidden by this message.
   if (!errors.latitude && !errors.longitude) {
     const hasLat = values.latitude != null, hasLng = values.longitude != null;

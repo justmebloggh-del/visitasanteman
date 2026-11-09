@@ -101,3 +101,25 @@ describe("investment and advertising rules", () => {
     expect(parseResourceForm(ad, fd({ ...ok, link_url: "javascript:alert(1)" }), { isAdmin: true }).errors.link_url).toBeDefined();
   });
 });
+
+describe("sort_order", () => {
+  it("defaults to 0 when left blank (the column is NOT NULL)", () => {
+    const def = resourceMap["administrative-areas"];
+    const { values, errors } = parseResourceForm(def, fd({ name: "Test", region_id: "00000000-0000-0000-0000-000000000001", kind: "district", sort_order: "" }), { isAdmin: false, canApprove: true });
+    expect(errors).toEqual({});
+    expect(values.sort_order).toBe(0);
+  });
+  it("ignores approver-only fields for people who cannot approve", () => {
+    const def = resourceMap.attractions;
+    const { values } = parseResourceForm(def, fd({ name: "A", status: "draft", content_verified: "on" }), { isAdmin: false, canApprove: false });
+    expect("content_verified" in values).toBe(false);
+    const approver = parseResourceForm(def, fd({ name: "A", status: "draft", content_verified: "on" }), { isAdmin: false, canApprove: true });
+    expect(approver.values.content_verified).toBe(true);
+  });
+  it("asks for a district before publishing content", () => {
+    const { errors } = parseResourceForm(resourceMap.attractions, fd({ name: "A", status: "published" }), { isAdmin: true, canApprove: true });
+    expect(errors.administrative_area_id).toMatch(/district/i);
+    const ok = parseResourceForm(resourceMap.attractions, fd({ name: "A", status: "published", administrative_area_id: "00000000-0000-0000-0000-000000000001" }), { isAdmin: true, canApprove: true });
+    expect(ok.errors.administrative_area_id).toBeUndefined();
+  });
+});
