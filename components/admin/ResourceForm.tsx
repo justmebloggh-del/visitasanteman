@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { saveResource } from "@/app/admin/actions";
+import { CoordinatePicker } from "@/components/admin/CoordinatePicker";
 import { ImageUploader, type MediaItem } from "@/components/admin/ImageUploader";
 import { SubmitButton } from "@/components/forms/SubmitButton";
 import { Field, Input, Notice, Select, Textarea } from "@/components/ui";
@@ -81,6 +82,7 @@ export function ResourceForm({ def, id, initial, relations, isAdmin, canApprove,
                   </Field>
                 );
               })}
+              {g.id === "location" && fields.some((f) => f.name === "latitude") && fields.some((f) => f.name === "longitude") && <CoordinatePicker latId="latitude" lngId="longitude" />}
               {g.id === "main" && def.hasSlug && (
                 <Field label="URL slug" htmlFor="slug" error={err.slug} hint="Part of the page address. Leave blank to create it from the title. Changing it later breaks old links." className="sm:col-span-2">
                   <Input id="slug" name="slug" defaultValue={(initial.slug as string) ?? ""} pattern="[a-z0-9]+(-[a-z0-9]+)*" />

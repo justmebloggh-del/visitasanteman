@@ -240,6 +240,39 @@ select pg_temp.visible('D11 anon sees the published club and no research drafts'
 select pg_temp.visible('D12 the researched drafts exist for staff but not anon', null, 'anon', 'select 1 from transport_providers', 0);
 select pg_temp.t('D13 events can be categorised', :editor, 'authenticated', 'insert into events (slug, title, starts_at, category) values (''d-ev'', ''D ev'', now() + interval ''1 day'', ''sports'')', true);
 
+-- ── Search and curated itineraries (Phase 6) ──
+update attractions set alt_names = '{Zebulon Hill}' where slug = 'derived';
+select pg_temp.visible('S01 anon finds a published record by name', null, 'anon', 'select * from search_site(''derived'')', 1);
+select pg_temp.visible('S02 anon never finds a draft', null, 'anon', 'select * from search_site(''x-res'')', 0);
+select pg_temp.visible('S03 an alternative spelling is searched', null, 'anon', 'select * from search_site(''zebulon'')', 1);
+select pg_temp.visible('S04 partial words match', null, 'anon', 'select * from search_site(''derive'')', 1);
+select pg_temp.visible('S05 inactive districts are not searchable', null, 'anon', 'select * from search_site(''inactive area'')', 0);
+select pg_temp.visible('S06 active districts are searchable', null, 'anon', 'select * from search_site(''test area'')', 1);
+select pg_temp.visible('S07 the type filter narrows results', null, 'anon', 'select * from search_site(''derived'', array[''ceremony''])', 0);
+select pg_temp.visible('S08 the district filter narrows results', null, 'anon', 'select * from search_site(''derived'', null, ''test-area'')', 1);
+select pg_temp.visible('S09 a wildcard is treated as text, not as match-everything', null, 'anon', 'select * from search_site(''%'')', 0);
+select pg_temp.visible('S10 an empty query returns nothing', null, 'anon', 'select * from search_site('''')', 0);
+select pg_temp.visible('S11 staff searching still only search published records', :editor, 'authenticated', 'select * from search_site(''x-res'')', 0);
+
+insert into travel_itineraries (id, user_id, title, days) values ('00000000-0000-0000-0000-0000000000fa', '00000000-0000-0000-0000-00000000a004', 'Editor plan', 1);
+insert into itinerary_items (itinerary_id, day, item_type, item_id) select '00000000-0000-0000-0000-0000000000fa', 1, 'attraction', id from attractions where slug = 'derived';
+insert into itinerary_items (itinerary_id, day, item_type, item_id) select '00000000-0000-0000-0000-0000000000fa', 1, 'attraction', id from attractions where slug = 'x-res';
+select pg_temp.t('Q01 a visitor cannot publish a curated itinerary', :visitor, 'authenticated', 'select make_curated_itinerary(''00000000-0000-0000-0000-0000000000fa'', ''Visitor try'', null, null)', false);
+select pg_temp.t('Q02 an editor cannot use someone else''s plan', :regional, 'authenticated', 'select make_curated_itinerary(''00000000-0000-0000-0000-0000000000fa'', ''Not mine'', null, null)', false);
+select pg_temp.t('Q03 an editor can create a curated draft from their own plan', :editor, 'authenticated', 'select make_curated_itinerary(''00000000-0000-0000-0000-0000000000fa'', ''Editor itinerary'', ''A summary'', ''Heritage'')', true);
+select pg_temp.visible('Q04 sharing was switched on for the plan', :editor, 'authenticated', 'select 1 from travel_itineraries where id = ''00000000-0000-0000-0000-0000000000fa'' and share_token is not null', 1);
+select pg_temp.visible('Q05 a draft curated itinerary is not public', null, 'anon', 'select 1 from curated_itineraries where slug = ''editor-itinerary''', 0);
+select pg_temp.visible('Q06 the draft view is empty for the public', null, 'anon', 'select 1 where curated_itinerary_view(''editor-itinerary'') is not null', 0);
+select pg_temp.t('Q07 a content editor cannot publish it', :editor, 'authenticated', 'update curated_itineraries set status = ''published'' where slug = ''editor-itinerary''', false);
+select pg_temp.t('Q08 a placeholder without a plan cannot be published', :admin, 'authenticated', 'update curated_itineraries set status = ''published'' where slug = ''lake-bosomtwe-weekend''', false);
+select pg_temp.t('Q09 an administrator can publish one with a plan', :admin, 'authenticated', 'update curated_itineraries set status = ''published'' where slug = ''editor-itinerary''', true);
+select pg_temp.visible('Q10 the public sees the published itinerary', null, 'anon', 'select 1 where curated_itinerary_view(''editor-itinerary'') is not null', 1);
+select pg_temp.visible('Q11 unpublished places are flagged unavailable in the public view', null, 'anon', 'select 1 from jsonb_array_elements(curated_itinerary_view(''editor-itinerary'') -> ''plan'' -> ''items'') i where (i ->> ''unavailable'')::boolean', 1);
+select pg_temp.t('Q12 copying needs a signed-in user', null, 'anon', 'select copy_curated_itinerary(''editor-itinerary'')', false);
+select pg_temp.t('Q13 a visitor can copy it into their own plans', :visitor, 'authenticated', 'select copy_curated_itinerary(''editor-itinerary'')', true);
+select pg_temp.visible('Q14 the copy holds only still-published places', :visitor, 'authenticated', 'select 1 from itinerary_items i join travel_itineraries t on t.id = i.itinerary_id where t.user_id = ''00000000-0000-0000-0000-00000000a007'' and t.title = ''Editor itinerary''', 1);
+select pg_temp.visible('Q15 the visitor cannot see the original plan', :visitor, 'authenticated', 'select 1 from travel_itineraries where id = ''00000000-0000-0000-0000-0000000000fa''', 0);
+
 -- ── Roles, plans: never writable by editors ──
 select pg_temp.rows('R01 regional editor cannot change roles', :regional, 'authenticated', format('update user_roles set role = ''admin'' where user_id = %L', :visitor), 0);
 select pg_temp.rows('R02 content editor cannot change roles', :editor, 'authenticated', format('update user_roles set role = ''admin'' where user_id = %L', :visitor), 0);

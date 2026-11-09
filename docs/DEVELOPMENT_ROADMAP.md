@@ -18,6 +18,21 @@ Legend: ✅ built and checked · 🟡 built, needs live-environment testing · �
 | Culture module content tables, travel-guide and gallery detail pages, new experience categories | ⬜ | Phase 2 of the brief |
 | Scheduled status, per-district editor scoping, revision restore | ⬜ | Not built |
 
+## VisitAsanteman Phase 6: experiences, map, search, travel planning (this branch)
+| Item | Status | Notes |
+|---|---|---|
+| Site-wide search with autocomplete, type and district filters, pagination | ✅ | PostgreSQL full-text + partial matching, runs under row level security; 132 SQL checks |
+| Regional map with education, sports and transport, list view, directions | ✅ | MapLibre + OpenStreetMap (provider is isolated in `components/maps`). Only verified coordinates |
+| Map-based coordinate picker in admin | ✅ | Click or drag; inputs remain the validated source |
+| More experience categories, price on request, minimum age | ✅ | |
+| Curated itineraries (staff publish, public view, copy to own plan) | ✅ | Nine brief titles exist as empty placeholders |
+| Itinerary content (real, checked itineraries) | ⬜ | Needs published, verified places first |
+| Realistic routes and journey times | ⬜ | Not calculated: needs a routing provider; itineraries carry a "check with providers" notice |
+| Ceremonies, institutions, venues and transport as planner items; download or print as PDF | 🟡 | Planner still takes attractions, listings, experiences, events, communities and custom items; print view exists |
+| Destination recommendations, nearby places on all pages | 🟡 | Nearby exists for attractions; no new recommender |
+| AI itinerary generation | 🟡 | Exists from earlier (grounded in catalogue, off without a key); not extended to new modules |
+| Saved places list, Google Maps/Mapbox option | ⬜ | Not built |
+
 ## VisitAsanteman Phase 5: education, sports and transport (this branch)
 | Item | Status | Notes |
 |---|---|---|

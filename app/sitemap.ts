@@ -7,7 +7,7 @@ export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const s = await getSitemapEntries();
-  const fixed = ["", "/about", "/explore", "/attractions", "/districts", "/destinations", "/culture", "/culture/history", "/culture/traditions", "/culture/festivals", "/culture/crafts", "/culture/food", "/culture/ceremonies", "/culture/calendar", "/communities", "/accommodation", "/restaurants", "/experiences", "/events", "/travel-guide", "/business-directory", "/markets", "/venues", "/education", "/education/events", "/sports", "/sports/clubs", "/sports/events", "/transport", "/articles", "/gallery", "/map", "/contact", "/partner", "/partner-with-us", "/advertise", "/about/our-mission", "/about/partners", "/travel-planner", "/investment"];
+  const fixed = ["", "/about", "/explore", "/attractions", "/districts", "/destinations", "/culture", "/culture/history", "/culture/traditions", "/culture/festivals", "/culture/crafts", "/culture/food", "/culture/ceremonies", "/culture/calendar", "/communities", "/accommodation", "/restaurants", "/experiences", "/events", "/travel-guide", "/business-directory", "/markets", "/venues", "/education", "/education/events", "/sports", "/sports/clubs", "/sports/events", "/transport", "/articles", "/gallery", "/map", "/contact", "/partner", "/partner-with-us", "/advertise", "/about/our-mission", "/about/partners", "/travel-planner", "/travel-planner/itineraries", "/investment"];
   const base = (p: string) => `${SITE_URL}${p}`;
   const list = (rows: { slug: string; updated_at: string }[], prefix: string) =>
     rows.map((r) => ({ url: base(`${prefix}/${r.slug}`), lastModified: r.updated_at }));

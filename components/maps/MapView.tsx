@@ -10,13 +10,15 @@ import type { MapPoint } from "@/types/content";
 const KIND_LABEL: Record<MapPoint["kind"], string> = {
   attraction: "Attractions", community: "Communities", accommodation: "Accommodation",
   restaurant: "Restaurants", business: "Businesses", experience: "Experiences", event: "Events",
+  education: "Education", sports: "Sports venues", transport: "Transport",
 };
 const KIND_COLOR: Record<MapPoint["kind"], string> = {
   attraction: "#174b35", community: "#8b6845", accommodation: "#287d9b", restaurant: "#d5a642",
   business: "#5d6b64", experience: "#1d6580", event: "#b4552d",
+  education: "#6a4c93", sports: "#2f7d32", transport: "#3d5a80",
 };
 
-const STYLE: maplibregl.StyleSpecification = {
+export const STYLE: maplibregl.StyleSpecification = {
   version: 8,
   sources: {
     osm: {
@@ -39,6 +41,7 @@ export function MapView({ points, center, zoom = 11, filters = false, className 
   const kinds = useMemo(() => Array.from(new Set(points.map((p) => p.kind))), [points]);
   const [active, setActive] = useState<Set<MapPoint["kind"]>>(new Set(kinds));
   const [query, setQuery] = useState("");
+  const [view, setView] = useState<"map" | "list">("map");
 
   useEffect(() => {
     if (!container.current || map.current) return;
@@ -88,6 +91,9 @@ export function MapView({ points, center, zoom = 11, filters = false, className 
     }
   }, [visible, query]);
 
+  // A hidden map has no size; tell it to measure itself again when it comes back.
+  useEffect(() => { if (view === "map") map.current?.resize(); }, [view]);
+
   const toggle = (k: MapPoint["kind"]) =>
     setActive((prev) => { const n = new Set(prev); if (n.has(k)) n.delete(k); else n.add(k); return n; });
 
@@ -110,7 +116,29 @@ export function MapView({ points, center, zoom = 11, filters = false, className 
           </div>
         </div>
       )}
-      <div ref={container} className="h-[420px] w-full overflow-hidden rounded-2xl border border-line sm:h-[560px]" role="region" aria-label="Interactive map" />
+      {filters && (
+        <div className="flex gap-2" role="group" aria-label="View">
+          {(["map", "list"] as const).map((v) => (
+            <button key={v} type="button" onClick={() => setView(v)} aria-pressed={view === v}
+              className={cn("rounded-full border px-4 py-1.5 text-sm font-medium", view === v ? "border-forest bg-forest text-white" : "border-line text-muted")}>{v === "map" ? "Map" : "List"}</button>
+          ))}
+        </div>
+      )}
+      <div ref={container} className={cn("h-[420px] w-full overflow-hidden rounded-2xl border border-line sm:h-[560px]", view === "list" && "hidden")} role="region" aria-label="Interactive map" />
+      {view === "list" && (
+        <ul className="divide-y divide-line rounded-2xl border border-line bg-white" aria-label="Places on the map">
+          {visible.length === 0 && <li className="p-5 text-sm text-muted">No places match.</li>}
+          {visible.map((p) => {
+            const dir = directionsLink(p.lat, p.lng);
+            return (
+              <li key={`${p.kind}-${p.id}`} className="flex flex-wrap items-center justify-between gap-2 p-4 text-sm">
+                <span><a href={p.href} className="font-medium text-forest hover:underline">{p.title}</a> <span className="text-muted">· {KIND_LABEL[p.kind].replace(/s$/, "")}</span></span>
+                {dir && <a href={dir} target="_blank" rel="noopener noreferrer" className="text-lake-dark underline">Directions</a>}
+              </li>
+            );
+          })}
+        </ul>
+      )}
       {points.length === 0 && (
         <p className="text-sm text-muted">No places with verified coordinates have been added yet. The map shows the Ashanti Region until they are.</p>
       )}

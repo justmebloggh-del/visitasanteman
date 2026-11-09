@@ -32,7 +32,7 @@ Editorial workflow: Draft, In review (`pending_review`), Approved, Published, Ar
 
 Publishing also requires an active administrative area (district): trigger `guard_publish_requires_area` on communities, attractions, listings, events, experiences and destinations. The area is filled automatically from the community or destination when left blank.
 
-Helper functions (all `security definer`, read `user_roles`): `is_staff()` (super admin, admin, regional editor, editor), `is_admin()`, `is_super_admin()`, `can_approve()`, `can_manage_geography()`, `can_manage_media()`. Permissions are checked by `supabase/tests/geography_rls.sql` (106 checks).
+Helper functions (all `security definer`, read `user_roles`): `is_staff()` (super admin, admin, regional editor, editor), `is_admin()`, `is_super_admin()`, `can_approve()`, `can_manage_geography()`, `can_manage_media()`. Permissions are checked by `supabase/tests/geography_rls.sql` (132 checks).
 
 ## Business (partner) accounts
 Registration at `/partner/register` creates a normal visitor account. After email verification, `/partner/activate` calls the database function `become_partner(type)`, the only path to the `partner` role. The function checks the email is verified, only moves `visitor → partner`, and sets the account type once. Partners can manage only listings where `owner_id = auth.uid()`, and the database refuses any attempt to publish, verify, feature or change plan/owner.

@@ -371,12 +371,15 @@ export async function getAllGalleryImages(limit = 60): Promise<(MediaRef & { cap
 export async function getMapPoints(): Promise<MapPoint[]> {
   const pt = <T extends { latitude: number | null; longitude: number | null }>(rows: T[]) =>
     rows.filter((r) => r.latitude != null && r.longitude != null);
-  const [attr, comm, lst, exp, ev] = await Promise.all([
+  const [attr, comm, lst, exp, ev, inst, spv, trn] = await Promise.all([
     run<Attraction[]>("map-attr", () => sb().from("attractions").select("id,slug,name,latitude,longitude").not("latitude", "is", null) as never, []),
     run<Community[]>("map-comm", () => sb().from("communities").select("id,slug,name,latitude,longitude").not("latitude", "is", null) as never, []),
     run<Listing[]>("map-list", () => sb().from("listings").select("id,slug,name,type,latitude,longitude").not("latitude", "is", null) as never, []),
     run<Experience[]>("map-exp", () => sb().from("experiences").select("id,slug,title,latitude,longitude").not("latitude", "is", null) as never, []),
     run<EventItem[]>("map-ev", () => sb().from("events").select("id,slug,title,latitude,longitude").not("latitude", "is", null).gte("starts_at", new Date().toISOString()) as never, []),
+    run<{ id: string; slug: string; name: string; latitude: number | null; longitude: number | null }[]>("map-inst", () => sb().from("institutions").select("id,slug,name,latitude,longitude").not("latitude", "is", null) as never, []),
+    run<{ id: string; slug: string; name: string; latitude: number | null; longitude: number | null }[]>("map-sports", () => sb().from("sports_venues").select("id,slug,name,latitude,longitude").not("latitude", "is", null) as never, []),
+    run<{ id: string; slug: string; name: string; latitude: number | null; longitude: number | null }[]>("map-transport", () => sb().from("transport_providers").select("id,slug,name,latitude,longitude").not("latitude", "is", null) as never, []),
   ]);
   return [
     ...pt(attr).map((r): MapPoint => ({ id: r.id, kind: "attraction", title: r.name, href: `/attractions/${r.slug}`, lat: r.latitude!, lng: r.longitude! })),
@@ -388,6 +391,9 @@ export async function getMapPoints(): Promise<MapPoint[]> {
     }),
     ...pt(exp).map((r): MapPoint => ({ id: r.id, kind: "experience", title: r.title, href: `/experiences/${r.slug}`, lat: r.latitude!, lng: r.longitude! })),
     ...pt(ev).map((r): MapPoint => ({ id: r.id, kind: "event", title: r.title, href: `/events/${r.slug}`, lat: r.latitude!, lng: r.longitude! })),
+    ...pt(inst).map((r): MapPoint => ({ id: r.id, kind: "education", title: r.name, href: `/education/${r.slug}`, lat: r.latitude!, lng: r.longitude! })),
+    ...pt(spv).map((r): MapPoint => ({ id: r.id, kind: "sports", title: r.name, href: `/sports/${r.slug}`, lat: r.latitude!, lng: r.longitude! })),
+    ...pt(trn).map((r): MapPoint => ({ id: r.id, kind: "transport", title: r.name, href: `/transport/${r.slug}`, lat: r.latitude!, lng: r.longitude! })),
   ];
 }
 

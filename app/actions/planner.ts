@@ -168,3 +168,25 @@ export async function suggestItinerary(planId: string) {
   if (rows.length) await supabase.from("itinerary_items").insert(rows);
   flash(planId, `Added ${rows.length} suggested place${rows.length === 1 ? "" : "s"} from our listings${result.dropped ? ` (${result.dropped} suggestion${result.dropped === 1 ? "" : "s"} ignored because they are not in our listings)` : ""}. Review and adjust them.`);
 }
+
+/** Staff only: publish one of your own plans as a curated itinerary (created as a draft). */
+export async function makeCurated(planId: string, fd: FormData) {
+  const { supabase } = await session();
+  const attach = String(fd.get("attach") ?? "");
+  const { data, error } = await supabase.rpc("make_curated_itinerary", {
+    p_itinerary: planId, p_title: String(fd.get("title") ?? ""), p_summary: String(fd.get("summary") ?? ""), p_theme: String(fd.get("theme") ?? ""),
+    p_attach: /^[0-9a-f-]{36}$/i.test(attach) ? attach : null,
+  });
+  if (error || !data) { console.error("[curated]", error?.message); flash(planId, "Could not create the curated itinerary. Staff only; give it a title."); }
+  redirect(`/admin/curated-itineraries/${data}?saved=1`);
+}
+
+/** Copy a published curated itinerary into the signed-in visitor's own plans. */
+export async function copyCurated(slug: string) {
+  const supabase = await createClient();
+  const { data: u } = await supabase.auth.getUser();
+  if (!u.user) redirect(`/login?next=/travel-planner/itineraries/${slug}`);
+  const { data, error } = await supabase.rpc("copy_curated_itinerary", { p_slug: slug });
+  if (error || !data) { console.error("[curated copy]", error?.message); redirect(`/travel-planner/itineraries/${slug}?error=1`); }
+  redirect(`/travel-planner/${data}`);
+}

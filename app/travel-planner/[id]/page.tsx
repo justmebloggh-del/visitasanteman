@@ -2,14 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { Printer, Share2, Sparkles } from "lucide-react";
-import { addCustom, addPlace, deletePlan, suggestItinerary, toggleShare } from "@/app/actions/planner";
+import { addCustom, addPlace, deletePlan, makeCurated, suggestItinerary, toggleShare } from "@/app/actions/planner";
 import { Breadcrumbs } from "@/components/layout/blocks";
 import { Map } from "@/components/maps/Map";
 import { PlanDays } from "@/components/planner/PlanDays";
 import { PlanForm } from "@/components/planner/PlanForm";
 import { Button, Container, Field, Input, Notice, Select } from "@/components/ui";
 import { aiEnabled } from "@/lib/ai/assistant";
-import { getSessionUser } from "@/lib/auth/session";
+import { getSessionUser, isStaff } from "@/lib/auth/session";
 import { SITE_URL } from "@/lib/env";
 import { listAttractions, listExperiences } from "@/lib/content/public";
 import { searchPlaces } from "@/lib/planner/search";
@@ -23,7 +23,8 @@ export const metadata: Metadata = { title: "Your travel plan", robots: { index: 
 export default async function PlanEditor({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ q?: string; notice?: string }> }) {
   const { id } = await params;
   const sp = await searchParams;
-  if (!(await getSessionUser())) redirect(`/login?next=/travel-planner/${id}`);
+  const me = await getSessionUser();
+  if (!me) redirect(`/login?next=/travel-planner/${id}`);
   const supabase = await createClient();
   const { data } = await supabase.rpc("itinerary_view", { p_id: id });
   const plan = data as PlanView | null;
@@ -36,6 +37,7 @@ export default async function PlanEditor({ params, searchParams }: { params: Pro
   const picks = attractions && experiences ? recommend(plan.interests, attractions.items, experiences.items, 3) : null;
   const inPlan = new Set(plan.items.map((i) => i.item_id));
   const points = plan.items.filter((i) => i.lat != null && i.lng != null && !i.unavailable).map((i) => ({ id: i.id, kind: kindFromHref(i.href), title: i.title ?? "", href: i.href ?? "#", lat: Number(i.lat), lng: Number(i.lng) }));
+  const drafts = isStaff(me.role) ? ((await supabase.from("curated_itineraries").select("id,title").is("itinerary_id", null).eq("status", "draft").is("deleted_at", null).order("title")).data ?? []) : [];
   const dayOptions = Array.from({ length: plan.days }, (_, d) => d + 1);
   const shareUrl = plan.shared ? `${SITE_URL}/plan/${(await supabase.from("travel_itineraries").select("share_token").eq("id", id).single()).data?.share_token}` : null;
 
@@ -66,6 +68,18 @@ export default async function PlanEditor({ params, searchParams }: { params: Pro
           <PlanDays plan={plan} editable />
           {points.length > 0 && <section><h2 className="mb-3 text-xl font-semibold text-forest">Your plan on the map</h2><Map points={points} center={[points[0].lng, points[0].lat]} zoom={12} /></section>}
           <details className="rounded-2xl border border-line bg-white p-5"><summary className="cursor-pointer font-semibold text-forest">Plan details</summary><div className="mt-4"><PlanForm plan={plan} /></div></details>
+          {isStaff(me.role) && (
+            <details className="rounded-2xl border border-line bg-white p-5"><summary className="cursor-pointer font-semibold text-forest">Publish as a curated itinerary (staff)</summary>
+              <form action={makeCurated.bind(null, id)} className="mt-4 grid gap-3">
+                <p className="text-xs text-muted">Creates a draft for the public itinerary list and turns on the share link. Only add places that are published and verified, and check that routes and times are realistic before publishing.</p>
+                <Field label="Title" htmlFor="cur-title"><Input id="cur-title" name="title" defaultValue={plan.title} required maxLength={150} /></Field>
+                <Field label="Theme" htmlFor="cur-theme"><Input id="cur-theme" name="theme" placeholder="e.g. Heritage" maxLength={60} /></Field>
+                <Field label="Summary" htmlFor="cur-summary"><Input id="cur-summary" name="summary" maxLength={400} /></Field>
+                <Field label="Attach to an existing draft" htmlFor="cur-attach"><Select id="cur-attach" name="attach" defaultValue=""><option value="">Create a new itinerary</option>{drafts.map((d) => <option key={d.id} value={d.id}>{d.title}</option>)}</Select></Field>
+                <div><Button size="sm">Create curated draft</Button></div>
+              </form>
+            </details>
+          )}
           <form action={deletePlan.bind(null, id)}><Button variant="danger" size="sm">Delete this plan</Button></form>
         </div>
 

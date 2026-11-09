@@ -219,6 +219,8 @@ export const resources: ResourceDef[] = [
       { name: "duration_minutes", label: "Duration (minutes)", type: "number", group: "details" },
       { name: "price_from", label: "Price from", type: "number", group: "details", hint: "Only enter a price the provider has confirmed." },
       { name: "price_unit", label: "Price applies", type: "text", group: "details", hint: "e.g. per person" },
+      { name: "price_on_request", label: "Price on request", type: "checkbox", group: "details", hint: "Tick instead of entering a price when the provider quotes per booking." },
+      { name: "min_age", label: "Minimum age", type: "number", group: "details", hint: "Leave blank if there is no age requirement." },
       { name: "min_participants", label: "Minimum participants", type: "number", group: "details" },
       { name: "max_participants", label: "Maximum participants", type: "number", group: "details" },
       { name: "meeting_point", label: "Meeting point", type: "text", group: "location" },
@@ -523,6 +525,19 @@ resources.push(
 );
 
 resources.push({
+  key: "curated-itineraries", table: "curated_itineraries", label: "Curated itineraries", singular: "curated itinerary", titleField: "title", hasSlug: true,
+  revisions: true, hasStatus: true, hasCover: true, seo: true, softDelete: true, orderBy: { column: "updated_at", ascending: false },
+  listColumns: [{ name: "title", label: "Title" }, { name: "theme", label: "Theme" }, { name: "status", label: "Status" }, { name: "updated_at", label: "Updated" }],
+  publicPath: (r) => `/travel-planner/itineraries/${r.slug}`,
+  fields: [
+    { name: "title", label: "Title", type: "text", required: true, group: "main" },
+    statusField,
+    { name: "theme", label: "Theme", type: "text", group: "main" },
+    { name: "summary", label: "Summary", type: "textarea", group: "main", max: 600, hint: "A curated itinerary can only be published once a plan is attached. Build the plan in the travel planner, then use “Publish as a curated itinerary” there." },
+  ],
+});
+
+resources.push({
   key: "ceremonies", table: "ceremonies", label: "Ceremonies and festivals", singular: "ceremony", titleField: "name", hasSlug: true,
   area: true, revisions: true, hasStatus: true, hasCover: true, seo: true, softDelete: true, orderBy: { column: "updated_at", ascending: false },
   filter: { column: "verification_status", label: "Verification", options: verificationOptions },
@@ -565,6 +580,7 @@ export const adminNav = [
   { href: "/admin/communities", label: "Communities" },
   { href: "/admin/destinations", label: "Destinations" },
   { href: "/admin/ceremonies", label: "Ceremonies & festivals" },
+  { href: "/admin/curated-itineraries", label: "Curated itineraries" },
   { href: "/admin/institutions", label: "Education" },
   { href: "/admin/sports-venues", label: "Sports venues" },
   { href: "/admin/sports-clubs", label: "Sports clubs" },

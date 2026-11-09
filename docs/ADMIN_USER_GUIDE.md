@@ -32,6 +32,12 @@ The full matrix is in [AUTHENTICATION](AUTHENTICATION.md).
 - A protected forest, shrine, dam or river is not automatically a visitor attraction. Set *Visitor access* honestly and explain permits and rules in *Access, permits and visitor rules*. Anything other than "Open to visitors" shows a notice on the public page.
 - **Import research** takes a CSV (download the template). Check the preview, then import. Imported rows are always unpublished drafts marked *Research identified*; status or verification columns in a file are ignored. Every row needs a source. Duplicates (same name or alternative spelling, or repeated in the file) are skipped; places within 200 m of an existing one are flagged. Columns are matched by heading, not mapped by hand. Templates exist for attractions and communities only.
 
+## Search, map, experiences and curated itineraries
+- **Search** (`/search`, and suggestions in the search box) covers every published section. A record appears only after it is published; alternative spellings you enter on attractions, communities and districts are searched too.
+- **Map** (`/map`): categories now include education, sports and transport; there is a list view. Only places with coordinates appear. On any edit form with latitude and longitude, **click the map or drag the pin** to fill them in, but only place a pin where you have confirmed the location on site or from an official source.
+- **Experiences** have new categories, *Price on request* and *Minimum age*.
+- **Curated itineraries:** build a plan in the Travel planner using published places, open it and use **Publish as a curated itinerary (staff)**. It is created as a draft (or attach it to one of the empty drafts). A regional editor or administrator publishes it from Admin → Curated itineraries. Before publishing, check that routes and times are realistic: the site does not calculate journey times. Visitors can copy a published itinerary into their own plans.
+
 ## Education, sports and transport
 - **Education** (institutions), **Sports venues**, **Sports clubs**, **Transport**: each record needs a source and verification before it can be published, like attractions.
 - Education: record recognition only with who confirmed it (a regulator register and the date). A campus is not a tourist attraction unless the institution says visitors are welcome; set *Visitor access* accordingly.

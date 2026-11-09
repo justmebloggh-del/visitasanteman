@@ -169,3 +169,12 @@ Four dedicated tables with a shared pattern (district, community, coordinates, c
 Deliberately not stored: **fixtures and results** (they need an authorised data source) and fares or timetables without a source.
 
 Research drafts (unpublished, unchecked): 13 education institutions (from the owner's list; the university renamed USTED is recorded with its source), 2 stadiums (Baba Yara, Len Clay; GFA 2026/27 approved-venue list cited, with conflicting reports noted), and 3 transport records (Prempeh I International Airport and Kumasi Railway Station: name only; Boankra Inland Port: recorded as **under development**, not operational).
+
+## VisitAsanteman Phase 6 additions (migrations `20261118000001`, `20261118000002`)
+| Item | Purpose |
+|---|---|
+| `experience_category` values | heritage tours, craft workshops, food experiences, city tours, festival experiences, farm visits, educational excursions, wildlife viewing, waterfall visits |
+| `experiences.price_on_request`, `min_age` | "Price on request" instead of a number; age requirement |
+| `search_site(q, kinds, area, limit, offset)` | Site-wide search over published districts, destinations, attractions, communities, ceremonies, accommodation, food, venues, markets, businesses, experiences, events, institutions, sports venues and clubs, transport and articles. **Security invoker**, so row level security applies: visitors only ever get published records. Whole-word full-text plus partial-name matching, alternative spellings of attractions, communities and districts, exact/prefix boost, wildcard characters escaped |
+| `curated_itineraries` | Public trip ideas. A staff member builds a plan in the travel planner and publishes it as a curated itinerary (`make_curated_itinerary`, staff only, own plans only, switches sharing on). Publishing needs a plan attached and an approver. The public reads it through `curated_itinerary_view` (unpublished places show as unavailable) and copies it with `copy_curated_itinerary` (only still-published places are copied) |
+| Placeholders | The nine itinerary titles from the brief exist as **empty drafts** with no places; nothing is invented |

@@ -16,8 +16,9 @@ export default async function TravelPlanner() {
   const plans = user ? ((await (await createClient()).from("travel_itineraries").select("id,title,days,updated_at").order("updated_at", { ascending: false })).data ?? []) : [];
   return (
     <>
-      <PageHeader title="Travel planner" intro="Build a day-by-day plan from places that are really on this site, then share it or print it." crumbs={[{ label: "Travel planner" }]} />
+      <PageHeader title="Travel planner" intro="Build a day-by-day plan from places that are really on this site, then share it or print it. Or start from a curated itinerary." crumbs={[{ label: "Travel planner" }]} />
       <Container className="py-10">
+        <p className="mb-8"><Link href="/travel-planner/itineraries" className="font-medium text-lake-dark underline">Browse curated itineraries</Link></p>
         {!user ? (
           <div className="max-w-2xl space-y-4">
             <p className="text-lg">Create a free account to build and save your plans. You can add attractions, accommodation, restaurants, experiences and events, arrange them by day, see them on a map and share a link.</p>

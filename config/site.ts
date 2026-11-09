@@ -76,6 +76,9 @@ export const experienceCategoryLabels: Record<string, string> = {
   cycling: "Cycling", birdwatching: "Birdwatching", photography: "Photography tours", cultural: "Cultural tours",
   community: "Community experiences", nature: "Nature exploration", group_excursion: "Group excursions",
   family: "Family activities",
+  heritage_tour: "Heritage tours", craft_workshop: "Craft workshops", food_experience: "Food experiences", city_tour: "City tours",
+  festival_experience: "Festival experiences", farm_visit: "Farm visits", educational_excursion: "Educational excursions",
+  wildlife_viewing: "Wildlife viewing", waterfall_visit: "Waterfall visits",
 };
 
 export const ceremonyKindLabels: Record<string, string> = {

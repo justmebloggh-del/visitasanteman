@@ -71,7 +71,7 @@ export interface Experience extends Seo, Cover {
   price_currency: string; price_unit: string | null; min_participants: number | null;
   max_participants: number | null; meeting_point: string | null; latitude: number | null;
   longitude: number | null; safety_requirements: string | null; cancellation_policy: string | null;
-  video_url: string | null; provider_verified: boolean; is_featured: boolean;
+  video_url: string | null; provider_verified: boolean; is_featured: boolean; price_on_request: boolean; min_age: number | null;
   provider: { name: string; slug: string; phone: string | null; whatsapp: string | null; email: string | null } | null;
 }
 
@@ -101,7 +101,7 @@ export interface Testimonial {
 }
 
 export interface MapPoint {
-  id: string; kind: "attraction" | "community" | "accommodation" | "restaurant" | "business" | "event" | "experience";
+  id: string; kind: "attraction" | "community" | "accommodation" | "restaurant" | "business" | "event" | "experience" | "education" | "sports" | "transport";
   title: string; href: string; lat: number; lng: number;
 }
 

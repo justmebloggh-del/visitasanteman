@@ -63,6 +63,8 @@ export default async function ExperiencePage({ params }: { params: Promise<{ slu
         </div>
         <aside className="space-y-6">
           <div className="rounded-2xl border border-line bg-white p-5">
+            {e.price_from == null && e.price_on_request && <p className="mb-3 text-xl font-semibold text-forest">Price on request</p>}
+            {e.min_age != null && <p className="mb-3 text-sm text-muted">Minimum age: {e.min_age}</p>}
             {e.price_from != null && <p className="mb-3 text-2xl font-semibold text-forest">From {formatPrice(e.price_from, e.price_currency)}{e.price_unit && <span className="ml-1 text-sm font-normal text-muted">{e.price_unit}</span>}</p>}
             {e.provider && <p className="mb-3 text-sm text-muted">Provided by <Link href={`/business/${e.provider.slug}`} className="font-medium text-lake-dark hover:underline">{e.provider.name}</Link>{e.provider_verified && <BadgeCheck className="ml-1 inline size-4 text-forest" aria-label="Confirmed by provider" />}</p>}
             <div className="flex flex-col gap-2">
