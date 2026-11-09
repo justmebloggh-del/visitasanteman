@@ -18,6 +18,18 @@ Legend: ✅ built and checked · 🟡 built, needs live-environment testing · �
 | Culture module content tables, travel-guide and gallery detail pages, new experience categories | ⬜ | Phase 2 of the brief |
 | Scheduled status, per-district editor scoping, revision restore | ⬜ | Not built |
 
+## VisitAsanteman Phase 3: culture, heritage and events (this branch)
+| Item | Status | Notes |
+|---|---|---|
+| Ceremonies and festivals: data model, admin, directory, detail pages | ✅ | Attendance classification; authority-approval publish gate; 74 SQL checks |
+| Cultural calendar (month view, type and district filters) | ✅ | Confirmed dates only |
+| Share and save | ✅ | WhatsApp/Facebook links; `.ics` download for confirmed dates. Accounts and a saved-places list are not built |
+| Homepage block for upcoming confirmed ceremonies | ✅ | Hides when none |
+| Ceremony records (Akwasidae, Papa Festival, Mmoaninko etc.) | ⬜ | **None loaded.** Dates, meanings and attendance rules must come from the traditional authorities; nothing was written from memory |
+| Culture sub-pages (history, traditions, crafts, food), cultural storytelling | 🟡 | CMS pages exist and say "being prepared"; need verified text |
+| Related transport and accommodation on ceremony pages | 🟡 | Links to district accommodation only; transport directory is Phase 5 |
+| Event management for general events | ✅ | Existing events module, unchanged |
+
 ## VisitAsanteman Phase 2: regional research and destination database (this branch)
 | Item | Status | Notes |
 |---|---|---|

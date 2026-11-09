@@ -123,3 +123,16 @@ describe("sort_order", () => {
     expect(ok.errors.administrative_area_id).toBeUndefined();
   });
 });
+
+describe("ceremonies", () => {
+  const def = resourceMap.ceremonies;
+  const base = { name: "C", kind: "ceremony", status: "draft", attendance: "unknown", verification_status: "awaiting_verification" };
+  it("will not confirm a date without a start", () => {
+    expect(parseResourceForm(def, fd({ ...base, date_confirmed: "on" }), { isAdmin: true, canApprove: true }).errors.starts_at).toMatch(/start date/);
+    expect(parseResourceForm(def, fd({ ...base, date_confirmed: "on", starts_at: "2026-12-01T09:00" }), { isAdmin: true, canApprove: true }).errors).toEqual({});
+  });
+  it("ignores authority approval from people who cannot approve", () => {
+    const r = parseResourceForm(def, fd({ ...base, authority_approved: "on" }), { isAdmin: false, canApprove: false });
+    expect("authority_approved" in r.values).toBe(false);
+  });
+});

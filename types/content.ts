@@ -21,6 +21,16 @@ export interface Community extends Seo, Cover {
   sources: string | null; content_verified: boolean;
 }
 
+export interface Ceremony extends Seo, Cover {
+  id: string; slug: string; name: string; kind: string; organiser: string | null; summary: string | null; significance: string | null;
+  starts_at: string | null; ends_at: string | null; date_confirmed: boolean; date_note: string | null;
+  attendance: string; attendance_notes: string | null; etiquette: string | null; dress_guidance: string | null; photography_rules: string | null;
+  contact_phone: string | null; contact_email: string | null; official_announcement_url: string | null;
+  source_organisation: string | null; source_url: string | null; source_published_at: string | null; researched_at: string | null;
+  traditional_area: { name: string; slug: string } | null; community: { name: string; slug: string } | null;
+  area: { name: string; slug: string } | null; administrative_area_id: string | null; community_id: string | null;
+}
+
 export interface Attraction extends Seo, Cover {
   id: string; slug: string; name: string; summary: string | null; description: string | null;
   history: string | null; video_url: string | null; latitude: number | null; longitude: number | null;

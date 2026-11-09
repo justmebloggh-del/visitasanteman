@@ -56,6 +56,18 @@ export const experienceCategoryLabels: Record<string, string> = {
   family: "Family activities",
 };
 
+export const ceremonyKindLabels: Record<string, string> = {
+  ceremony: "Traditional ceremony", festival: "Festival", durbar: "Durbar", performance: "Music, dance or performance",
+  craft_demonstration: "Craft demonstration", exhibition: "Cultural exhibition", other: "Other cultural occasion",
+};
+export const attendanceLabels: Record<string, string> = {
+  unknown: "Public attendance has not been confirmed",
+  public: "Open to the public",
+  public_with_conditions: "Open to the public, with conditions",
+  by_invitation: "By invitation only",
+  restricted: "Restricted: sacred or private, not open to visitors",
+};
+
 export const eventStatusLabels: Record<string, string> = {
   scheduled: "Scheduled", cancelled: "Cancelled", postponed: "Postponed", completed: "Completed",
 };

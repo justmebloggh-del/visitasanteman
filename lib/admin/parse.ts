@@ -140,6 +140,10 @@ export function parseResourceForm(def: ResourceDef, fd: FormData, o: { isAdmin: 
   if (def.typeFilter && typeof values[def.typeFilter.column] === "string" && !def.typeFilter.values.includes(values[def.typeFilter.column] as string)) {
     errors[def.typeFilter.column] = "Not allowed for this section";
   }
+  if (def.key === "ceremonies") {
+    if (values.date_confirmed && !values.starts_at) errors.starts_at = "Enter the start date before confirming it";
+    if (values.starts_at && values.ends_at && String(values.ends_at) < String(values.starts_at)) errors.ends_at = "End must be after the start";
+  }
   if (def.key === "events" && values.starts_at && values.ends_at && String(values.ends_at) < String(values.starts_at)) {
     errors.ends_at = "End must be after the start";
   }

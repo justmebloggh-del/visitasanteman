@@ -181,6 +181,28 @@ select pg_temp.t('X08 awaiting-verification records are hidden from anon even wh
   'select 1 from attractions where verification_status = ''awaiting_verification'' and status = ''published''', true);
 select pg_temp.visible('X09 anon sees no research records (none are published)', null, 'anon', 'select 1 from attractions where verification_status in (''research_identified'', ''awaiting_verification'')', 0);
 
+-- ── Ceremonies (Phase 3) ──
+select pg_temp.t('C01 editor cannot record authority approval on insert', :editor, 'authenticated',
+  'insert into ceremonies (slug, name, authority_approved) values (''c-x1'', ''C x1'', true)', false);
+select pg_temp.t('C02 editor can draft a ceremony', :editor, 'authenticated',
+  format('insert into ceremonies (slug, name, administrative_area_id) values (''c-draft'', ''C draft'', %L)', :area), true);
+select pg_temp.t('C03 editor cannot record authority approval on update', :editor, 'authenticated',
+  'update ceremonies set authority_approved = true where slug = ''c-draft''', false);
+select pg_temp.t('C04 cannot publish without authority approval, even as admin', :admin, 'authenticated',
+  format('insert into ceremonies (slug, name, status, administrative_area_id, verification_status) values (''c-noauth'', ''C noauth'', ''published'', %L, ''verified_secondary'')', :area), false);
+select pg_temp.t('C05 cannot publish an unverified ceremony', :admin, 'authenticated',
+  format('insert into ceremonies (slug, name, status, administrative_area_id, authority_approved) values (''c-unver'', ''C unver'', ''published'', %L, true)', :area), false);
+select pg_temp.t('C06 cannot publish a ceremony without a district', :admin, 'authenticated',
+  'insert into ceremonies (slug, name, status, authority_approved, verification_status) values (''c-nodist'', ''C nodist'', ''published'', true, ''verified_secondary'')', false);
+select pg_temp.t('C07 admin can publish an approved, verified ceremony in an active district', :admin, 'authenticated',
+  format('insert into ceremonies (slug, name, status, administrative_area_id, authority_approved, verification_status, attendance) values (''c-ok'', ''C ok'', ''published'', %L, true, ''verified_secondary'', ''public'')', :area), true);
+select pg_temp.t('C08 a date cannot be confirmed without a start time', :regional, 'authenticated',
+  'update ceremonies set date_confirmed = true where slug = ''c-draft''', false);
+select pg_temp.visible('C09 anon sees only the published ceremony', null, 'anon', 'select 1 from ceremonies', 1);
+select pg_temp.visible('C10 editor sees drafts too', :editor, 'authenticated', 'select 1 from ceremonies', 2);
+select pg_temp.t('C11 content editor cannot publish a ceremony', :editor, 'authenticated',
+  'update ceremonies set status = ''published'' where slug = ''c-draft''', false);
+
 -- ── Roles, plans: never writable by editors ──
 select pg_temp.rows('R01 regional editor cannot change roles', :regional, 'authenticated', format('update user_roles set role = ''admin'' where user_id = %L', :visitor), 0);
 select pg_temp.rows('R02 content editor cannot change roles', :editor, 'authenticated', format('update user_roles set role = ''admin'' where user_id = %L', :visitor), 0);

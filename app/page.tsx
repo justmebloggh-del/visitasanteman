@@ -8,9 +8,9 @@ import { ButtonLink, Container } from "@/components/ui";
 import { AdSlot } from "@/components/ads/AdSlot";
 import { Map } from "@/components/maps/Map";
 import { SearchBox } from "@/components/layout/SearchBox";
-import { stageLabels, eventStatusLabels, experienceCategoryLabels, listingTypeLabels, accommodationTypes, businessTypes, restaurantTypes, planVisit, type ListingType } from "@/config/site";
+import { ceremonyKindLabels, stageLabels, eventStatusLabels, experienceCategoryLabels, listingTypeLabels, accommodationTypes, businessTypes, restaurantTypes, planVisit, type ListingType } from "@/config/site";
 import {
-  getAreaContentCounts, getHomepageSections, getTestimonials, listAreas, listArticles, listAttractions, listCommunities, listDestinations, listEvents,
+  getAreaContentCounts, getHomepageSections, listCeremonies, getTestimonials, listAreas, listArticles, listAttractions, listCommunities, listDestinations, listEvents,
   listExperiences, listListings, getMapPoints, getSettings, listInvestments,
 } from "@/lib/content/public";
 import { formatDate, formatPrice, mediaUrl } from "@/lib/utils";
@@ -18,7 +18,7 @@ import { formatDate, formatPrice, mediaUrl } from "@/lib/utils";
 export const revalidate = 60;
 
 export default async function HomePage() {
-  const [sections, attractions, experiences, stays, food, communities, events, articles, testimonials, points, settings, investments, areas, areaCounts, destinations, businesses, cultureStories] = await Promise.all([
+  const [sections, attractions, experiences, stays, food, communities, events, articles, testimonials, points, settings, investments, areas, areaCounts, destinations, businesses, cultureStories, ceremonies] = await Promise.all([
     getHomepageSections(),
     listAttractions({ limit: 6 }),
     listExperiences({ limit: 3 }),
@@ -36,6 +36,7 @@ export default async function HomePage() {
     listDestinations({ limit: 6 }),
     listListings(businessTypes, { limit: 3 }),
     listArticles({ category: "culture-heritage", limit: 3 }),
+    listCeremonies({ when: "upcoming", limit: 3 }),
   ]);
   const activeAreas = areas.filter((a) => (areaCounts[a.id] ?? 0) > 0);
   const mapCfg = settings.map ?? {};
@@ -114,6 +115,15 @@ export default async function HomePage() {
             {attractions.items.map((a) => (
               <ContentCard key={a.id} href={`/attractions/${a.slug}`} title={a.name} summary={a.summary} media={a.cover} meta={a.community?.name ?? a.category?.name} badge={a.category?.name} />
             ))}
+          </CardGrid>
+        </Block>
+      )}
+
+      {/* D1. Upcoming ceremonies and festivals: only dates the organisers have confirmed */}
+      {on("ceremonies") && ceremonies.items.length > 0 && (
+        <Block title={sections.ceremonies?.title ?? "Ceremonies and festivals"} subtitle={sections.ceremonies?.subtitle} more={{ href: "/culture/calendar", label: "Cultural calendar" }}>
+          <CardGrid>
+            {ceremonies.items.map((c) => <ContentCard key={c.id} href={`/culture/ceremonies/${c.slug}`} title={c.name} summary={c.summary} media={c.cover} meta={[ceremonyKindLabels[c.kind], formatDate(c.starts_at!)].join(" · ")} />)}
           </CardGrid>
         </Block>
       )}

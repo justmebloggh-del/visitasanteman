@@ -2,7 +2,7 @@ import { PAGE_SIZE, type ListingType } from "@/config/site";
 import { supabaseConfigured } from "@/lib/env";
 import { createPublicClient } from "@/lib/supabase/server";
 import type {
-  Article, Attraction, Community, EventItem, Experience, HomepageSection, Listing, MapPoint,
+  Article, Attraction, Ceremony, Community, EventItem, Experience, HomepageSection, Listing, MapPoint,
   MediaRef, MenuItem, Page, PageContent, RoomType, Testimonial,
 } from "@/types/content";
 
@@ -306,6 +306,39 @@ export async function getDestination(slug: string) {
   return rows[0] ?? null;
 }
 
+// ── Ceremonies and festivals ──
+const CEREMONY = `*, ${COVER}, traditional_area:traditional_areas(name,slug), community:communities(name,slug), area:administrative_areas(name,slug)`;
+
+export async function listCeremonies(o: { when?: "upcoming" | "all"; month?: string; area?: string; kind?: string; q?: string; page?: number; limit?: number } = {}) {
+  const page = o.page ?? 1;
+  const [from, to] = o.limit ? [0, o.limit - 1] : range(page);
+  if (!supabaseConfigured) return paged<Ceremony>([], 0, page);
+  try {
+    let q = sb().from("ceremonies").select(CEREMONY, { count: "exact" });
+    if (o.month && /^\d{4}-\d{2}$/.test(o.month)) {
+      // The calendar only ever shows dates the organisers have confirmed.
+      const start = new Date(`${o.month}-01T00:00:00Z`); const end = new Date(start); end.setUTCMonth(end.getUTCMonth() + 1);
+      q = q.eq("date_confirmed", true).gte("starts_at", start.toISOString()).lt("starts_at", end.toISOString()).order("starts_at");
+    } else if (o.when === "upcoming") {
+      q = q.eq("date_confirmed", true).gte("starts_at", new Date().toISOString()).order("starts_at");
+    } else q = q.order("name");
+    if (o.kind) q = q.eq("kind", o.kind);
+    if (o.q) q = q.ilike("name", `%${cleanTerm(o.q)}%`);
+    if (o.area) q = q.eq("administrative_area_id", await areaId(o.area));
+    const { data, count, error } = await q.range(from, to);
+    if (error) throw error;
+    return paged((data ?? []) as unknown as Ceremony[], count ?? 0, page);
+  } catch (e) {
+    console.error("[content:ceremonies]", e);
+    return paged<Ceremony>([], 0, page);
+  }
+}
+
+export async function getCeremony(slug: string) {
+  const rows = await run<Ceremony[]>("ceremony", () => sb().from("ceremonies").select(CEREMONY).eq("slug", slug).limit(1) as never, []);
+  return rows[0] ?? null;
+}
+
 // ── Misc ──
 export const getTestimonials = (limit = 3) =>
   run<Testimonial[]>("testimonials", () => sb().from("testimonials").select("id,author_name,author_origin,quote,rating").order("created_at", { ascending: false }).limit(limit) as never, []);
@@ -351,14 +384,14 @@ export async function getSitemapEntries() {
   const slugs = (table: string, col = "slug") =>
     run<{ slug: string; updated_at: string }[]>(`sitemap-${table}`, () => sb().from(table).select(`${col}, updated_at`).eq("noindex", false) as never, []);
   const [areas, counts] = await Promise.all([listAreas(), getAreaContentCounts()]);
-  const [attractions, communities, listings, experiences, events, articles, investments, destinations] = await Promise.all([
+  const [attractions, communities, listings, experiences, events, articles, investments, destinations, ceremonies] = await Promise.all([
     slugs("attractions"), slugs("communities"),
     run<{ slug: string; type: string; updated_at: string }[]>("sitemap-listings", () => sb().from("listings").select("slug,type,updated_at").eq("noindex", false) as never, []),
-    slugs("experiences"), slugs("events"), slugs("articles"), slugs("investment_opportunities"), slugs("destinations"),
+    slugs("experiences"), slugs("events"), slugs("articles"), slugs("investment_opportunities"), slugs("destinations"), slugs("ceremonies"),
   ]);
   // Districts without any published content are left out of the sitemap (thin pages).
   const districts = areas.filter((a) => (counts[a.id] ?? 0) > 0).map((a) => ({ slug: a.slug, updated_at: a.verified_at ?? new Date().toISOString() }));
-  return { attractions, communities, listings, experiences, events, articles, investments, destinations, districts };
+  return { attractions, communities, listings, experiences, events, articles, investments, destinations, districts, ceremonies };
 }
 
 // ── Reviews (only published, booking-verified ones are public) ──

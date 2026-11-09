@@ -135,3 +135,11 @@ Research, verification and access are separate ideas: a fact can be established 
 | Inventory load | 52 attraction records from the owner's research summary (citing the ARCC Regional Profile 2023) loaded as **draft / research_identified / access unknown**, with no coordinates, descriptions, hours, fees or contacts. 16 are linked to a district where the summary names one and it matches the working district list. The ARCC document itself could not be reached, so none of it has been checked against it |
 
 Only attractions have the verification gate so far. Other record types (hospitality, education, sports, transport, markets, ceremonies) are later phases.
+
+## VisitAsanteman Phase 3 additions (migration `20261115000001`)
+`ceremonies` (kind, traditional area, community, district, organiser, significance, schedule, attendance, etiquette, dress and photography guidance, contact, official announcement, source and verification fields). Built-in rules:
+- **Not automatically public.** `attendance` is `unknown`, `public`, `public_with_conditions`, `by_invitation` or `restricted`; the page shows it prominently.
+- **Authority approval.** Publishing requires `authority_approved` (the responsible traditional authority or organiser approved the public information). Only approvers can set it (trigger `guard_ceremony`).
+- **Verified and located.** Publishing also needs a verified record and an active district (same triggers as attractions).
+- **Dates are never assumed.** `date_confirmed` needs a start time (check constraint). Unconfirmed dates are not shown, not listed on the calendar, not exported to `.ics` and not put in structured data.
+RLS matches other content (public sees published; staff manage; delete is admin only).

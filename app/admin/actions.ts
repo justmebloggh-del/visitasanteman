@@ -32,7 +32,7 @@ export async function saveResource(resourceKey: string, id: string | null, _prev
   if (Object.keys(errors).length) return { ok: false, message: "Please fix the highlighted fields.", errors };
 
   // Record who verified a researched record.
-  if (def.key === "attractions" && (values.verification_status === "verified_secondary" || values.verification_status === "officially_confirmed")) values.reviewed_by = user.id;
+  if ((def.key === "attractions" || def.key === "ceremonies") && (values.verification_status === "verified_secondary" || values.verification_status === "officially_confirmed")) values.reviewed_by = user.id;
 
   const supabase = await createClient();
   const pk = def.slugField ?? "id";

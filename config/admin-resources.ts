@@ -1,4 +1,4 @@
-import { stageLabels, accommodationTypes, businessTypes, experienceCategoryLabels, eventStatusLabels, listingTypeLabels, restaurantTypes, type ListingType } from "@/config/site";
+import { ceremonyKindLabels, attendanceLabels, stageLabels, accommodationTypes, businessTypes, experienceCategoryLabels, eventStatusLabels, listingTypeLabels, restaurantTypes, type ListingType } from "@/config/site";
 
 export type FieldType =
   | "text" | "textarea" | "markdown" | "number" | "select" | "checkbox" | "datetime" | "tags" | "url" | "email"
@@ -427,6 +427,39 @@ resources.push(
   },
 );
 
+resources.push({
+  key: "ceremonies", table: "ceremonies", label: "Ceremonies and festivals", singular: "ceremony", titleField: "name", hasSlug: true,
+  area: true, revisions: true, hasStatus: true, hasCover: true, seo: true, softDelete: true, orderBy: { column: "updated_at", ascending: false },
+  filter: { column: "verification_status", label: "Verification", options: verificationOptions },
+  listColumns: [{ name: "name", label: "Name" }, { name: "kind", label: "Type" }, { name: "starts_at", label: "Date" }, { name: "status", label: "Status" }],
+  publicPath: (r) => `/culture/ceremonies/${r.slug}`,
+  fields: [
+    { name: "name", label: "Name", type: "text", required: true, group: "main" },
+    { name: "kind", label: "Type", type: "select", required: true, group: "main", options: Object.entries(ceremonyKindLabels).map(([value, label]) => ({ value, label })) },
+    statusField,
+    { name: "attendance", label: "Public attendance", type: "select", required: true, group: "main", options: Object.entries(attendanceLabels).map(([value, label]) => ({ value, label })), hint: "Ceremonies are not automatically public events. Some are private or sacred. Be strict." },
+    { name: "authority_approved", label: "Traditional authority or organiser has approved the public information", type: "checkbox", approverOnly: true, group: "main", hint: "Required before publishing. Tick only after the responsible authority has agreed what may be shown." },
+    { name: "traditional_area_id", label: "Traditional area", type: "relation", relation: { table: "traditional_areas", label: "name" }, group: "main" },
+    community, area,
+    { name: "organiser", label: "Traditional authority or organiser", type: "text", group: "main" },
+    { name: "summary", label: "Short summary", type: "textarea", group: "main", max: 400 },
+    { name: "significance", label: "Significance and history (verified only)", type: "textarea", group: "details", hint: "Do not write cultural meaning from memory. Use cited sources or custodians, and record who reviewed it." },
+    { name: "starts_at", label: "Starts (Ghana time)", type: "datetime", group: "details" },
+    { name: "ends_at", label: "Ends (Ghana time)", type: "datetime", group: "details" },
+    { name: "date_confirmed", label: "Date confirmed with the organisers for this occurrence", type: "checkbox", group: "details", hint: "Traditional dates are announced each year and do not follow fixed calendar dates. Only tick when confirmed; unconfirmed dates are never shown." },
+    { name: "date_note", label: "How dates are announced", type: "text", group: "details", hint: "e.g. who announces the date. Do not guess a pattern." },
+    { name: "attendance_notes", label: "Attendance conditions", type: "textarea", group: "details" },
+    { name: "etiquette", label: "Visitor etiquette", type: "textarea", group: "details" },
+    { name: "dress_guidance", label: "Dress guidance", type: "textarea", group: "details" },
+    { name: "photography_rules", label: "Photography and recording rules", type: "textarea", group: "details" },
+    { name: "contact_phone", label: "Contact phone", type: "text", group: "contact" },
+    { name: "contact_email", label: "Contact email", type: "email", group: "contact" },
+    { name: "official_announcement_url", label: "Official announcement link", type: "url", group: "contact" },
+    verifiedAt, verifyNotes,
+    ...researchFields.filter((f) => !["access_status", "access_notes", "managing_institution", "alt_names"].includes(f.name)),
+  ],
+});
+
 export const resourceMap = Object.fromEntries(resources.map((r) => [r.key, r])) as Record<string, ResourceDef>;
 
 export const adminNav = [
@@ -436,6 +469,7 @@ export const adminNav = [
   { href: "/admin/import", label: "Import research" },
   { href: "/admin/communities", label: "Communities" },
   { href: "/admin/destinations", label: "Destinations" },
+  { href: "/admin/ceremonies", label: "Ceremonies & festivals" },
   { href: "/admin/accommodation", label: "Accommodation" },
   { href: "/admin/restaurants", label: "Restaurants" },
   { href: "/admin/experiences", label: "Experiences" },
