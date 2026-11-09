@@ -1,0 +1,49 @@
+# Admin user guide
+
+Sign in, then open **Admin** in the top bar (or `/admin`). Editors, administrators and super administrators can enter.
+
+## Publishing content
+1. Pick a section (Attractions, Communities, Accommodation, Restaurants, Experiences, Events, Businesses, Articles).
+2. **New**, fill in the form, upload a main photograph (describe it in the alt-text box first).
+3. Leave **Status** as *Draft* while working. Choose *Published* to make it public. Pages update within about a minute.
+4. Use **Unpublish** in the list to take something down. **Delete** (administrators) archives the item; it is not erased.
+
+## Rules for trustworthy content
+- Only enter facts, prices, hours and coordinates you have confirmed. Leave a field blank rather than guessing.
+- Fill **Sources** for history/heritage; it is shown to visitors.
+- The **Verified** badge (listings) and **Provider has confirmed** (experiences) are admin-only. Tick them only after checking with the business.
+- Coordinates: take them on site or from an official source. Both latitude and longitude, or neither.
+
+## Roles
+| Role | Can |
+|---|---|
+| Editor | Create/edit/publish content, upload media, handle enquiries |
+| Administrator | Editor + delete, verification badges, featured flags, settings, view audit-relevant data |
+| Super administrator | Administrator + change user roles |
+
+## Other screens
+- **Homepage**: headings, on/off for each section, hero photograph. Empty sections never show.
+- **Media library**: upload, edit alt text/caption/credit, delete unused files. Put photos in folder `gallery` to show them on the public Gallery page.
+- **Enquiries**: reply by email, mark read/replied/closed. These are requests, not confirmed bookings.
+- **Newsletter**: view and export subscribers as CSV.
+- **Pages**: write About, Explore, Travel Guide, Privacy, Terms in Markdown (`## Heading`, `**bold**`, `- list`, `[text](https://…)`).
+- **Settings**: contact details, social links, map start view.
+
+## Business listing requests
+Businesses ask to be listed through the contact form (type *List my business*). Review the request in Enquiries, contact them to verify details, create the listing as a draft, then publish. A self-service partner portal arrives in Phase 2.
+
+## Visitor features worth knowing
+- **Travel planner** (`/travel-planner`): signed-in visitors build day-by-day plans from published places, view them on a map, share a read-only link and print. Plans only contain places that are published, so keep content accurate.
+- **Nearby**: attraction pages list close places automatically. They appear only for items with verified coordinates, so adding coordinates improves discovery.
+- **AI suggestions** appear in the planner only when `AI_ASSISTANT_ENABLED` and an API key are set. They use only published items.
+
+## Investment opportunities (Admin → Investments)
+- Choose the **real stage**. *Approved* and *Existing* need a named source (who approved it, which reference); the system will not save them without one.
+- Leave *Estimated investment* blank unless you can state where the figure comes from.
+- Keep *Images are conceptual* ticked unless the photo shows the real, existing facility.
+- Investor enquiries arrive in *Enquiries* (filter **Investor**), linked to the project.
+- Have the wording on this section reviewed legally before launch: it must not read as an offer of securities or a promise of returns.
+
+## Advertisements (Admin → Advertisements, administrators only)
+- Create an ad, set **placement**, link, and start/end times (Ghana time), then set status to **Published**. It shows only inside its dates and is always labelled “Sponsored”.
+- *Views* and *Clicks* update automatically. Ads are sold and invoiced manually; there is no online purchase flow.

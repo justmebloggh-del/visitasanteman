@@ -1,0 +1,101 @@
+# Database schema (Phase 1)
+
+Source of truth: `supabase/migrations/`. Seed (structure only, no invented facts): `supabase/seed.sql`.
+
+```mermaid
+erDiagram
+  auth_users ||--|| profiles : has
+  auth_users ||--|| user_roles : has
+  communities ||--o{ attractions : contains
+  communities ||--o{ listings : contains
+  communities ||--o{ events : hosts
+  attraction_categories ||--o{ attractions : groups
+  listings ||--o{ room_types : offers
+  listings ||--o{ menu_items : serves
+  listings ||--o{ experiences : provides
+  listings ||--o{ enquiries : receives
+  experiences ||--o{ enquiries : receives
+  article_categories ||--o{ articles : groups
+  media ||--o{ media_links : "gallery of"
+  media ||--o{ attractions : "cover"
+```
+
+## Tables
+| Table | Purpose | Public read |
+|---|---|---|
+| `profiles`, `user_roles` | Person details; role (separate table so users cannot edit it) | Own row; staff read all |
+| `communities` | Settlements around the lake (names seeded as **drafts**) | Published |
+| `attraction_categories`, `attractions` | Directory of places to see | Published |
+| `listings` | Hotels, restaurants, tour operators, guides, boats, artisans… (`type` enum) | Published |
+| `room_types`, `menu_items` | Child data of a listing | If parent is published |
+| `experiences` | Tours and activities; `provider_verified` gates "confirmed" claims | Published |
+| `events` | Dated events; `event_status` separate from publication `status` | Published |
+| `article_categories`, `articles` | Editorial; `published_at` in the future = scheduled | Published and date reached |
+| `pages` | About, Explore, Travel Guide, Privacy, Terms (Markdown) | Published |
+| `testimonials` | Only `is_verified` + published are shown | Verified + published |
+| `media`, `media_links` | File metadata and gallery links | Yes |
+| `enquiries` | Contact, booking requests, listing/partnership requests | **No** (insert only) |
+| `newsletter_subscribers` | Email list | **No** (insert only) |
+| `site_settings`, `homepage_sections` | CMS-managed configuration. Never store secrets here | Yes |
+| `audit_logs` | Trigger-written change history | Admins only |
+| view `public_authors` | Name/avatar of authors of published articles only | Yes |
+
+## Conventions
+- UUID primary keys; `created_at`/`updated_at` maintained by trigger.
+- Soft delete via `deleted_at` on content tables; RLS hides soft-deleted rows from the public.
+- `status`: `draft` → `pending_review` → `published` → `archived`.
+- Latitude/longitude are nullable with range checks. They are never defaulted or guessed.
+- Currency columns default to `GHS`; no exchange rates are stored.
+- `sources` (attractions/communities) is a **public** field shown on the page. RLS cannot hide single columns, so it is deliberately not an internal note.
+
+## Row Level Security summary
+| Actor | Can |
+|---|---|
+| Anonymous | Read published content; insert into `enquiries` / `newsletter_subscribers` (status forced to `new`) |
+| Visitor / partner | Same as anonymous, plus read/update own profile and read own role |
+| Editor | Create/update all content and media; no deletes; cannot change `is_verified`, `is_featured`, `owner_id` on listings (DB trigger) |
+| Admin | Editor + delete content, read audit log, manage settings, read users |
+| Super admin | Admin + change user roles |
+
+Verified by running both migrations plus an RLS test script (24 checks) against a throwaway Postgres: anonymous cannot read drafts, future-dated articles, unverified testimonials, enquiries, roles or audit logs; a visitor cannot promote themselves; an editor cannot delete or verify; only a super admin can change roles.
+
+## Phase 2 additions (migration `20261109000001`)
+| Item | Purpose |
+|---|---|
+| `subscription_plans` | Admin-editable plans (price optional, photo limit, featured/analytics flags) |
+| `listings.plan_id` | Plan assigned by an admin |
+| `profiles.business_account_type` | Partner type; set once |
+| `listing_views` + `record_listing_view()` | Daily view counts; anyone can record a view of a published listing, only the owner/staff can read |
+| `become_partner(type)` | visitor → partner, requires verified email; the only way to get the partner role |
+| Policies | Owners read/insert/update own listings (cannot publish/verify/feature/plan), manage own rooms/menu/gallery, read enquiries about own listings, upload to `partners/<uid>/` |
+
+## Phase 3 additions (migration `20261110000001`)
+| Table / function | Purpose |
+|---|---|
+| `bookings` | Request-based bookings (accommodation, experience, table). Reference `VLB-XXXXXXXX`; price set only by provider/staff; status + payment status |
+| `booking_status_history` | Every status change with actor |
+| `booking_payments` | Gateway transactions (reference, amount, currency, method, provider response). Written only by server code |
+| `room_blocked_dates` | Provider-blocked dates (availability). Active bookings also consume `room_types.units` |
+| `reviews` | One per completed booking; moderated (`pending/published/rejected`); owner reply |
+| `subscription_plans.commission_percent` | Commission recorded at payment time |
+| Functions | `create_booking`, `set_booking_status`, `lookup_booking`, `guest_cancel_booking`, `submit_review`, `reply_to_review`, `can_manage_booking`, `room_available` |
+| Access | No direct writes to booking tables. Customers see bookings by reference+email (or their account), providers see bookings for their own listings, staff see all |
+
+## Phase 4 additions (migration `20261111000001`)
+| Item | Purpose |
+|---|---|
+| `travel_itineraries` | A user's plan (days, travellers, interests, optional `share_token`). Owner-only; max 20 per user |
+| `itinerary_items` | Items by day/order: a published attraction, listing, experience, event, community, or a custom line. Max 100 per plan |
+| `itinerary_view(id, token)` | Resolves a plan for its owner or a share-token holder, against **published** content only (unpublished items show as "no longer available", no title) |
+| `nearby_places(lat, lng, radius, limit)` | Great-circle distance search over published items that have coordinates |
+
+## Phase 5 additions (migration `20261112000001`)
+| Item | Purpose |
+|---|---|
+| `investment_opportunities` | Projects with `stage` (operational/approved/proposed/under_consideration). CHECK: approved/operational need `stage_source`; estimates need `investment_note` and min ≤ max |
+| `enquiries.investment_id` | Investor enquiries point at a project |
+| `advertisements` | Sponsored placements; visible publicly only when published and inside `starts_at..ends_at`; admins only can write |
+| `record_ad_event()` | Only way to bump `impressions`/`clicks`; counts only live ads |
+
+## Planned tables (later phases)
+Phase 4: `travel_itineraries`, `itinerary_items`, `saved_places`. Phase 5: `investment_opportunities`, `investor_enquiries`, `advertisements`, `advertisement_campaigns`.

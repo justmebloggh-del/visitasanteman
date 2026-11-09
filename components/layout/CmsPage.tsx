@@ -1,0 +1,30 @@
+import type { Metadata } from "next";
+import { Breadcrumbs, Photo } from "@/components/layout/blocks";
+import { Markdown } from "@/components/layout/Markdown";
+import { buildMetadata } from "@/components/layout/seo";
+import { Container } from "@/components/ui";
+import { getPage } from "@/lib/content/public";
+
+export async function cmsMetadata(slug: string, fallbackTitle: string): Promise<Metadata> {
+  const p = await getPage(slug);
+  return buildMetadata({ title: p?.title ?? fallbackTitle, description: p?.seo_description, path: `/${slug}`, image: p?.cover, seoTitle: p?.seo_title, canonical: p?.canonical_url, noindex: p ? p.noindex : true });
+}
+
+export async function CmsPage({ slug, fallbackTitle, children }: { slug: string; fallbackTitle: string; children?: React.ReactNode }) {
+  const page = await getPage(slug);
+  return (
+    <>
+      <header className="bg-forest-dark text-white">
+        <Container className="py-12 sm:py-16"><div className="mb-4 [&_*]:!text-white/70 [&_[aria-current]]:!text-white"><Breadcrumbs items={[{ label: page?.title ?? fallbackTitle }]} /></div>
+          <h1 className="text-3xl font-semibold sm:text-5xl">{page?.title ?? fallbackTitle}</h1></Container>
+      </header>
+      <Container className="py-10">
+        {page?.cover && <div className="relative mb-8 aspect-[21/9] overflow-hidden rounded-2xl"><Photo media={page.cover} sizes="100vw" priority /></div>}
+        {page?.body ? <Markdown>{page.body}</Markdown> : (
+          <p className="rounded-2xl bg-mist p-6 text-muted">This page is being prepared. Please check back soon.</p>
+        )}
+        {children}
+      </Container>
+    </>
+  );
+}

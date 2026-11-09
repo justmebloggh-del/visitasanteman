@@ -1,0 +1,69 @@
+@import "tailwindcss";
+
+/* Brand tokens (from the project brief). Forest is primary, lake is the accent, gold is for highlights. */
+@theme {
+  --color-forest: #174b35;
+  --color-forest-dark: #0f3324;
+  --color-forest-soft: #e4ede7;
+  --color-lake: #287d9b;
+  --color-lake-dark: #1d6580;
+  --color-lake-soft: #e3f0f5;
+  --color-gold: #d5a642;
+  --color-gold-soft: #f7efd9;
+  --color-earth: #8b6845;
+  --color-mist: #f5f7f3;
+  --color-ink: #1b2a24;
+  --color-muted: #5d6b64;
+  --color-line: #dfe5dd;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-fraunces), ui-serif, Georgia, serif;
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #1b2a24;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-serif);
+  letter-spacing: -0.01em;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-lake);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+/* Rendered Markdown content (articles, static pages) */
+.prose-vlb { color: var(--color-ink); line-height: 1.75; max-width: 70ch; }
+.prose-vlb h2 { font-size: 1.6rem; margin: 2rem 0 0.75rem; color: var(--color-forest); }
+.prose-vlb h3 { font-size: 1.25rem; margin: 1.5rem 0 0.5rem; color: var(--color-forest); }
+.prose-vlb p { margin: 0 0 1rem; }
+.prose-vlb ul { list-style: disc; padding-left: 1.4rem; margin: 0 0 1rem; }
+.prose-vlb ol { list-style: decimal; padding-left: 1.4rem; margin: 0 0 1rem; }
+.prose-vlb a { color: var(--color-lake-dark); text-decoration: underline; text-underline-offset: 3px; }
+.prose-vlb blockquote { border-left: 3px solid var(--color-gold); padding-left: 1rem; color: var(--color-muted); margin: 1rem 0; }
+.prose-vlb strong { font-weight: 600; }
+
+/* Printing (travel plans): hide site chrome */
+@media print {
+  body > header, body > footer, .no-print { display: none !important; }
+  body { background: #fff; }
+}
