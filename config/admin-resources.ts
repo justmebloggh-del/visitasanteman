@@ -1,3 +1,4 @@
+import { facilityStatusLabels, institutionKinds, transportKinds } from "@/config/domains";
 import { marketTypes, venueTypes, priceRangeLabels, ceremonyKindLabels, attendanceLabels, stageLabels, accommodationTypes, businessTypes, experienceCategoryLabels, eventStatusLabels, listingTypeLabels, restaurantTypes, type ListingType } from "@/config/site";
 
 export type FieldType =
@@ -41,7 +42,8 @@ export interface ResourceDef {
   revisions?: boolean;                              // show revision history on the edit page
   area?: boolean;                                   // has administrative_area_id (checked before publishing)
   filter?: { column: string; label: string; options: { value: string; label: string }[] };   // extra list filter
-  noCreatedBy?: boolean;                            // table has no created_by column
+  noCreatedBy?: boolean;
+  verifiable?: boolean;                             // has verification_status and reviewed_by                            // table has no created_by column
 }
 
 const statusOptions = [
@@ -235,6 +237,7 @@ export const resources: ResourceDef[] = [
     fields: [
       { name: "title", label: "Title", type: "text", required: true, group: "main" },
       statusField,
+      { name: "category", label: "Category", type: "select", required: true, group: "main", options: [{ value: "general", label: "General" }, { value: "sports", label: "Sports" }, { value: "education", label: "Education" }, { value: "cultural", label: "Cultural" }, { value: "business", label: "Business" }], hint: "Sports and education events also appear on their own pages." },
       { name: "event_status", label: "Event status", type: "select", required: true, group: "main", options: Object.entries(eventStatusLabels).map(([value, label]) => ({ value, label })) },
       { name: "starts_at", label: "Starts (Ghana time)", type: "datetime", required: true, group: "main" },
       { name: "ends_at", label: "Ends (Ghana time)", type: "datetime", group: "main" },
@@ -455,6 +458,70 @@ resources.push(
   },
 );
 
+/* ───────────── Education, sports and transport (Phase 5) ───────────── */
+const researchCore = researchFields.filter((f) => !["access_status", "access_notes", "managing_institution", "alt_names"].includes(f.name));
+const opts = (m: Record<string, string>) => Object.entries(m).map(([value, label]) => ({ value, label }));
+const facilityField: FieldDef = { name: "facility_status", label: "Operating status", type: "select", required: true, group: "main", options: opts(facilityStatusLabels), hint: "Existing, planned and closed facilities must never look alike. Leave as unconfirmed unless you have a source." };
+const domainBase = (extraMain: FieldDef[], extraDetails: FieldDef[]): FieldDef[] => [
+  { name: "name", label: "Name", type: "text", required: true, group: "main" },
+  ...extraMain,
+  statusField, area, community,
+  { name: "summary", label: "Short summary", type: "textarea", group: "main", max: 400 },
+  { name: "description", label: "Description", type: "textarea", group: "main" },
+  ...extraDetails,
+  { name: "address", label: "Address", type: "text", group: "location" }, lat, lng,
+  { name: "website", label: "Website", type: "url", group: "contact" },
+  { name: "contact_phone", label: "Phone", type: "text", group: "contact" },
+  { name: "contact_email", label: "Email", type: "email", group: "contact" },
+  verifiedAt, verifyNotes, ...researchCore,
+];
+const domainDef = (key: string, table: string, label: string, singular: string, base: string, fields: FieldDef[], cols: { name: string; label: string }[]): ResourceDef => ({
+  key, table, label, singular, titleField: "name", hasSlug: true, area: true, revisions: true, verifiable: true, hasStatus: true, hasCover: true, seo: true, softDelete: true,
+  filter: { column: "verification_status", label: "Verification", options: verificationOptions },
+  orderBy: { column: "updated_at", ascending: false }, listColumns: [{ name: "name", label: "Name" }, ...cols, { name: "status", label: "Status" }, { name: "updated_at", label: "Updated" }],
+  publicPath: (r) => `${base}/${r.slug}`, fields,
+});
+
+resources.push(
+  domainDef("institutions", "institutions", "Education institutions", "institution", "/education", domainBase(
+    [{ name: "kind", label: "Type", type: "select", required: true, group: "main", options: opts(institutionKinds) }],
+    [
+      { name: "programmes", label: "Programmes or courses", type: "textarea", group: "details", hint: "As stated by the institution." },
+      { name: "admissions_url", label: "Admissions link", type: "url", group: "details" },
+      { name: "facilities", label: "Campus facilities", type: "tags", group: "details" },
+      { name: "visitor_access", label: "Visitor access", type: "select", required: true, group: "details", options: accessOptions, hint: "A campus is not a tourist attraction unless the institution says visitors are welcome." },
+      { name: "visitor_arrangements", label: "Visitors and open days", type: "textarea", group: "details" },
+      { name: "recognition_note", label: "Recognition status and who confirmed it", type: "textarea", group: "details", hint: "e.g. the regulator register and the date checked. Leave blank if unconfirmed." },
+    ]), [{ name: "kind", label: "Type" }]),
+  domainDef("sports-venues", "sports_venues", "Sports venues", "sports venue", "/sports", domainBase([facilityField], [
+    { name: "sports", label: "Sports supported", type: "tags", group: "details" },
+    { name: "capacity", label: "Capacity (verified only)", type: "number", group: "details" },
+    { name: "managed_by", label: "Owner or manager", type: "text", group: "details" },
+    { name: "facilities", label: "Facilities", type: "tags", group: "details" },
+    { name: "booking_info", label: "Booking and enquiries", type: "textarea", group: "details" },
+    { name: "accessibility", label: "Accessibility", type: "textarea", group: "details" },
+  ]), [{ name: "facility_status", label: "Operating status" }]),
+  domainDef("sports-clubs", "sports_clubs", "Sports clubs", "sports club", "/sports/clubs", domainBase([], [
+    { name: "sport", label: "Sport", type: "text", group: "details" },
+    { name: "level", label: "League or division (as stated by an official source)", type: "text", group: "details", hint: "Changes by season. Record the source and date." },
+    { name: "home_venue_id", label: "Home venue", type: "relation", relation: { table: "sports_venues", label: "name" }, group: "details" },
+    { name: "official_url", label: "Official club or league link", type: "url", group: "details" },
+  ]), [{ name: "sport", label: "Sport" }]),
+  domainDef("transport", "transport_providers", "Transport", "transport service", "/transport", domainBase(
+    [{ name: "kind", label: "Type", type: "select", required: true, group: "main", options: opts(transportKinds) }, facilityField],
+    [
+      { name: "routes", label: "Routes covered", type: "textarea", group: "details" },
+      { name: "departure_points", label: "Departure points", type: "textarea", group: "details" },
+      { name: "operating_info", label: "Operating days and times", type: "textarea", group: "details", hint: "Only as confirmed by the operator." },
+      { name: "fare_info", label: "Fares", type: "textarea", group: "details", hint: "Only with a source. Record the date below." },
+      { name: "fare_updated_at", label: "Fare information last updated", type: "date", group: "details" },
+      { name: "luggage_rules", label: "Luggage rules", type: "textarea", group: "details" },
+      { name: "accessibility", label: "Accessibility", type: "textarea", group: "details" },
+      { name: "booking_method", label: "How to book", type: "text", group: "details" },
+      { name: "booking_url", label: "Booking link", type: "url", group: "details" },
+    ]), [{ name: "kind", label: "Type" }, { name: "facility_status", label: "Operating status" }]),
+);
+
 resources.push({
   key: "ceremonies", table: "ceremonies", label: "Ceremonies and festivals", singular: "ceremony", titleField: "name", hasSlug: true,
   area: true, revisions: true, hasStatus: true, hasCover: true, seo: true, softDelete: true, orderBy: { column: "updated_at", ascending: false },
@@ -498,6 +565,10 @@ export const adminNav = [
   { href: "/admin/communities", label: "Communities" },
   { href: "/admin/destinations", label: "Destinations" },
   { href: "/admin/ceremonies", label: "Ceremonies & festivals" },
+  { href: "/admin/institutions", label: "Education" },
+  { href: "/admin/sports-venues", label: "Sports venues" },
+  { href: "/admin/sports-clubs", label: "Sports clubs" },
+  { href: "/admin/transport", label: "Transport" },
   { href: "/admin/accommodation", label: "Accommodation" },
   { href: "/admin/restaurants", label: "Food & dining" },
   { href: "/admin/venues", label: "Event venues" },

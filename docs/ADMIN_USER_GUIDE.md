@@ -32,6 +32,13 @@ The full matrix is in [AUTHENTICATION](AUTHENTICATION.md).
 - A protected forest, shrine, dam or river is not automatically a visitor attraction. Set *Visitor access* honestly and explain permits and rules in *Access, permits and visitor rules*. Anything other than "Open to visitors" shows a notice on the public page.
 - **Import research** takes a CSV (download the template). Check the preview, then import. Imported rows are always unpublished drafts marked *Research identified*; status or verification columns in a file are ignored. Every row needs a source. Duplicates (same name or alternative spelling, or repeated in the file) are skipped; places within 200 m of an existing one are flagged. Columns are matched by heading, not mapped by hand. Templates exist for attractions and communities only.
 
+## Education, sports and transport
+- **Education** (institutions), **Sports venues**, **Sports clubs**, **Transport**: each record needs a source and verification before it can be published, like attractions.
+- Education: record recognition only with who confirmed it (a regulator register and the date). A campus is not a tourist attraction unless the institution says visitors are welcome; set *Visitor access* accordingly.
+- Sports: do not enter fixtures or results. Club league or division changes by season, so record the official source. Capacity only when verified.
+- Transport: set *Operating status* honestly (a proposed or under-development facility must never look operational). Enter fares and times only from the operator, with the *Fare information last updated* date.
+- Events have a **Category**; sports and education events appear at `/sports/events` and `/education/events`.
+
 ## Hospitality, markets and business verification
 - Sections: Accommodation (hotels, boutique hotels, homestays and more), Food & dining (restaurants, cafés, bakeries, traditional food vendors, caterers), Event venues, Markets, Businesses. Each has public filters for district, type, price range, capacity and facility.
 - Enter **price range**, **capacity**, **how to book** and **accessibility** only as the business has told you.

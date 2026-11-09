@@ -205,7 +205,7 @@ export async function getExperience(slug: string) {
 }
 
 // ── Events ──
-export async function listEvents(o: { when?: "upcoming" | "past"; area?: string; page?: number; limit?: number; month?: string }) {
+export async function listEvents(o: { when?: "upcoming" | "past"; area?: string; category?: string; page?: number; limit?: number; month?: string }) {
   const page = o.page ?? 1;
   const [from, to] = o.limit ? [0, o.limit - 1] : range(page);
   if (!supabaseConfigured) return paged<EventItem>([], 0, page);
@@ -222,6 +222,7 @@ export async function listEvents(o: { when?: "upcoming" | "past"; area?: string;
       q = q.gte("starts_at", now).order("starts_at");
     }
     if (o.area) q = q.eq("administrative_area_id", await areaId(o.area));
+    if (o.category && ["sports", "education", "cultural", "business", "general"].includes(o.category)) q = q.eq("category", o.category);
     const { data, count, error } = await q.range(from, to);
     if (error) throw error;
     return paged((data ?? []) as unknown as EventItem[], count ?? 0, page);
@@ -394,14 +395,14 @@ export async function getSitemapEntries() {
   const slugs = (table: string, col = "slug") =>
     run<{ slug: string; updated_at: string }[]>(`sitemap-${table}`, () => sb().from(table).select(`${col}, updated_at`).eq("noindex", false) as never, []);
   const [areas, counts] = await Promise.all([listAreas(), getAreaContentCounts()]);
-  const [attractions, communities, listings, experiences, events, articles, investments, destinations, ceremonies] = await Promise.all([
+  const [attractions, communities, listings, experiences, events, articles, investments, destinations, ceremonies, institutions, sportsVenues, sportsClubs, transport] = await Promise.all([
     slugs("attractions"), slugs("communities"),
     run<{ slug: string; type: string; updated_at: string }[]>("sitemap-listings", () => sb().from("listings").select("slug,type,updated_at").eq("noindex", false) as never, []),
-    slugs("experiences"), slugs("events"), slugs("articles"), slugs("investment_opportunities"), slugs("destinations"), slugs("ceremonies"),
+    slugs("experiences"), slugs("events"), slugs("articles"), slugs("investment_opportunities"), slugs("destinations"), slugs("ceremonies"), slugs("institutions"), slugs("sports_venues"), slugs("sports_clubs"), slugs("transport_providers"),
   ]);
   // Districts without any published content are left out of the sitemap (thin pages).
   const districts = areas.filter((a) => (counts[a.id] ?? 0) > 0).map((a) => ({ slug: a.slug, updated_at: a.verified_at ?? new Date().toISOString() }));
-  return { attractions, communities, listings, experiences, events, articles, investments, destinations, districts, ceremonies };
+  return { attractions, communities, listings, experiences, events, articles, investments, destinations, districts, ceremonies, institutions, sportsVenues, sportsClubs, transport };
 }
 
 // ── Reviews (only published, booking-verified ones are public) ──

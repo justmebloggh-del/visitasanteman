@@ -153,3 +153,19 @@ RLS matches other content (public sees published; staff manage; delete is admin 
 | Source fields on listings | `source_organisation`, `source_url`, `source_published_at`, `researched_at`, `research_notes` for team-researched records |
 | Function updates | `create_booking`, `itinerary_view` and `nearby_places` now know the new types (table requests: restaurants and cafés; stays: incl. boutique hotels and homestays; links to `/venues` and `/markets`) |
 | Research drafts | Five market records (Kumasi Central Market/Kejetia, Mampong, Tepa, Ejura-Sekyedumase, Fumso) from the owner's summary of the ARCC profile: **unpublished drafts**, unchecked, with no address, hours, coordinates or contacts. Two are linked to districts by name only |
+
+## VisitAsanteman Phase 5 additions (migrations `20261117000001`, `20261117000002`)
+Four dedicated tables with a shared pattern (district, community, coordinates, contacts, source and verification fields, status workflow, RLS, revision history): `institutions`, `sports_venues`, `sports_clubs`, `transport_providers`. Same safeguards as attractions: a record cannot be published until it is **verified with a source** and placed in an **active district**; only approvers publish; content editors can draft and cannot mark records verified.
+
+| Table | Specific fields |
+|---|---|
+| `institutions` | `kind` (university, technical university, college of education, nursing and midwifery, TVET, senior high, library, research, cultural learning centre, vocational), programmes, admissions link, facilities, `visitor_access` (same enum as attractions), visitor arrangements, `recognition_note` (who confirmed recognition) |
+| `sports_venues` | sports supported, capacity (verified only), manager, facilities, booking info, accessibility, `facility_status` |
+| `sports_clubs` | sport, level (as stated by an official source), home venue, official link |
+| `transport_providers` | `kind` (airport, intercity and local bus, terminal, taxi, ride-hailing, car rental, private driver, tour transport, railway, port, walking and cycling routes, accessible transport), routes, departure points, operating times, fares **with a last-updated date**, luggage rules, accessibility, booking method and link, `facility_status` |
+| `facility_status` enum | unknown, operational, limited service, **under development, proposed**, temporarily closed, permanently closed. Anything except "operational" shows a notice on the public page |
+| `events.category` | general, sports, education, cultural, business. Sports and education events have their own lists |
+
+Deliberately not stored: **fixtures and results** (they need an authorised data source) and fares or timetables without a source.
+
+Research drafts (unpublished, unchecked): 13 education institutions (from the owner's list; the university renamed USTED is recorded with its source), 2 stadiums (Baba Yara, Len Clay; GFA 2026/27 approved-venue list cited, with conflicting reports noted), and 3 transport records (Prempeh I International Airport and Kumasi Railway Station: name only; Boankra Inland Port: recorded as **under development**, not operational).

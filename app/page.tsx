@@ -8,6 +8,8 @@ import { ButtonLink, Container } from "@/components/ui";
 import { AdSlot } from "@/components/ads/AdSlot";
 import { Map } from "@/components/maps/Map";
 import { SearchBox } from "@/components/layout/SearchBox";
+import { educationCfg, sportsCfg, transportCfg } from "@/config/domains";
+import { listDomain } from "@/lib/content/domains";
 import { ceremonyKindLabels, stageLabels, eventStatusLabels, experienceCategoryLabels, listingTypeLabels, accommodationTypes, businessTypes, restaurantTypes, planVisit, type ListingType } from "@/config/site";
 import {
   getAreaContentCounts, getHomepageSections, listCeremonies, getTestimonials, listAreas, listArticles, listAttractions, listCommunities, listDestinations, listEvents,
@@ -18,7 +20,7 @@ import { formatDate, formatPrice, mediaUrl } from "@/lib/utils";
 export const revalidate = 60;
 
 export default async function HomePage() {
-  const [sections, attractions, experiences, stays, food, communities, events, articles, testimonials, points, settings, investments, areas, areaCounts, destinations, businesses, cultureStories, ceremonies] = await Promise.all([
+  const [sections, attractions, experiences, stays, food, communities, events, articles, testimonials, points, settings, investments, areas, areaCounts, destinations, businesses, cultureStories, ceremonies, education, sports, transport] = await Promise.all([
     getHomepageSections(),
     listAttractions({ limit: 6 }),
     listExperiences({ limit: 3 }),
@@ -37,6 +39,7 @@ export default async function HomePage() {
     listListings(businessTypes, { limit: 3 }),
     listArticles({ category: "culture-heritage", limit: 3 }),
     listCeremonies({ when: "upcoming", limit: 3 }),
+    listDomain(educationCfg, { limit: 3 }), listDomain(sportsCfg, { limit: 3 }), listDomain(transportCfg, { limit: 3 }),
   ]);
   const activeAreas = areas.filter((a) => (areaCounts[a.id] ?? 0) > 0);
   const mapCfg = settings.map ?? {};
@@ -229,6 +232,16 @@ export default async function HomePage() {
           </ul>
         </Block>
       )}
+
+      {/* Education, sports and transport: each part appears only when it has published records */}
+      {[{ cfg: educationCfg, data: education, heading: "Education and learning" }, { cfg: sportsCfg, data: sports, heading: "Sports and recreation" }, { cfg: transportCfg, data: transport, heading: "Getting around" }]
+        .filter((x) => x.data.items.length > 0).map((x, i) => (
+          <Block key={x.cfg.key} tone={i % 2 === 0 ? "mist" : undefined} title={x.heading} more={{ href: x.cfg.base, label: `All ${x.cfg.noun}s` }}>
+            <CardGrid>
+              {x.data.items.map((r) => <ContentCard key={r.id} href={`${x.cfg.base}/${r.slug}`} title={r.name} summary={r.summary} media={r.cover} meta={[x.cfg.kindColumn ? x.cfg.kinds?.[String(r[x.cfg.kindColumn])] : null, r.area?.name].filter(Boolean).join(" · ")} />)}
+            </CardGrid>
+          </Block>
+        ))}
 
       {/* I. Plan your visit: always available, these are working tools */}
       <Block title={sections.plan?.title ?? "Plan your visit"} subtitle={sections.plan?.subtitle ?? "Build an itinerary, read the travel guide or find places on the map."}>

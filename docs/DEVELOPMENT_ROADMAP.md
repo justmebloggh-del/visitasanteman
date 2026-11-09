@@ -18,6 +18,18 @@ Legend: ✅ built and checked · 🟡 built, needs live-environment testing · �
 | Culture module content tables, travel-guide and gallery detail pages, new experience categories | ⬜ | Phase 2 of the brief |
 | Scheduled status, per-district editor scoping, revision restore | ⬜ | Not built |
 
+## VisitAsanteman Phase 5: education, sports and transport (this branch)
+| Item | Status | Notes |
+|---|---|---|
+| Education, sports venues, clubs, transport directories: data model, admin, public index and detail pages, filters | ✅ | 106 SQL checks |
+| Operating-status and visitor-access notices | ✅ | Proposed, under-development, closed and unconfirmed are never shown as operating |
+| Sports and education event lists (event categories) | ✅ | |
+| Research drafts (13 institutions, 2 stadiums, 3 transport records) | 🟡 | Unpublished and unchecked; no invented programmes, capacities, fares or times |
+| Fixtures, results, league tables | ⬜ | Not built: need an authorised data provider (e.g. Ghana FA) |
+| Verified institutions, clubs, routes, operators, fares | ⬜ | Needs research against GTEC, official sites, operators |
+| Journey times and directions between destinations | ⬜ | Not built (would need a routing provider) |
+| Sports calendar with fixtures; transport booking | ⬜ | Later |
+
 ## VisitAsanteman Phase 4: hospitality and business (this branch)
 | Item | Status | Notes |
 |---|---|---|

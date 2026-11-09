@@ -225,6 +225,21 @@ select pg_temp.t('B16 an administrator can suspend', :admin, 'authenticated', 'u
 select pg_temp.t('B17 a suspended listing cannot request verification', :partner, 'authenticated', 'select request_verification(''00000000-0000-0000-0000-0000000000f7'')', false);
 select pg_temp.visible('B18 researched market drafts are hidden from anon', null, 'anon', 'select 1 from listings where type = ''market''', 0);
 
+-- ── Education, sports and transport (Phase 5) ──
+select pg_temp.t('D01 editor can draft an institution', :editor, 'authenticated', 'insert into institutions (slug, name, kind) values (''d-inst'', ''D inst'', ''university'')', true);
+select pg_temp.t('D02 editor cannot mark an institution verified', :editor, 'authenticated', 'insert into institutions (slug, name, verification_status) values (''d-inst2'', ''D inst2'', ''verified_secondary'')', false);
+select pg_temp.t('D03 an unverified institution cannot be published, even by an admin', :admin, 'authenticated', format('insert into institutions (slug, name, status, administrative_area_id) values (''d-inst3'', ''D inst3'', ''published'', %L)', :area), false);
+select pg_temp.t('D04 an admin can publish a verified institution in an active district', :admin, 'authenticated', format('insert into institutions (slug, name, status, administrative_area_id, verification_status) values (''d-inst4'', ''D inst4'', ''published'', %L, ''verified_secondary'')', :area), true);
+select pg_temp.t('D05 a content editor cannot publish it', :editor, 'authenticated', 'update institutions set status = ''published'' where slug = ''d-inst''', false);
+select pg_temp.visible('D06 anon sees only the published institution', null, 'anon', 'select 1 from institutions where slug like ''d-%''', 1);
+select pg_temp.t('D07 a sports venue cannot be published without a district', :admin, 'authenticated', 'insert into sports_venues (slug, name, status, verification_status) values (''d-ven'', ''D ven'', ''published'', ''verified_secondary'')', false);
+select pg_temp.t('D08 a transport service defaults to unconfirmed operating status', :editor, 'authenticated', 'insert into transport_providers (slug, name, kind) values (''d-tr'', ''D tr'', ''airport'')', true);
+select pg_temp.visible('D09 the status default is unknown', :editor, 'authenticated', 'select 1 from transport_providers where slug = ''d-tr'' and facility_status = ''unknown''', 1);
+select pg_temp.t('D10 a club can link a home venue', :admin, 'authenticated', format('insert into sports_clubs (slug, name, sport, status, administrative_area_id, verification_status) values (''d-club'', ''D club'', ''Football'', ''published'', %L, ''officially_confirmed'')', :area), true);
+select pg_temp.visible('D11 anon sees the published club and no research drafts', null, 'anon', 'select 1 from sports_clubs', 1);
+select pg_temp.visible('D12 the researched drafts exist for staff but not anon', null, 'anon', 'select 1 from transport_providers', 0);
+select pg_temp.t('D13 events can be categorised', :editor, 'authenticated', 'insert into events (slug, title, starts_at, category) values (''d-ev'', ''D ev'', now() + interval ''1 day'', ''sports'')', true);
+
 -- ── Roles, plans: never writable by editors ──
 select pg_temp.rows('R01 regional editor cannot change roles', :regional, 'authenticated', format('update user_roles set role = ''admin'' where user_id = %L', :visitor), 0);
 select pg_temp.rows('R02 content editor cannot change roles', :editor, 'authenticated', format('update user_roles set role = ''admin'' where user_id = %L', :visitor), 0);
