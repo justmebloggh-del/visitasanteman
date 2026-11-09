@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { resourceMap } from "@/config/admin-resources";
-import { isAdmin, requireAdmin, requireStaff, requireSuperAdmin, type AppRole } from "@/lib/auth/session";
+import { canApprove, isAdmin, requireAdmin, requireApprover, requireMediaAccess, requireStaff, requireSuperAdmin, type AppRole } from "@/lib/auth/session";
 import { parseIdList, parseResourceForm } from "@/lib/admin/parse";
 import { createClient } from "@/lib/supabase/server";
 import { safeUrl } from "@/lib/utils";
@@ -26,8 +26,9 @@ export async function saveResource(resourceKey: string, id: string | null, _prev
   const user = await requireStaff();
   const def = resourceMap[resourceKey];
   if (!def) return { ok: false, message: "Unknown section." };
+  if (def.approverOnly) await requireApprover();
 
-  const { values, errors } = parseResourceForm(def, fd, { isAdmin: isAdmin(user.role) });
+  const { values, errors } = parseResourceForm(def, fd, { isAdmin: isAdmin(user.role), canApprove: canApprove(user.role) });
   if (Object.keys(errors).length) return { ok: false, message: "Please fix the highlighted fields.", errors };
 
   const supabase = await createClient();
@@ -61,15 +62,18 @@ export async function saveResource(resourceKey: string, id: string | null, _prev
 }
 
 export async function setStatus(resourceKey: string, id: string, status: string) {
-  await requireStaff();
+  const user = await requireStaff();
   const def = resourceMap[resourceKey];
-  if (!def?.hasStatus || !["draft", "pending_review", "published", "archived"].includes(status)) return;
+  if (!def?.hasStatus || !["draft", "pending_review", "approved", "published", "archived"].includes(status)) return;
+  // Friendly pre-check; the database trigger enforces the same rule.
+  if ((status === "approved" || status === "published") && !canApprove(user.role)) redirect(`/admin/${def.key}?error=1`);
   const supabase = await createClient();
   const patch: Record<string, unknown> = { status };
   if (def.key === "articles" && status === "published") patch.published_at = new Date().toISOString();
-  await supabase.from(def.table).update(patch).eq(def.slugField ?? "id", id);
+  const { error } = await supabase.from(def.table).update(patch).eq(def.slugField ?? "id", id);
+  if (error) console.error("[admin status]", error.message);
   flush();
-  redirect(`/admin/${def.key}?saved=1`);
+  redirect(`/admin/${def.key}?${error ? "error=1" : "saved=1"}`);
 }
 
 export async function deleteResource(resourceKey: string, id: string) {
@@ -114,7 +118,7 @@ export async function deleteChild(kind: "rooms" | "menu", id: string, redirectTo
 
 /* ───────────── Media ───────────── */
 export async function updateMedia(id: string, fd: FormData) {
-  await requireStaff();
+  await requireMediaAccess();
   const supabase = await createClient();
   await supabase.from("media").update({
     alt_text: String(fd.get("alt_text") ?? "").trim().slice(0, 300),
@@ -140,7 +144,7 @@ export async function deleteMedia(id: string) {
 }
 
 /* ───────────── Users, enquiries ───────────── */
-const ROLES: AppRole[] = ["super_admin", "admin", "editor", "partner", "visitor"];
+const ROLES: AppRole[] = ["super_admin", "admin", "regional_editor", "editor", "media_manager", "partner", "visitor"];
 
 export async function setUserRole(userId: string, fd: FormData) {
   const me = await requireSuperAdmin();

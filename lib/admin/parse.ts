@@ -53,6 +53,7 @@ function parseField(f: FieldDef, fd: FormData): { value?: unknown; error?: strin
       return { value: raw };
     }
     case "relation": {
+      if (need()) return { error: need() };
       if (empty) return { value: null };
       return UUID.test(raw) ? { value: raw } : { error: `Choose a valid ${f.label.toLowerCase()}` };
     }
@@ -82,13 +83,14 @@ function parseField(f: FieldDef, fd: FormData): { value?: unknown; error?: strin
 }
 
 /** Turns submitted form data into a database payload. Pure: no I/O, easy to test. */
-export function parseResourceForm(def: ResourceDef, fd: FormData, o: { isAdmin: boolean }): ParseResult {
+export function parseResourceForm(def: ResourceDef, fd: FormData, o: { isAdmin: boolean; canApprove?: boolean }): ParseResult {
   const values: Record<string, unknown> = {};
   const errors: Record<string, string> = {};
 
   for (const f of def.fields) {
     // Admin-only fields are ignored from editors, whatever the browser sends.
     if (f.adminOnly && !o.isAdmin) continue;
+    if (f.approverOnly && !o.canApprove) continue;
     const r = parseField(f, fd);
     if (r.error) errors[f.name] = r.error;
     else values[f.name] = r.value;
@@ -120,6 +122,10 @@ export function parseResourceForm(def: ResourceDef, fd: FormData, o: { isAdmin: 
     values.slug = slug;
   }
 
+  // Friendly version of the database publish guard (the database still enforces it).
+  if (def.area && values.status === "published" && !values.administrative_area_id && !values.community_id && !values.destination_id) {
+    errors.administrative_area_id = "Choose a district, municipality or metropolis (or a community) before publishing";
+  }
   if (def.key === "articles" && values.status === "published" && !values.published_at) {
     values.published_at = new Date().toISOString();
   }

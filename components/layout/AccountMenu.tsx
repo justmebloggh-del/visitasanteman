@@ -27,7 +27,7 @@ export function AccountMenu({ stacked }: { stacked?: boolean }) {
       if (!active) return;
       if (!data.user) { setState({ loading: false, signedIn: false, staff: false }); return; }
       const { data: role } = await supabase.from("user_roles").select("role").eq("user_id", data.user.id).maybeSingle();
-      if (active) setState({ loading: false, signedIn: true, staff: ["super_admin", "admin", "editor"].includes(role?.role ?? ""), partner: role?.role === "partner" });
+      if (active) setState({ loading: false, signedIn: true, staff: ["super_admin", "admin", "regional_editor", "editor", "media_manager"].includes(role?.role ?? ""), partner: role?.role === "partner" });
     }
     load();
     const { data: sub } = supabase.auth.onAuthStateChange(() => load());

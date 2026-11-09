@@ -7,15 +7,15 @@ import { ResourceForm } from "@/components/admin/ResourceForm";
 import { loadMedia, loadRelations, toClientDef } from "@/components/admin/loadForm";
 import { Button, Field, Input, Notice } from "@/components/ui";
 import { resourceMap } from "@/config/admin-resources";
-import { isAdmin, requireStaff } from "@/lib/auth/session";
+import { canApprove, isAdmin, requireApprover, requireStaff } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
-import { formatPrice } from "@/lib/utils";
+import { formatDate, formatPrice } from "@/lib/utils";
 
 export default async function EditResource({ params, searchParams }: { params: Promise<{ resource: string; id: string }>; searchParams: Promise<Record<string, string | undefined>> }) {
   const { resource, id } = await params;
   const def = resourceMap[resource];
   if (!def) notFound();
-  const user = await requireStaff();
+  const user = def.approverOnly ? await requireApprover() : await requireStaff();
   const sp = await searchParams;
   const supabase = await createClient();
 
@@ -41,7 +41,7 @@ export default async function EditResource({ params, searchParams }: { params: P
         actions={<>{def.hasStatus && <StatusBadge value={String(row.status)} />}{publicHref && <Link href={publicHref} target="_blank" className="inline-flex items-center gap-1 text-sm text-lake-dark hover:underline">View live<ExternalLink className="size-3.5" aria-hidden /></Link>}</>} />
       <Flash sp={sp} />
       {row.deleted_at && <div className="mb-4"><Notice tone="error">This item has been deleted (archived). Saving will not restore it.</Notice></div>}
-      <ResourceForm def={toClientDef(def)} id={rowId} initial={row} relations={relations} isAdmin={isAdmin(user.role)} cover={media.cover} gallery={media.gallery} />
+      <ResourceForm def={toClientDef(def)} id={rowId} initial={row} relations={relations} isAdmin={isAdmin(user.role)} canApprove={canApprove(user.role)} cover={media.cover} gallery={media.gallery} />
 
       {def.children === "rooms" && (
         <section className="mt-10 rounded-2xl border border-line bg-white p-5 sm:p-6">
@@ -90,6 +90,37 @@ export default async function EditResource({ params, searchParams }: { params: P
           </form>
         </section>
       )}
+
+      {def.revisions && <Revisions table={def.table} recordId={rowId} />}
     </>
+  );
+}
+
+/** Read-only history: the previous version of the row each time it changed. */
+async function Revisions({ table, recordId }: { table: string; recordId: string }) {
+  const supabase = await createClient();
+  const { data } = await supabase.from("content_revisions").select("id,created_at,changed_by,snapshot")
+    .eq("table_name", table).eq("record_id", recordId).order("created_at", { ascending: false }).limit(15);
+  const ids = Array.from(new Set((data ?? []).map((r) => r.changed_by).filter(Boolean)));
+  const { data: people } = ids.length ? await supabase.from("profiles").select("id,full_name,email").in("id", ids) : { data: [] };
+  const name = (id: string | null) => { const p = (people ?? []).find((x) => x.id === id); return p ? p.full_name || p.email : "system"; };
+  return (
+    <section className="mt-10 rounded-2xl border border-line bg-white p-5 sm:p-6">
+      <h2 className="mb-1 font-serif text-lg font-semibold text-forest">Revision history</h2>
+      <p className="mb-4 text-sm text-muted">Each entry is the version that was replaced by a later save.</p>
+      {(data ?? []).length === 0 ? <p className="text-sm text-muted">No earlier versions yet.</p> : (
+        <ul className="divide-y divide-line text-sm">
+          {data!.map((r) => {
+            const s = r.snapshot as Record<string, unknown>;
+            return (
+              <li key={r.id} className="py-2.5">
+                <span className="font-medium">{formatDate(r.created_at, true)}</span> by {name(r.changed_by)}
+                <span className="text-muted"> · was “{String(s.name ?? s.title ?? "")}”, status {String(s.status ?? "n/a").replace("_", " ")}</span>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </section>
   );
 }

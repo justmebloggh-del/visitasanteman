@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Users" };
-const ROLES = [["super_admin", "Super administrator"], ["admin", "Administrator"], ["editor", "Editor"], ["partner", "Business partner"], ["visitor", "Registered visitor"]];
+const ROLES = [["super_admin", "Super administrator"], ["admin", "Administrator"], ["regional_editor", "Regional tourism editor"], ["editor", "Content editor"], ["media_manager", "Media manager"], ["partner", "Business partner"], ["visitor", "Registered visitor"]];
 
 export default async function Users({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
   const me = await requireStaff();

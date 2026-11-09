@@ -4,7 +4,7 @@ import { ImageUploader } from "@/components/admin/ImageUploader";
 import { Pagination } from "@/components/layout/blocks";
 import { Button, Field, Input } from "@/components/ui";
 import { deleteMedia, updateMedia } from "@/app/admin/actions";
-import { isAdmin, requireStaff } from "@/lib/auth/session";
+import { isAdmin, requireMediaAccess } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { mediaUrl } from "@/lib/utils";
 
@@ -12,7 +12,7 @@ export const metadata: Metadata = { title: "Media library" };
 const PER = 24;
 
 export default async function MediaLibrary({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
-  const user = await requireStaff();
+  const user = await requireMediaAccess();
   const sp = await searchParams;
   const page = Math.max(1, Number(sp.page) || 1);
   const folder = sp.folder && /^[a-z0-9-]{1,40}$/.test(sp.folder) ? sp.folder : "";

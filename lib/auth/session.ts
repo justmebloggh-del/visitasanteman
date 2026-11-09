@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { supabaseConfigured } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
 
-export type AppRole = "super_admin" | "admin" | "editor" | "partner" | "visitor";
+export type AppRole = "super_admin" | "admin" | "regional_editor" | "editor" | "media_manager" | "partner" | "visitor";
 
 export interface SessionUser {
   id: string;
@@ -28,16 +28,41 @@ export async function getSessionUser(): Promise<SessionUser | null> {
   return { id: data.user.id, email: data.user.email, role: (roleRow?.role as AppRole) ?? "visitor" };
 }
 
-const STAFF: AppRole[] = ["super_admin", "admin", "editor"];
+// Mirrors the database helpers is_staff(), is_admin(), can_approve(), can_manage_media().
+// These only decide what the interface offers; Row Level Security is the real control.
+const STAFF: AppRole[] = ["super_admin", "admin", "regional_editor", "editor"];
 const ADMINS: AppRole[] = ["super_admin", "admin"];
+const APPROVERS: AppRole[] = ["super_admin", "admin", "regional_editor"];
 
 export const isStaff = (r?: AppRole) => !!r && STAFF.includes(r);
 export const isAdmin = (r?: AppRole) => !!r && ADMINS.includes(r);
+export const canApprove = (r?: AppRole) => !!r && APPROVERS.includes(r);
+export const canManageMedia = (r?: AppRole) => !!r && (STAFF.includes(r) || r === "media_manager");
 
 export async function requireStaff(): Promise<SessionUser> {
   const user = await getSessionUser();
   if (!user) redirect("/login?next=/admin");
   if (!isStaff(user.role)) redirect("/?error=forbidden");
+  return user;
+}
+
+/** Admin area entry: staff, or a media manager (who only sees the media library). */
+export async function requireAdminArea(): Promise<SessionUser> {
+  const user = await getSessionUser();
+  if (!user) redirect("/login?next=/admin");
+  if (!canManageMedia(user.role)) redirect("/?error=forbidden");
+  return user;
+}
+
+export async function requireMediaAccess(): Promise<SessionUser> {
+  const user = await requireAdminArea();
+  return user;
+}
+
+/** Regional editors, administrators and super administrators. */
+export async function requireApprover(): Promise<SessionUser> {
+  const user = await requireStaff();
+  if (!canApprove(user.role)) redirect("/admin?error=forbidden");
   return user;
 }
 

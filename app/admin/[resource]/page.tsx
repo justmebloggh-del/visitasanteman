@@ -1,13 +1,13 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Plus } from "lucide-react";
 import { AdminHeader, Flash, StatusBadge } from "@/components/admin/ui";
 import { Pagination } from "@/components/layout/blocks";
 import { FilterBar } from "@/components/layout/FilterBar";
 import { Button, ButtonLink } from "@/components/ui";
-import { resourceMap } from "@/config/admin-resources";
+import { resourceMap, statusOptionList } from "@/config/admin-resources";
 import { deleteResource, setStatus } from "@/app/admin/actions";
-import { isAdmin, requireStaff } from "@/lib/auth/session";
+import { canApprove, isAdmin, requireStaff } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/utils";
 
@@ -18,6 +18,7 @@ export default async function ResourceList({ params, searchParams }: { params: P
   const def = resourceMap[resource];
   if (!def) notFound();
   const user = await requireStaff();
+  if (def.approverOnly && !canApprove(user.role)) redirect("/admin?error=forbidden");
   const sp = await searchParams;
   const page = Math.max(1, Number(sp.page) || 1);
 
@@ -44,7 +45,7 @@ export default async function ResourceList({ params, searchParams }: { params: P
       <Flash sp={sp} />
       {error && <p role="alert" className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">Could not load this list: {error.message}</p>}
       <FilterBar action={`/admin/${def.key}`} q={sp.q} qLabel="Search title" values={{ status: sp.status }}
-        filters={def.hasStatus ? [{ name: "status", label: "Status", options: [{ value: "draft", label: "Draft" }, { value: "pending_review", label: "Pending review" }, { value: "published", label: "Published" }, { value: "archived", label: "Archived" }] }] : []} />
+        filters={def.hasStatus ? [{ name: "status", label: "Status", options: statusOptionList }] : []} />
       <div className="mt-6 overflow-x-auto rounded-2xl border border-line bg-white">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-line bg-mist text-xs uppercase tracking-wide text-muted">
@@ -62,8 +63,10 @@ export default async function ResourceList({ params, searchParams }: { params: P
                   <td className="px-4 py-3">
                     <div className="flex flex-wrap justify-end gap-1.5">
                       <ButtonLink href={`/admin/${def.key}/${id}`} variant="outline" size="sm">Edit</ButtonLink>
-                      {def.hasStatus && r.status !== "published" && <form action={setStatus.bind(null, def.key, id, "published")}><Button size="sm" variant="primary">Publish</Button></form>}
-                      {def.hasStatus && r.status === "published" && <form action={setStatus.bind(null, def.key, id, "draft")}><Button size="sm" variant="ghost">Unpublish</Button></form>}
+                      {def.hasStatus && r.status === "draft" && <form action={setStatus.bind(null, def.key, id, "pending_review")}><Button size="sm" variant="outline">Send for review</Button></form>}
+                      {def.hasStatus && canApprove(user.role) && r.status === "pending_review" && <form action={setStatus.bind(null, def.key, id, "approved")}><Button size="sm" variant="outline">Approve</Button></form>}
+                      {def.hasStatus && canApprove(user.role) && r.status !== "published" && <form action={setStatus.bind(null, def.key, id, "published")}><Button size="sm" variant="primary">Publish</Button></form>}
+                      {def.hasStatus && canApprove(user.role) && r.status === "published" && <form action={setStatus.bind(null, def.key, id, "draft")}><Button size="sm" variant="ghost">Unpublish</Button></form>}
                       {isAdmin(user.role) && def.key !== "pages" && <form action={deleteResource.bind(null, def.key, id)}><Button size="sm" variant="danger" aria-label={`Delete ${String(r[def.titleField] ?? "item")}`}>Delete</Button></form>}
                     </div>
                   </td>

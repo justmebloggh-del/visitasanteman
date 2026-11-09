@@ -10,7 +10,7 @@ export function AdminNav({ role }: { role: string }) {
   const pathname = usePathname();
   const list = (
     <nav aria-label="Admin" className="space-y-0.5 text-sm">
-      {adminNav.map((n, i) =>
+      {adminNav.filter((n) => role !== "media_manager" || ("href" in n && n.href === "/admin/media")).map((n, i) =>
         "group" in n ? (
           <p key={i} className="px-3 pb-1 pt-5 text-[11px] font-semibold uppercase tracking-wider text-white/50">{n.group}</p>
         ) : (

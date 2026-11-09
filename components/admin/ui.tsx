@@ -9,7 +9,7 @@ export function AdminHeader({ title, intro, actions }: { title: string; intro?: 
   );
 }
 
-const tone = { published: "green", draft: "neutral", pending_review: "gold", archived: "red", new: "gold", read: "blue", replied: "green", closed: "neutral" } as const;
+const tone = { published: "green", draft: "neutral", pending_review: "gold", approved: "blue", archived: "red", new: "gold", read: "blue", replied: "green", closed: "neutral" } as const;
 export function StatusBadge({ value }: { value: string }) {
   return <Badge tone={tone[value as keyof typeof tone] ?? "neutral"}>{value.replace("_", " ")}</Badge>;
 }

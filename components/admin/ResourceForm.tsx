@@ -34,7 +34,7 @@ function control(f: FieldDef, value: unknown, error: string | undefined, options
     );
     case "relation": return (
       <Select {...common} defaultValue={(value as string) ?? ""}>
-        <option value="">None</option>
+        <option value="">{f.required ? "Choose…" : "None"}</option>
         {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
       </Select>
     );
@@ -49,9 +49,9 @@ function control(f: FieldDef, value: unknown, error: string | undefined, options
   }
 }
 
-export function ResourceForm({ def, id, initial, relations, isAdmin, cover, gallery, customAction, uploadFolder, cancelHref, partner, maxGallery }: {
+export function ResourceForm({ def, id, initial, relations, isAdmin, canApprove, cover, gallery, customAction, uploadFolder, cancelHref, partner, maxGallery }: {
   def: ClientDef; id: string | null; initial: Record<string, unknown>;
-  relations: Record<string, { value: string; label: string }[]>; isAdmin: boolean;
+  relations: Record<string, { value: string; label: string }[]>; isAdmin: boolean; canApprove?: boolean;
   cover: MediaItem[]; gallery: MediaItem[];
   customAction?: (prev: FormState, fd: FormData) => Promise<FormState>;
   uploadFolder?: string; cancelHref?: string; partner?: boolean; maxGallery?: number;
@@ -71,11 +71,11 @@ export function ResourceForm({ def, id, initial, relations, isAdmin, cover, gall
             <h2 className="mb-4 font-serif text-lg font-semibold text-forest">{g.title}</h2>
             <div className="grid gap-4 sm:grid-cols-2">
               {fields.map((f) => {
-                const locked = !!f.adminOnly && !isAdmin;
+                const locked = (!!f.adminOnly && !isAdmin) || (!!f.approverOnly && !canApprove);
                 const wide = ["textarea", "markdown", "text"].includes(f.type) && f.name !== "price_note" && f.name !== "price_unit";
                 return (
                   <Field key={f.name} label={f.type === "checkbox" ? "" : f.label} htmlFor={f.name} error={err[f.name]}
-                    hint={locked ? "Only administrators can change this." : f.hint} className={wide || f.type === "checkbox" ? "sm:col-span-2" : undefined}>
+                    hint={locked ? (f.approverOnly ? "Only regional editors and administrators can change this." : "Only administrators can change this.") : f.hint} className={wide || f.type === "checkbox" ? "sm:col-span-2" : undefined}>
                     {control(f, initial[f.name], err[f.name], f.relation ? relations[f.name] ?? [] : [], locked)}
                   </Field>
                 );

@@ -13,6 +13,7 @@ export interface FieldDef {
   options?: { value: string; label: string }[];
   relation?: { table: string; label: string };     // options loaded from this table
   adminOnly?: boolean;                              // only admins may change (editors see it read-only)
+  approverOnly?: boolean;                           // regional editors and admins only (verification, publishing)
   group?: "main" | "details" | "location" | "contact";
   max?: number;
 }
@@ -36,19 +37,29 @@ export interface ResourceDef {
   softDelete: boolean;
   orderBy: { column: string; ascending: boolean };
   publicPath?: (row: Record<string, unknown>) => string;
+  approverOnly?: boolean;                           // whole section: only regional editors and admins may change it
+  revisions?: boolean;                              // show revision history on the edit page
+  area?: boolean;                                   // has administrative_area_id (checked before publishing)
 }
 
 const statusOptions = [
-  { value: "draft", label: "Draft" }, { value: "pending_review", label: "Pending review" },
+  { value: "draft", label: "Draft" }, { value: "pending_review", label: "In review" },
+  { value: "approved", label: "Approved" },
   { value: "published", label: "Published" }, { value: "archived", label: "Archived" },
 ];
-export const statusField: FieldDef = { name: "status", label: "Status", type: "select", required: true, options: statusOptions, group: "main", hint: "Only Published items are visible on the website." };
+export const statusOptionList = statusOptions;
+export const statusField: FieldDef = { name: "status", label: "Status", type: "select", required: true, options: statusOptions, group: "main", hint: "Workflow: Draft, In review, Approved, Published. Only regional editors and administrators can approve or publish. Only Published items are visible on the website." };
+
+const area: FieldDef = { name: "administrative_area_id", label: "District / municipality / metropolis", type: "relation", relation: { table: "administrative_areas", label: "name" }, group: "main", hint: "Required before publishing. If left blank it is taken from the community or destination." };
+const destination: FieldDef = { name: "destination_id", label: "Destination", type: "relation", relation: { table: "destinations", label: "name" }, group: "details" };
+const verifiedAt: FieldDef = { name: "last_verified_at", label: "Last verified on", type: "datetime", approverOnly: true, group: "details", hint: "When a person last checked these facts." };
+const verifyNotes: FieldDef = { name: "verification_notes", label: "Verification notes (internal)", type: "textarea", group: "details", hint: "What was checked, by whom, and what still needs checking. Not shown publicly." };
 
 const typeOptions = (types: ListingType[]) => types.map((t) => ({ value: t, label: listingTypeLabels[t] }));
 
 const community: FieldDef = { name: "community_id", label: "Community", type: "relation", relation: { table: "communities", label: "name" }, group: "details" };
 const lat: FieldDef = { name: "latitude", label: "Latitude", type: "lat", group: "location", hint: "Decimal degrees measured on site or from an official source. Leave blank if unknown. Never estimate." };
-const lng: FieldDef = { name: "longitude", label: "Longitude", type: "lng", group: "location", hint: "Negative values are west of Greenwich (Lake Bosomtwe is west, e.g. -1.4…)." };
+const lng: FieldDef = { name: "longitude", label: "Longitude", type: "lng", group: "location", hint: "Negative values are west of Greenwich (the Ashanti Region is west of the meridian)." };
 
 export const listingFields = (types: ListingType[], food: boolean, stay: boolean): FieldDef[] => [
   { name: "name", label: "Name", type: "text", required: true, group: "main" },
@@ -56,7 +67,7 @@ export const listingFields = (types: ListingType[], food: boolean, stay: boolean
   statusField,
   { name: "summary", label: "Short summary", type: "textarea", group: "main", max: 400 },
   { name: "description", label: "Description", type: "textarea", group: "main" },
-  community,
+  community, area, destination, verifiedAt, verifyNotes,
   { name: "address", label: "Address / landmark", type: "text", group: "location" },
   { name: "directions", label: "Directions", type: "textarea", group: "location" },
   lat, lng,
@@ -76,7 +87,7 @@ export const listingFields = (types: ListingType[], food: boolean, stay: boolean
 
 export const resources: ResourceDef[] = [
   {
-    key: "attractions", table: "attractions", label: "Attractions", singular: "attraction", titleField: "name", hasSlug: true,
+    area: true, revisions: true, key: "attractions", table: "attractions", label: "Attractions", singular: "attraction", titleField: "name", hasSlug: true,
     hasStatus: true, hasCover: true, galleryEntity: "attraction", seo: true, softDelete: true, orderBy: { column: "updated_at", ascending: false },
     listColumns: [{ name: "name", label: "Name" }, { name: "status", label: "Status" }, { name: "updated_at", label: "Updated" }],
     publicPath: (r) => `/attractions/${r.slug}`,
@@ -84,7 +95,7 @@ export const resources: ResourceDef[] = [
       { name: "name", label: "Name", type: "text", required: true, group: "main" },
       statusField,
       { name: "category_id", label: "Category", type: "relation", relation: { table: "attraction_categories", label: "name" }, group: "main" },
-      community,
+      community, area, destination,
       { name: "summary", label: "Short summary", type: "textarea", group: "main", max: 400 },
       { name: "description", label: "Description", type: "textarea", group: "main" },
       { name: "history", label: "History (verified only)", type: "textarea", group: "details", hint: "Leave blank unless verified. Cite the source below." },
@@ -99,18 +110,19 @@ export const resources: ResourceDef[] = [
       { name: "contact_email", label: "Contact email", type: "email", group: "contact" },
       { name: "video_url", label: "Video link", type: "url", group: "details" },
       { name: "sources", label: "Sources", type: "textarea", group: "details", hint: "Shown publicly. Who or what confirmed these facts?" },
-      { name: "content_verified", label: "Content verified", type: "checkbox", group: "details" },
+      { name: "content_verified", label: "Content verified", type: "checkbox", approverOnly: true, group: "details" },
+      verifiedAt, verifyNotes,
       { name: "is_featured", label: "Featured on homepage", type: "checkbox", group: "main" },
     ],
   },
   {
-    key: "communities", table: "communities", label: "Communities", singular: "community", titleField: "name", hasSlug: true,
+    area: true, revisions: true, key: "communities", table: "communities", label: "Communities", singular: "community", titleField: "name", hasSlug: true,
     hasStatus: true, hasCover: true, galleryEntity: "community", seo: true, softDelete: true, orderBy: { column: "sort_order", ascending: true },
     listColumns: [{ name: "name", label: "Name" }, { name: "status", label: "Status" }, { name: "updated_at", label: "Updated" }],
     publicPath: (r) => `/communities/${r.slug}`,
     fields: [
       { name: "name", label: "Name", type: "text", required: true, group: "main" },
-      statusField,
+      statusField, area,
       { name: "summary", label: "Introduction", type: "textarea", group: "main", max: 600 },
       { name: "history", label: "History (verified only)", type: "textarea", group: "details", hint: "Do not publish unverified history or population figures." },
       { name: "cultural_heritage", label: "Cultural heritage", type: "textarea", group: "details" },
@@ -120,33 +132,34 @@ export const resources: ResourceDef[] = [
       { name: "directions", label: "Directions", type: "textarea", group: "location" },
       lat, lng,
       { name: "sources", label: "Sources", type: "textarea", group: "details", hint: "Shown publicly. Who or what confirmed these facts?" },
-      { name: "content_verified", label: "Content verified", type: "checkbox", group: "details" },
+      { name: "content_verified", label: "Content verified", type: "checkbox", approverOnly: true, group: "details" },
+      verifiedAt, verifyNotes,
       { name: "sort_order", label: "Display order", type: "number", group: "details" },
     ],
   },
   {
-    key: "accommodation", table: "listings", label: "Accommodation", singular: "accommodation listing", titleField: "name", hasSlug: true,
+    area: true, revisions: true, key: "accommodation", table: "listings", label: "Accommodation", singular: "accommodation listing", titleField: "name", hasSlug: true,
     typeFilter: { column: "type", values: accommodationTypes }, hasStatus: true, hasCover: true, galleryEntity: "listing", children: "rooms",
     seo: true, softDelete: true, orderBy: { column: "updated_at", ascending: false },
     listColumns: [{ name: "name", label: "Name" }, { name: "type", label: "Type" }, { name: "status", label: "Status" }, { name: "updated_at", label: "Updated" }],
     publicPath: (r) => `/accommodation/${r.slug}`, fields: listingFields(accommodationTypes, false, true),
   },
   {
-    key: "restaurants", table: "listings", label: "Restaurants", singular: "restaurant", titleField: "name", hasSlug: true,
+    area: true, revisions: true, key: "restaurants", table: "listings", label: "Restaurants", singular: "restaurant", titleField: "name", hasSlug: true,
     typeFilter: { column: "type", values: restaurantTypes }, hasStatus: true, hasCover: true, galleryEntity: "listing", children: "menu",
     seo: true, softDelete: true, orderBy: { column: "updated_at", ascending: false },
     listColumns: [{ name: "name", label: "Name" }, { name: "status", label: "Status" }, { name: "updated_at", label: "Updated" }],
     publicPath: (r) => `/restaurants/${r.slug}`, fields: listingFields(restaurantTypes, true, false),
   },
   {
-    key: "businesses", table: "listings", label: "Businesses", singular: "business", titleField: "name", hasSlug: true,
+    area: true, revisions: true, key: "businesses", table: "listings", label: "Businesses", singular: "business", titleField: "name", hasSlug: true,
     typeFilter: { column: "type", values: businessTypes }, hasStatus: true, hasCover: true, galleryEntity: "listing",
     seo: true, softDelete: true, orderBy: { column: "updated_at", ascending: false },
     listColumns: [{ name: "name", label: "Name" }, { name: "type", label: "Type" }, { name: "status", label: "Status" }, { name: "updated_at", label: "Updated" }],
     publicPath: (r) => `/business/${r.slug}`, fields: listingFields(businessTypes, false, false),
   },
   {
-    key: "experiences", table: "experiences", label: "Experiences", singular: "experience", titleField: "title", hasSlug: true,
+    area: true, revisions: true, key: "experiences", table: "experiences", label: "Experiences", singular: "experience", titleField: "title", hasSlug: true,
     hasStatus: true, hasCover: true, galleryEntity: "experience", seo: true, softDelete: true, orderBy: { column: "updated_at", ascending: false },
     listColumns: [{ name: "title", label: "Title" }, { name: "category", label: "Type" }, { name: "status", label: "Status" }, { name: "updated_at", label: "Updated" }],
     publicPath: (r) => `/experiences/${r.slug}`,
@@ -158,7 +171,7 @@ export const resources: ResourceDef[] = [
       { name: "provider_verified", label: "Provider has confirmed this experience", type: "checkbox", adminOnly: true, group: "main", hint: "Tick only after the provider has confirmed details and availability." },
       { name: "summary", label: "Short summary", type: "textarea", group: "main", max: 400 },
       { name: "description", label: "Description", type: "textarea", group: "main" },
-      community,
+      community, area, destination, verifiedAt, verifyNotes,
       { name: "duration_minutes", label: "Duration (minutes)", type: "number", group: "details" },
       { name: "price_from", label: "Price from", type: "number", group: "details", hint: "Only enter a price the provider has confirmed." },
       { name: "price_unit", label: "Price applies", type: "text", group: "details", hint: "e.g. per person" },
@@ -173,7 +186,7 @@ export const resources: ResourceDef[] = [
     ],
   },
   {
-    key: "events", table: "events", label: "Events", singular: "event", titleField: "title", hasSlug: true,
+    area: true, revisions: true, key: "events", table: "events", label: "Events", singular: "event", titleField: "title", hasSlug: true,
     hasStatus: true, hasCover: true, galleryEntity: "event", seo: true, softDelete: true, orderBy: { column: "starts_at", ascending: false },
     listColumns: [{ name: "title", label: "Title" }, { name: "starts_at", label: "Starts" }, { name: "status", label: "Status" }],
     publicPath: (r) => `/events/${r.slug}`,
@@ -186,7 +199,7 @@ export const resources: ResourceDef[] = [
       { name: "summary", label: "Short summary", type: "textarea", group: "main", max: 400 },
       { name: "description", label: "Description", type: "textarea", group: "main" },
       { name: "venue", label: "Venue", type: "text", group: "location" },
-      community,
+      community, area, destination, verifiedAt, verifyNotes,
       lat, lng,
       { name: "organiser", label: "Organiser", type: "text", group: "details" },
       { name: "ticket_info", label: "Ticket information", type: "textarea", group: "details" },
@@ -196,7 +209,7 @@ export const resources: ResourceDef[] = [
     ],
   },
   {
-    key: "articles", table: "articles", label: "Articles", singular: "article", titleField: "title", hasSlug: true,
+    revisions: true, key: "articles", table: "articles", label: "Articles", singular: "article", titleField: "title", hasSlug: true,
     hasStatus: true, hasCover: true, galleryEntity: "article", seo: true, softDelete: true, orderBy: { column: "updated_at", ascending: false },
     listColumns: [{ name: "title", label: "Title" }, { name: "status", label: "Status" }, { name: "published_at", label: "Publish date" }],
     publicPath: (r) => `/articles/${r.slug}`,
@@ -205,6 +218,7 @@ export const resources: ResourceDef[] = [
       statusField,
       { name: "published_at", label: "Publish date (Ghana time)", type: "datetime", group: "main", hint: "Set a future date to schedule. Defaults to now when published." },
       { name: "category_id", label: "Category", type: "relation", relation: { table: "article_categories", label: "name" }, group: "main" },
+      destination,
       { name: "excerpt", label: "Excerpt", type: "textarea", group: "main", max: 400 },
       { name: "body", label: "Article body (Markdown)", type: "markdown", required: true, group: "main", hint: "Use ## for headings, **bold**, [links](https://…), and - for lists." },
       { name: "tags", label: "Tags", type: "tags", group: "details" },
@@ -224,7 +238,7 @@ export const resources: ResourceDef[] = [
     ],
   },
   {
-    key: "pages", table: "pages", label: "Pages", singular: "page", titleField: "title", hasSlug: false, slugField: "slug",
+    revisions: true, key: "pages", table: "pages", label: "Pages", singular: "page", titleField: "title", hasSlug: false, slugField: "slug",
     hasStatus: true, hasCover: true, seo: true, softDelete: false, orderBy: { column: "slug", ascending: true },
     listColumns: [{ name: "title", label: "Title" }, { name: "slug", label: "URL" }, { name: "status", label: "Status" }],
     publicPath: (r) => `/${r.slug}`,
@@ -299,6 +313,88 @@ resources.push(
   },
 );
 
+/* ───────────── Regional geography (Phase 1 of VisitAsanteman) ───────────── */
+const sourceFields: FieldDef[] = [
+  { name: "source", label: "Source of this record", type: "text", group: "details", hint: "Name the official publication, e.g. the Local Government Service list." },
+  { name: "source_url", label: "Source link", type: "url", group: "details" },
+  { name: "verified_at", label: "Source checked on", type: "datetime", group: "details" },
+];
+const activeField: FieldDef = { name: "is_active", label: "Active", type: "checkbox", group: "main", hint: "Inactive areas cannot be used to publish content." };
+
+resources.push(
+  {
+    key: "regions", table: "regions", label: "Regions", singular: "region", titleField: "name", hasSlug: true, approverOnly: true,
+    hasStatus: false, hasCover: false, seo: false, softDelete: false, orderBy: { column: "name", ascending: true },
+    listColumns: [{ name: "name", label: "Name" }, { name: "country_code", label: "Country" }, { name: "is_active", label: "Active" }],
+    fields: [
+      { name: "name", label: "Name", type: "text", required: true, group: "main" },
+      { name: "summary", label: "Summary", type: "textarea", group: "main", max: 600 },
+      activeField, ...sourceFields,
+    ],
+  },
+  {
+    key: "administrative-areas", table: "administrative_areas", label: "Districts and municipalities", singular: "administrative area", titleField: "name", hasSlug: true, approverOnly: true,
+    hasStatus: false, hasCover: true, seo: false, softDelete: false, orderBy: { column: "name", ascending: true },
+    listColumns: [{ name: "name", label: "Name" }, { name: "kind", label: "Type" }, { name: "is_active", label: "Active" }, { name: "verified_at", label: "Source checked" }],
+    publicPath: (r) => `/districts/${r.slug}`,
+    fields: [
+      { name: "name", label: "Name (as named by the official source)", type: "text", required: true, group: "main" },
+      { name: "region_id", label: "Region", type: "relation", relation: { table: "regions", label: "name" }, required: true, group: "main" },
+      { name: "kind", label: "Type", type: "select", required: true, group: "main", options: [{ value: "metropolitan", label: "Metropolitan" }, { value: "municipal", label: "Municipal" }, { value: "district", label: "District" }] },
+      { name: "capital_name", label: "Capital", type: "text", group: "main", hint: "Only from the official source." },
+      { name: "summary", label: "Introduction", type: "textarea", group: "main", max: 600 },
+      activeField,
+      { name: "latitude", label: "Map centre latitude", type: "lat", group: "location", hint: "Optional. Leave blank if unknown. Never estimate." },
+      { name: "longitude", label: "Map centre longitude", type: "lng", group: "location" },
+      ...sourceFields,
+      { name: "sort_order", label: "Display order", type: "number", group: "details" },
+    ],
+  },
+  {
+    key: "traditional-areas", table: "traditional_areas", label: "Traditional areas", singular: "traditional area", titleField: "name", hasSlug: true,
+    revisions: true, hasStatus: true, hasCover: false, seo: false, softDelete: true, orderBy: { column: "name", ascending: true },
+    listColumns: [{ name: "name", label: "Name" }, { name: "status", label: "Status" }, { name: "updated_at", label: "Updated" }],
+    fields: [
+      { name: "name", label: "Name", type: "text", required: true, group: "main" },
+      statusField,
+      { name: "summary", label: "Summary (verified only)", type: "textarea", group: "main", max: 600, hint: "Traditional institutions are culturally sensitive. Publish only text reviewed by the appropriate custodians." },
+      { name: "sources", label: "Sources", type: "textarea", group: "details", hint: "Who or what confirmed these facts?" },
+      { name: "content_verified", label: "Content verified", type: "checkbox", approverOnly: true, group: "details" },
+      verifiedAt, verifyNotes,
+    ],
+  },
+  {
+    key: "destinations", table: "destinations", label: "Destinations", singular: "destination", titleField: "name", hasSlug: true,
+    revisions: true, hasStatus: true, hasCover: true, seo: true, softDelete: true, orderBy: { column: "sort_order", ascending: true },
+    listColumns: [{ name: "name", label: "Name" }, { name: "status", label: "Status" }, { name: "updated_at", label: "Updated" }],
+    publicPath: (r) => `/destinations/${r.slug}`,
+    fields: [
+      { name: "name", label: "Name", type: "text", required: true, group: "main" },
+      statusField,
+      { ...area, required: true, hint: "Every destination belongs to one district, municipality or metropolis." },
+      { name: "summary", label: "Short summary", type: "textarea", group: "main", max: 400 },
+      { name: "description", label: "Description", type: "textarea", group: "main" },
+      { name: "directions", label: "Directions", type: "textarea", group: "location" },
+      lat, lng,
+      { name: "sources", label: "Sources", type: "textarea", group: "details", hint: "Shown publicly. Who or what confirmed these facts?" },
+      { name: "content_verified", label: "Content verified", type: "checkbox", approverOnly: true, group: "details" },
+      verifiedAt, verifyNotes,
+      { name: "sort_order", label: "Display order", type: "number", group: "details" },
+    ],
+  },
+  {
+    key: "localities", table: "localities", label: "Localities", singular: "locality", titleField: "name", hasSlug: true,
+    hasStatus: false, hasCover: false, seo: false, softDelete: false, orderBy: { column: "name", ascending: true },
+    listColumns: [{ name: "name", label: "Name" }, { name: "updated_at", label: "Updated" }],
+    fields: [
+      { name: "name", label: "Name", type: "text", required: true, group: "main" },
+      { name: "community_id", label: "Community", type: "relation", relation: { table: "communities", label: "name" }, required: true, group: "main" },
+      lat, lng,
+      { name: "sort_order", label: "Display order", type: "number", group: "details" },
+    ],
+  },
+);
+
 export const resourceMap = Object.fromEntries(resources.map((r) => [r.key, r])) as Record<string, ResourceDef>;
 
 export const adminNav = [
@@ -306,6 +402,7 @@ export const adminNav = [
   { group: "Content" },
   { href: "/admin/attractions", label: "Attractions" },
   { href: "/admin/communities", label: "Communities" },
+  { href: "/admin/destinations", label: "Destinations" },
   { href: "/admin/accommodation", label: "Accommodation" },
   { href: "/admin/restaurants", label: "Restaurants" },
   { href: "/admin/experiences", label: "Experiences" },
@@ -319,6 +416,11 @@ export const adminNav = [
   { href: "/admin/testimonials", label: "Testimonials" },
   { href: "/admin/homepage", label: "Homepage" },
   { href: "/admin/media", label: "Media library" },
+  { group: "Geography" },
+  { href: "/admin/regions", label: "Regions" },
+  { href: "/admin/administrative-areas", label: "Districts" },
+  { href: "/admin/traditional-areas", label: "Traditional areas" },
+  { href: "/admin/localities", label: "Localities" },
   { group: "Audience" },
   { href: "/admin/bookings", label: "Bookings" },
   { href: "/admin/reviews", label: "Reviews" },

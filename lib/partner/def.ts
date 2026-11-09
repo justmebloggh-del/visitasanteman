@@ -10,6 +10,6 @@ export function partnerListingDef(accountType: BusinessAccountType): ResourceDef
     hasSlug: false, hasStatus: false, hasCover: true, galleryEntity: "listing", seo: false, softDelete: true,
     orderBy: { column: "updated_at", ascending: false }, listColumns: [],
     typeFilter: { column: "type", values: types },
-    fields: listingFields(types, types.includes("restaurant"), stay).filter((f) => !f.adminOnly && f.name !== "status"),
+    fields: listingFields(types, types.includes("restaurant"), stay).filter((f) => !f.adminOnly && !f.approverOnly && f.name !== "status" && !["administrative_area_id", "destination_id", "last_verified_at", "verification_notes"].includes(f.name)),
   };
 }
