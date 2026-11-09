@@ -31,6 +31,9 @@ export async function saveResource(resourceKey: string, id: string | null, _prev
   const { values, errors } = parseResourceForm(def, fd, { isAdmin: isAdmin(user.role), canApprove: canApprove(user.role) });
   if (Object.keys(errors).length) return { ok: false, message: "Please fix the highlighted fields.", errors };
 
+  // Record who verified a researched record.
+  if (def.key === "attractions" && (values.verification_status === "verified_secondary" || values.verification_status === "officially_confirmed")) values.reviewed_by = user.id;
+
   const supabase = await createClient();
   const pk = def.slugField ?? "id";
   let savedId = id;

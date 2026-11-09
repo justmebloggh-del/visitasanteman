@@ -41,6 +41,7 @@ function control(f: FieldDef, value: unknown, error: string | undefined, options
     case "checkbox": return (
       <label className="flex items-center gap-2 text-sm"><input type="checkbox" {...common} defaultChecked={!!value} className="size-4 accent-[var(--color-forest)]" />{f.label}</label>
     );
+    case "date": return <Input {...common} type="date" defaultValue={typeof value === "string" ? value.slice(0, 10) : ""} />;
     case "datetime": return <Input {...common} type="datetime-local" defaultValue={typeof value === "string" ? value.slice(0, 16) : ""} />;
     case "tags": return <Input {...common} defaultValue={Array.isArray(value) ? (value as string[]).join(", ") : ""} />;
     case "url": return <Input {...common} type="url" defaultValue={(value as string) ?? ""} placeholder="https://" />;

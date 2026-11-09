@@ -121,3 +121,17 @@ Geography: **Region → Administrative area (MMDA) → Community → Locality.**
 Triggers (run in this order on content tables): `tg_a_derive_area` (area from community or destination), `tg_b_publish_area` (no publishing without an active area), `tg_c_workflow` (approve/publish needs `can_approve()`), `tg_d_verification` (only approvers change verification flags), `tg_e_revision`. `auth.uid()` being null (migrations, service role, direct SQL) is treated as a non-user session and skips the role checks; end users never do.
 
 Not done in this phase: a separate `scheduled` status, restoring a revision from the admin, per-district scoping of regional editors (a regional editor currently works across the whole region).
+
+## VisitAsanteman Phase 2 additions (migrations `20261114000001`, `20261114000002`)
+Research, verification and access are separate ideas: a fact can be established while the site is closed or only proposed.
+
+| Item | Purpose |
+|---|---|
+| `verification_status` (attractions) | `research_identified` → `awaiting_verification` → `verified_secondary` → `officially_confirmed`. **A record cannot be published unless it is one of the two verified levels** (trigger `guard_attraction_research`). Only approvers can set a verified level |
+| `access_status` | `unknown`, `open_to_visitors`, `permission_required`, `restricted_access`, `temporarily_unavailable`, `permanently_closed`, `proposed`. Shown on the public page; anything except plain "open" displays a notice |
+| `access_notes`, `managing_institution` | Public: permits, etiquette, photography rules, responsible body |
+| `source_organisation`, `source_url`, `source_published_at`, `researched_at`, `reviewed_by`, `research_notes` | Source tracking. The first four and the access fields are shown publicly where present; `research_notes` is internal |
+| `alt_names` | Alternative spellings on attractions, communities and districts. Recorded; public search does not match them yet |
+| Inventory load | 52 attraction records from the owner's research summary (citing the ARCC Regional Profile 2023) loaded as **draft / research_identified / access unknown**, with no coordinates, descriptions, hours, fees or contacts. 16 are linked to a district where the summary names one and it matches the working district list. The ARCC document itself could not be reached, so none of it has been checked against it |
+
+Only attractions have the verification gate so far. Other record types (hospitality, education, sports, transport, markets, ceremonies) are later phases.

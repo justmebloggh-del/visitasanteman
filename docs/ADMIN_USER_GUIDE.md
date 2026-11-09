@@ -26,6 +26,12 @@ Sign in, then open **Admin** in the top bar (or `/admin`). Content editors, regi
 
 The full matrix is in [AUTHENTICATION](AUTHENTICATION.md).
 
+## Research records and import (Admin → Attractions, Import research)
+- Each attraction has **Verification status** and **Visitor access**. A record cannot be published until a regional editor or administrator marks it *Verified through a credible secondary source* or *Officially confirmed* and a source is recorded. Use *Awaiting verification* while you work.
+- Filter the Attractions list by **Verification** to see the research queue (the loaded inventory starts as *Research identified*).
+- A protected forest, shrine, dam or river is not automatically a visitor attraction. Set *Visitor access* honestly and explain permits and rules in *Access, permits and visitor rules*. Anything other than "Open to visitors" shows a notice on the public page.
+- **Import research** takes a CSV (download the template). Check the preview, then import. Imported rows are always unpublished drafts marked *Research identified*; status or verification columns in a file are ignored. Every row needs a source. Duplicates (same name or alternative spelling, or repeated in the file) are skipped; places within 200 m of an existing one are flagged. Columns are matched by heading, not mapped by hand. Templates exist for attractions and communities only.
+
 ## Geography (Admin → Geography)
 - **Regions** and **Districts** (metropolitan, municipal and district assemblies) are managed by regional editors and administrators. Record the **source** and the date it was checked for every district.
 - **Traditional areas** and **Localities** are optional. Traditional-area text is culturally sensitive: publish only what the appropriate custodians have reviewed.

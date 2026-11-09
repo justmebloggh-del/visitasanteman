@@ -27,6 +27,8 @@ export interface Attraction extends Seo, Cover {
   directions: string | null; opening_hours: string | null; entrance_fee: string | null; activities: string[];
   visitor_guidelines: string | null; accessibility: string | null; contact_phone: string | null;
   contact_email: string | null; is_featured: boolean; community_id: string | null;
+  access_status: string; access_notes: string | null; managing_institution: string | null; alt_names: string[];
+  source_organisation: string | null; source_url: string | null; source_published_at: string | null; researched_at: string | null;
   sources: string | null; content_verified: boolean;
   category: { name: string; slug: string } | null;
   community: { name: string; slug: string } | null;

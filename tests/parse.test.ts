@@ -12,7 +12,7 @@ describe("parseResourceForm", () => {
   const attractions = resourceMap.attractions;
 
   it("builds a payload and derives the slug from the name", () => {
-    const { values, errors } = parseResourceForm(attractions, fd({ name: "Lake Bosomtwe Viewpoint", status: "draft", activities: "Hiking, Photography, hiking" }), { isAdmin: false });
+    const { values, errors } = parseResourceForm(attractions, fd({ name: "Lake Bosomtwe Viewpoint", status: "draft", verification_status: "awaiting_verification", access_status: "unknown", activities: "Hiking, Photography, hiking" }), { isAdmin: false });
     expect(errors).toEqual({});
     expect(values.slug).toBe("lake-bosomtwe-viewpoint");
     expect(values.activities).toEqual(["Hiking", "Photography", "hiking"]);
@@ -26,9 +26,9 @@ describe("parseResourceForm", () => {
   });
 
   it("rejects out-of-range or half-supplied coordinates", () => {
-    expect(parseResourceForm(attractions, fd({ name: "A", status: "draft", latitude: "95", longitude: "-1.4" }), { isAdmin: true }).errors.latitude).toMatch(/between -90 and 90/);
-    expect(parseResourceForm(attractions, fd({ name: "A", status: "draft", latitude: "6.5" }), { isAdmin: true }).errors.longitude).toMatch(/both/);
-    expect(parseResourceForm(attractions, fd({ name: "A", status: "draft", latitude: "6.5", longitude: "-1.4" }), { isAdmin: true }).errors).toEqual({});
+    expect(parseResourceForm(attractions, fd({ name: "A", status: "draft", verification_status: "awaiting_verification", access_status: "unknown", latitude: "95", longitude: "-1.4" }), { isAdmin: true }).errors.latitude).toMatch(/between -90 and 90/);
+    expect(parseResourceForm(attractions, fd({ name: "A", status: "draft", verification_status: "awaiting_verification", access_status: "unknown", latitude: "6.5" }), { isAdmin: true }).errors.longitude).toMatch(/both/);
+    expect(parseResourceForm(attractions, fd({ name: "A", status: "draft", verification_status: "awaiting_verification", access_status: "unknown", latitude: "6.5", longitude: "-1.4" }), { isAdmin: true }).errors).toEqual({});
   });
 
   it("ignores admin-only fields submitted by editors", () => {

@@ -67,6 +67,11 @@ function parseField(f: FieldDef, fd: FormData): { value?: unknown; error?: strin
       if (empty) return { value: null };
       return EMAIL.test(raw) ? { value: raw.toLowerCase() } : { error: `${f.label} is not a valid email address` };
     }
+    case "date": {
+      if (need()) return { error: need() };
+      if (empty) return { value: null };
+      return /^\d{4}-\d{2}-\d{2}$/.test(raw) && !Number.isNaN(Date.parse(raw)) ? { value: raw } : { error: `${f.label} is not a valid date` };
+    }
     case "datetime": {
       if (need()) return { error: need() };
       if (empty) return { value: null };

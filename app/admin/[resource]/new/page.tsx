@@ -13,6 +13,7 @@ export default async function NewResource({ params }: { params: Promise<{ resour
   const initial: Record<string, unknown> = { status: "draft" };
   if (def.typeFilter && def.typeFilter.values.length === 1) initial[def.typeFilter.column] = def.typeFilter.values[0];
   if (def.key === "regions" || def.key === "administrative-areas") initial.is_active = true;
+  if (def.key === "attractions") Object.assign(initial, { verification_status: "awaiting_verification", access_status: "unknown" });
   if (def.key === "events") initial.event_status = "scheduled";
   if (def.key === "investments") Object.assign(initial, { stage: "proposed", investment_currency: "GHS", images_are_conceptual: true });
   return (

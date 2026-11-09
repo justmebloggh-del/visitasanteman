@@ -34,10 +34,10 @@ test("setup: published places with verified coordinates", async ({ page }) => {
   await register(page, alice); await register(page, bob);
   const cat = sql(`select id from attraction_categories where slug='natural'`);
   const area = testAreaId();
-  sql(`insert into attractions(slug,name,status,summary,category_id,latitude,longitude,administrative_area_id) values
-    ('${tag}-a','${tag} Viewpoint','published','Test viewpoint','${cat}',6.5000,-1.4100,'${area}'),
-    ('${tag}-b','${tag} Boardwalk','published','Test boardwalk','${cat}',6.5030,-1.4100,'${area}'),
-    ('${tag}-far','${tag} Far Away','published','Far',null,7.9000,-1.4100,'${area}')`);
+  sql(`insert into attractions(slug,name,status,summary,category_id,latitude,longitude,administrative_area_id,verification_status) values
+    ('${tag}-a','${tag} Viewpoint','published','Test viewpoint','${cat}',6.5000,-1.4100,'${area}','verified_secondary'),
+    ('${tag}-b','${tag} Boardwalk','published','Test boardwalk','${cat}',6.5030,-1.4100,'${area}','verified_secondary'),
+    ('${tag}-far','${tag} Far Away','published','Far',null,7.9000,-1.4100,'${area}','verified_secondary')`);
   sql(`insert into experiences(slug,title,category,status,administrative_area_id) values ('${tag}-bird','${tag} Bird Walk','birdwatching','published','${area}')`);
 });
 

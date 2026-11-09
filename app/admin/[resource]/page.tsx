@@ -27,6 +27,7 @@ export default async function ResourceList({ params, searchParams }: { params: P
   if (def.softDelete) q = q.is("deleted_at", null);
   if (def.typeFilter) q = q.in(def.typeFilter.column, def.typeFilter.values);
   if (sp.status && def.hasStatus) q = q.eq("status", sp.status);
+  if (def.filter && sp.filter && def.filter.options.some((o) => o.value === sp.filter)) q = q.eq(def.filter.column, sp.filter);
   if (sp.q) q = q.ilike(def.titleField, `%${sp.q.replace(/[%,()*\\]/g, " ").slice(0, 80)}%`);
   const { data, count, error } = await q.range((page - 1) * PER, page * PER - 1);
   const rows = (data ?? []) as Record<string, unknown>[];
@@ -44,8 +45,8 @@ export default async function ResourceList({ params, searchParams }: { params: P
       <AdminHeader title={def.label} actions={def.key !== "pages" && <ButtonLink href={`/admin/${def.key}/new`}><Plus className="size-4" aria-hidden />New {def.singular}</ButtonLink>} />
       <Flash sp={sp} />
       {error && <p role="alert" className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">Could not load this list: {error.message}</p>}
-      <FilterBar action={`/admin/${def.key}`} q={sp.q} qLabel="Search title" values={{ status: sp.status }}
-        filters={def.hasStatus ? [{ name: "status", label: "Status", options: statusOptionList }] : []} />
+      <FilterBar action={`/admin/${def.key}`} q={sp.q} qLabel="Search title" values={{ status: sp.status, filter: sp.filter }}
+        filters={[...(def.hasStatus ? [{ name: "status", label: "Status", options: statusOptionList }] : []), ...(def.filter ? [{ name: "filter", label: def.filter.label, options: def.filter.options }] : [])]} />
       <div className="mt-6 overflow-x-auto rounded-2xl border border-line bg-white">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-line bg-mist text-xs uppercase tracking-wide text-muted">
@@ -77,7 +78,7 @@ export default async function ResourceList({ params, searchParams }: { params: P
         </table>
       </div>
       <p className="mt-3 text-xs text-muted">{count ?? 0} total. Deleted items are archived (soft-deleted) and can be recovered from the database.</p>
-      <Pagination page={page} pageCount={Math.max(1, Math.ceil((count ?? 0) / PER))} basePath={`/admin/${def.key}`} params={{ q: sp.q, status: sp.status }} />
+      <Pagination page={page} pageCount={Math.max(1, Math.ceil((count ?? 0) / PER))} basePath={`/admin/${def.key}`} params={{ q: sp.q, status: sp.status, filter: sp.filter }} />
     </>
   );
 }

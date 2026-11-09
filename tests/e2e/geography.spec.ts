@@ -76,6 +76,7 @@ test.describe("VisitAsanteman brand and navigation", () => {
 
 test.describe("districts, destinations and region filters", () => {
   test.skip(({ isMobile }) => isMobile, "desktop only");
+  test.setTimeout(120_000);   // these wait for page caches (up to 90 s) to refresh
   const area = `e2e-area-${tag}`;
   const hidden = `e2e-hidden-${tag}`;
 
@@ -83,7 +84,7 @@ test.describe("districts, destinations and region filters", () => {
     const region = sql(`select id from regions where slug='ashanti'`);
     const a = sql(`insert into administrative_areas (region_id,slug,name,kind,is_active,source) values ('${region}','${area}','E2E ${tag} district','district',true,'test fixture') returning id`).split("\n")[0];
     sql(`insert into administrative_areas (region_id,slug,name,kind,is_active) values ('${region}','${hidden}','E2E ${tag} inactive','municipal',false)`);
-    sql(`insert into attractions (slug,name,status,administrative_area_id) values ('${tag}-pub','Published ${tag}','published','${a}'),('${tag}-draft','Draft ${tag}','draft','${a}')`);
+    sql(`insert into attractions (slug,name,status,administrative_area_id,verification_status) values ('${tag}-pub','Published ${tag}','published','${a}','verified_secondary'),('${tag}-draft','Draft ${tag}','draft','${a}','verified_secondary')`);
 
     await expect.poll(async () => (await page.goto(`/districts/${area}`))?.status(), { timeout: 90_000, intervals: [3000] }).toBe(200);
     await expect(page.getByRole("heading", { level: 1 })).toContainText(`E2E ${tag} district`);
@@ -156,7 +157,8 @@ test.describe.serial("roles and the geography admin", () => {
     // publishing without a district is refused with a clear message
     await page.goto("/admin/attractions/new");
     await page.getByLabel("Name", { exact: true }).fill(`NoArea ${tag}`);
-    await page.getByLabel("Status").selectOption("published");
+    await page.getByLabel("Status", { exact: true }).selectOption("published");
+    await page.getByLabel("Verification status").selectOption("verified_secondary");
     await page.getByRole("button", { name: /Create attraction/ }).click();
     await expect(page.getByText(/Choose a district, municipality or metropolis/)).toBeVisible();
 
@@ -169,7 +171,7 @@ test.describe.serial("roles and the geography admin", () => {
 
   test("the database refuses to publish without a district even when the interface is bypassed", async () => {
     let refused = false;
-    try { sql(`insert into attractions (slug,name,status) values ('${tag}-bypass','Bypass ${tag}','published')`); } catch { refused = true; }
+    try { sql(`insert into attractions (slug,name,status,verification_status) values ('${tag}-bypass','Bypass ${tag}','published','verified_secondary')`); } catch { refused = true; }
     expect(refused).toBe(true);
   });
 

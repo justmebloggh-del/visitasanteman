@@ -50,6 +50,7 @@ test.describe("auth, roles and CMS publishing", () => {
     await page.getByLabel("Name", { exact: true }).fill(title);
     await page.getByLabel("Short summary").fill("An automated test attraction.");
     await page.getByLabel("District / municipality / metropolis").selectOption({ label: TEST_AREA_NAME });
+    await page.getByLabel("Verification status").selectOption("verified_secondary");
     await page.getByRole("button", { name: /Create attraction/ }).click();
     await expect(page).toHaveURL(/\/admin\/attractions\?saved=1/);
 

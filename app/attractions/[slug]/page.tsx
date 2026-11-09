@@ -5,6 +5,7 @@ import { Navigation, Phone } from "lucide-react";
 import { Breadcrumbs, CardGrid, ContentCard, Facts, Gallery, Photo, TextBlock } from "@/components/layout/blocks";
 import { breadcrumbLd, buildMetadata, JsonLd } from "@/components/layout/seo";
 import { Map } from "@/components/maps/Map";
+import { AccessNotice, SourceNote } from "@/components/listings/AccessNotice";
 import { Badge, ButtonLink, Container } from "@/components/ui";
 import { accommodationTypes, restaurantTypes, listingTypeLabels, type ListingType } from "@/config/site";
 import { SITE_URL } from "@/lib/env";
@@ -58,6 +59,7 @@ export default async function AttractionPage({ params }: { params: Promise<{ slu
 
       <Container className="grid gap-10 py-10 lg:grid-cols-3">
         <div className="space-y-10 lg:col-span-2">
+          <AccessNotice status={a.access_status} notes={a.access_notes} managedBy={a.managing_institution} />
           {a.summary && <p className="text-lg text-ink/90">{a.summary}</p>}
           <TextBlock title="About" text={a.description} />
           <TextBlock title="History" text={a.history} />
@@ -76,6 +78,7 @@ export default async function AttractionPage({ params }: { params: Promise<{ slu
           )}
           {!hasCoords && a.directions && <TextBlock title="Directions" text={a.directions} />}
           {a.sources && <p className="rounded-xl bg-mist p-4 text-xs text-muted"><strong className="text-ink">Sources:</strong> {a.sources}</p>}
+          <SourceNote organisation={a.source_organisation} url={a.source_url} publishedAt={a.source_published_at} checkedAt={a.researched_at} />
         </div>
         <aside className="space-y-6">
           <div className="flex flex-col gap-2 rounded-2xl border border-line bg-white p-5">

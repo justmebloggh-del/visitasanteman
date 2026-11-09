@@ -2,7 +2,7 @@ import { stageLabels, accommodationTypes, businessTypes, experienceCategoryLabel
 
 export type FieldType =
   | "text" | "textarea" | "markdown" | "number" | "select" | "checkbox" | "datetime" | "tags" | "url" | "email"
-  | "relation" | "lat" | "lng";
+  | "relation" | "lat" | "lng" | "date";
 
 export interface FieldDef {
   name: string;
@@ -40,6 +40,7 @@ export interface ResourceDef {
   approverOnly?: boolean;                           // whole section: only regional editors and admins may change it
   revisions?: boolean;                              // show revision history on the edit page
   area?: boolean;                                   // has administrative_area_id (checked before publishing)
+  filter?: { column: string; label: string; options: { value: string; label: string }[] };   // extra list filter
   noCreatedBy?: boolean;                            // table has no created_by column
 }
 
@@ -50,6 +51,34 @@ const statusOptions = [
 ];
 export const statusOptionList = statusOptions;
 export const statusField: FieldDef = { name: "status", label: "Status", type: "select", required: true, options: statusOptions, group: "main", hint: "Workflow: Draft, In review, Approved, Published. Only regional editors and administrators can approve or publish. Only Published items are visible on the website." };
+
+export const verificationOptions = [
+  { value: "research_identified", label: "Research identified (nothing checked)" },
+  { value: "awaiting_verification", label: "Awaiting verification" },
+  { value: "verified_secondary", label: "Verified through a credible secondary source" },
+  { value: "officially_confirmed", label: "Officially confirmed" },
+];
+export const accessOptions = [
+  { value: "unknown", label: "Not yet established" },
+  { value: "open_to_visitors", label: "Open to visitors" },
+  { value: "permission_required", label: "Permission or permit required" },
+  { value: "restricted_access", label: "Restricted access (sacred, private or protected)" },
+  { value: "temporarily_unavailable", label: "Temporarily unavailable" },
+  { value: "permanently_closed", label: "Permanently closed" },
+  { value: "proposed", label: "Proposed or under development" },
+];
+const researchFields: FieldDef[] = [
+  { name: "verification_status", label: "Verification status", type: "select", required: true, options: verificationOptions, group: "details", hint: "A record cannot be published until it is verified. Only regional editors and administrators can set the two verified levels." },
+  { name: "access_status", label: "Visitor access", type: "select", required: true, options: accessOptions, group: "details", hint: "A site can be real and still closed, restricted or only proposed. Never imply access that is not confirmed." },
+  { name: "access_notes", label: "Access, permits and visitor rules (public)", type: "textarea", group: "details", hint: "Permits, permissions, safety, etiquette, photography rules." },
+  { name: "managing_institution", label: "Managing institution", type: "text", group: "details", hint: "e.g. the body responsible for the site. Leave blank if unknown." },
+  { name: "alt_names", label: "Alternative names and spellings", type: "tags", group: "details", hint: "Comma separated. Recorded for editors; public search does not match these yet." },
+  { name: "source_organisation", label: "Source organisation", type: "text", group: "details" },
+  { name: "source_url", label: "Source link", type: "url", group: "details" },
+  { name: "source_published_at", label: "Source publication date", type: "date", group: "details" },
+  { name: "researched_at", label: "Date researched", type: "date", group: "details" },
+  { name: "research_notes", label: "Research notes (internal)", type: "textarea", group: "details", hint: "Uncertainty and what still needs checking. Not shown publicly." },
+];
 
 const area: FieldDef = { name: "administrative_area_id", label: "District / municipality / metropolis", type: "relation", relation: { table: "administrative_areas", label: "name" }, group: "main", hint: "Required before publishing. If left blank it is taken from the community or destination." };
 const destination: FieldDef = { name: "destination_id", label: "Destination", type: "relation", relation: { table: "destinations", label: "name" }, group: "details" };
@@ -88,7 +117,7 @@ export const listingFields = (types: ListingType[], food: boolean, stay: boolean
 
 export const resources: ResourceDef[] = [
   {
-    area: true, revisions: true, key: "attractions", table: "attractions", label: "Attractions", singular: "attraction", titleField: "name", hasSlug: true,
+    filter: { column: "verification_status", label: "Verification", options: verificationOptions }, area: true, revisions: true, key: "attractions", table: "attractions", label: "Attractions", singular: "attraction", titleField: "name", hasSlug: true,
     hasStatus: true, hasCover: true, galleryEntity: "attraction", seo: true, softDelete: true, orderBy: { column: "updated_at", ascending: false },
     listColumns: [{ name: "name", label: "Name" }, { name: "status", label: "Status" }, { name: "updated_at", label: "Updated" }],
     publicPath: (r) => `/attractions/${r.slug}`,
@@ -112,7 +141,7 @@ export const resources: ResourceDef[] = [
       { name: "video_url", label: "Video link", type: "url", group: "details" },
       { name: "sources", label: "Sources", type: "textarea", group: "details", hint: "Shown publicly. Who or what confirmed these facts?" },
       { name: "content_verified", label: "Content verified", type: "checkbox", approverOnly: true, group: "details" },
-      verifiedAt, verifyNotes,
+      verifiedAt, verifyNotes, ...researchFields,
       { name: "is_featured", label: "Featured on homepage", type: "checkbox", group: "main" },
     ],
   },
@@ -124,6 +153,7 @@ export const resources: ResourceDef[] = [
     fields: [
       { name: "name", label: "Name", type: "text", required: true, group: "main" },
       statusField, area,
+      { name: "alt_names", label: "Alternative names and spellings", type: "tags", group: "main", hint: "Comma separated. Recorded for editors; public search does not match these yet." },
       { name: "summary", label: "Introduction", type: "textarea", group: "main", max: 600 },
       { name: "history", label: "History (verified only)", type: "textarea", group: "details", hint: "Do not publish unverified history or population figures." },
       { name: "cultural_heritage", label: "Cultural heritage", type: "textarea", group: "details" },
@@ -343,6 +373,7 @@ resources.push(
       { name: "region_id", label: "Region", type: "relation", relation: { table: "regions", label: "name" }, required: true, group: "main" },
       { name: "kind", label: "Type", type: "select", required: true, group: "main", options: [{ value: "metropolitan", label: "Metropolitan" }, { value: "municipal", label: "Municipal" }, { value: "district", label: "District" }] },
       { name: "capital_name", label: "Capital", type: "text", group: "main", hint: "Only from the official source." },
+      { name: "alt_names", label: "Alternative names and spellings", type: "tags", group: "main", hint: "Comma separated. Recorded for editors; public search does not match these yet." },
       { name: "summary", label: "Introduction", type: "textarea", group: "main", max: 600 },
       activeField,
       { name: "latitude", label: "Map centre latitude", type: "lat", group: "location", hint: "Optional. Leave blank if unknown. Never estimate." },
@@ -402,6 +433,7 @@ export const adminNav = [
   { href: "/admin/dashboard", label: "Dashboard" },
   { group: "Content" },
   { href: "/admin/attractions", label: "Attractions" },
+  { href: "/admin/import", label: "Import research" },
   { href: "/admin/communities", label: "Communities" },
   { href: "/admin/destinations", label: "Destinations" },
   { href: "/admin/accommodation", label: "Accommodation" },

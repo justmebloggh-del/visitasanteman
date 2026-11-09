@@ -18,6 +18,19 @@ Legend: ✅ built and checked · 🟡 built, needs live-environment testing · �
 | Culture module content tables, travel-guide and gallery detail pages, new experience categories | ⬜ | Phase 2 of the brief |
 | Scheduled status, per-district editor scoping, revision restore | ⬜ | Not built |
 
+## VisitAsanteman Phase 2: regional research and destination database (this branch)
+| Item | Status | Notes |
+|---|---|---|
+| Verification status, access status, source tracking on attractions; publish gate | ✅ | 63 SQL checks |
+| Public access notice and source attribution on attraction pages | ✅ | |
+| Researched inventory loaded (52 records, unpublished) | 🟡 | From the owner's summary; **not checked against the ARCC profile** (site unreachable). Needs research, location, access and photo verification per record |
+| CSV import with preview, duplicate detection, templates (attractions, communities) | ✅ | Heading-matched columns; no manual column-mapping screen; images are not imported |
+| Research queue (filter by verification status) | ✅ | |
+| Alternative spellings stored | 🟡 | Not yet used by public search |
+| Community records for the whole region; verified district list | ⬜ | Needs the official MMDA list and local sources |
+| Source records for other bodies (GTA, Forestry Commission, GMMB, etc.) | ⬜ | Needs research access; none fetched |
+| Hospitality, education, sports, transport, ceremonies modules (brief Phases 3 to 5) | ⬜ | Next |
+
 ## Phase 1: Website + CMS
 | Item | Status | Notes |
 |---|---|---|

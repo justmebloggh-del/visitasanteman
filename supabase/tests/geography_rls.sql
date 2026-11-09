@@ -26,7 +26,7 @@ insert into administrative_areas (id, region_id, slug, name, kind, is_active) va
 insert into communities (id, slug, name, status, administrative_area_id) values
   ('00000000-0000-0000-0000-0000000000f4', 'test-community', 'Test community', 'published', '00000000-0000-0000-0000-0000000000f2');
 insert into localities (community_id, slug, name) values ('00000000-0000-0000-0000-0000000000f4', 'test-locality', 'Test locality');
-insert into attractions (id, slug, name, status) values ('00000000-0000-0000-0000-0000000000f5', 'draft-attraction', 'Draft attraction', 'draft');
+insert into attractions (id, slug, name, status, verification_status) values ('00000000-0000-0000-0000-0000000000f5', 'draft-attraction', 'Draft attraction', 'draft', 'verified_secondary');
 insert into listings (id, slug, type, name, status) values ('00000000-0000-0000-0000-0000000000f6', 'draft-hotel', 'hotel', 'Draft hotel', 'draft');
 insert into destinations (slug, name, administrative_area_id, status) values
   ('draft-destination', 'Draft destination', '00000000-0000-0000-0000-0000000000f2', 'draft');
@@ -121,7 +121,7 @@ select pg_temp.t('P02 cannot publish with an inactive area', :regional, 'authent
 select pg_temp.t('P03 regional editor can publish with an active area', :regional, 'authenticated',
   format('update attractions set status = ''published'', administrative_area_id = %L where id = %L', :area, :attr), true);
 select pg_temp.t('P04 area is derived from the community when left blank', :regional, 'authenticated',
-  format('insert into attractions (slug, name, status, community_id) values (''derived'', ''Derived'', ''published'', %L)', :comm), true);
+  format('insert into attractions (slug, name, status, community_id, verification_status) values (''derived'', ''Derived'', ''published'', %L, ''verified_secondary'')', :comm), true);
 select pg_temp.visible('P05 the derived area was stored', null, 'anon', format('select 1 from attractions where slug = ''derived'' and administrative_area_id = %L', :area), 1);
 select pg_temp.t('P06 cannot publish a listing without an area', :admin, 'authenticated',
   format('update listings set status = ''published'' where id = %L', :lst), false);
@@ -140,7 +140,7 @@ select pg_temp.t('W02 content editor cannot approve', :editor, 'authenticated',
 select pg_temp.t('W03 content editor cannot publish', :editor, 'authenticated',
   format('update attractions set status = ''published'' where id = %L', :attr), false);
 select pg_temp.t('W04 content editor cannot insert already-published content', :editor, 'authenticated',
-  format('insert into attractions (slug, name, status, administrative_area_id) values (''sneaky'', ''Sneaky'', ''published'', %L)', :area), false);
+  format('insert into attractions (slug, name, status, administrative_area_id, verification_status) values (''sneaky'', ''Sneaky'', ''published'', %L, ''verified_secondary'')', :area), false);
 select pg_temp.t('W05 regional editor can approve', :regional, 'authenticated',
   format('update attractions set status = ''approved'' where id = %L', :attr), true);
 select pg_temp.t('W06 content editor may still edit text of published content', :editor, 'authenticated',
@@ -161,6 +161,25 @@ select pg_temp.t('V05 regional editor cannot set the listing verified badge', :r
   format('update listings set is_verified = true where id = %L', :lst), false);
 select pg_temp.t('V06 admin can set the listing verified badge', :admin, 'authenticated',
   format('update listings set is_verified = true where id = %L', :lst), true);
+
+-- ── Research and verification (Phase 2) ──
+select pg_temp.t('X01 content editor cannot insert a record as verified', :editor, 'authenticated',
+  'insert into attractions (slug, name, verification_status) values (''x-ver'', ''X'', ''verified_secondary'')', false);
+select pg_temp.t('X02 content editor can insert a research record', :editor, 'authenticated',
+  'insert into attractions (slug, name, verification_status, source_organisation) values (''x-res'', ''X res'', ''research_identified'', ''Some source'')', true);
+select pg_temp.t('X03 content editor cannot raise a record to verified', :editor, 'authenticated',
+  'update attractions set verification_status = ''officially_confirmed'' where slug = ''x-res''', false);
+select pg_temp.t('X04 regional editor can verify a record', :regional, 'authenticated',
+  'update attractions set verification_status = ''verified_secondary'' where slug = ''x-res''', true);
+select pg_temp.t('X05 an unverified record cannot be published, even by an admin', :admin, 'authenticated',
+  format('insert into attractions (slug, name, status, administrative_area_id, verification_status) values (''x-pub'', ''X pub'', ''published'', %L, ''research_identified'')', :area), false);
+select pg_temp.t('X06 awaiting verification cannot be published either', :admin, 'authenticated',
+  format('insert into attractions (slug, name, status, administrative_area_id, verification_status) values (''x-pub2'', ''X pub2'', ''published'', %L, ''awaiting_verification'')', :area), false);
+select pg_temp.t('X07 content editor can lower a verified record back to awaiting', :editor, 'authenticated',
+  'update attractions set verification_status = ''awaiting_verification'' where slug = ''x-res''', true);
+select pg_temp.t('X08 awaiting-verification records are hidden from anon even when published is attempted by superuser', null, 'anon',
+  'select 1 from attractions where verification_status = ''awaiting_verification'' and status = ''published''', true);
+select pg_temp.visible('X09 anon sees no research records (none are published)', null, 'anon', 'select 1 from attractions where verification_status in (''research_identified'', ''awaiting_verification'')', 0);
 
 -- ── Roles, plans: never writable by editors ──
 select pg_temp.rows('R01 regional editor cannot change roles', :regional, 'authenticated', format('update user_roles set role = ''admin'' where user_id = %L', :visitor), 0);
