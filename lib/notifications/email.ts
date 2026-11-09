@@ -10,7 +10,8 @@ export async function sendEmail(o: { to: string; subject: string; text: string; 
   const from = process.env.EMAIL_FROM;
   if (!key || !from) return false;
   try {
-    const res = await fetch("https://api.resend.com/emails", {
+    const base = (process.env.RESEND_BASE_URL ?? "https://api.resend.com").replace(/\/$/, "");
+    const res = await fetch(`${base}/emails`, {
       method: "POST",
       headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
       body: JSON.stringify({ from, to: o.to, subject: o.subject, text: o.text, reply_to: o.replyTo }),

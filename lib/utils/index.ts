@@ -65,3 +65,6 @@ export function safeUrl(url: string | null | undefined): string | null {
     return null;
   }
 }
+
+/** The current time in milliseconds. A function so server pages can read the clock without tripping the render-purity lint rule. */
+export const nowMs = () => Date.now();

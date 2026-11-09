@@ -348,8 +348,9 @@ resources.push(
     listColumns: [{ name: "title", label: "Ad" }, { name: "placement", label: "Placement" }, { name: "status", label: "Status" }, { name: "ends_at", label: "Ends" }, { name: "impressions", label: "Views" }, { name: "clicks", label: "Clicks" }],
     fields: [
       { name: "title", label: "Internal title", type: "text", required: true, group: "main" },
-      { name: "advertiser_name", label: "Advertiser", type: "text", required: true, group: "main" },
-      { name: "placement", label: "Placement", type: "select", required: true, group: "main", options: [{ value: "homepage_banner", label: "Homepage banner" }, { value: "directory_top", label: "Top of directory pages" }] },
+      { name: "advertiser_id", label: "Advertiser record", type: "relation", relation: { table: "advertisers", label: "name" }, group: "main", hint: "Optional: links the ad to an advertiser (Admin → Advertisers)." },
+      { name: "advertiser_name", label: "Advertiser name shown publicly", type: "text", required: true, group: "main" },
+      { name: "placement", label: "Placement", type: "select", required: true, group: "main", options: [{ value: "homepage_banner", label: "Homepage banner" }, { value: "directory_top", label: "Top of directory pages" }, { value: "search_top", label: "Top of search results" }, { value: "culture_top", label: "Culture and heritage pages" }, { value: "district_top", label: "Top of district pages" }] },
       statusField,
       { name: "headline", label: "Headline", type: "text", group: "main", max: 140 },
       { name: "body", label: "Short text", type: "textarea", group: "main", max: 300 },
@@ -525,6 +526,19 @@ resources.push(
 );
 
 resources.push({
+  key: "advertisers", table: "advertisers", label: "Advertisers", singular: "advertiser", titleField: "name", hasSlug: false,
+  hasStatus: false, hasCover: false, seo: false, softDelete: true, noCreatedBy: false, orderBy: { column: "name", ascending: true },
+  listColumns: [{ name: "name", label: "Name" }, { name: "contact_email", label: "Email" }, { name: "updated_at", label: "Updated" }],
+  fields: [
+    { name: "name", label: "Advertiser name", type: "text", required: true, group: "main" },
+    { name: "contact_name", label: "Contact person", type: "text", group: "main" },
+    { name: "contact_email", label: "Contact email", type: "email", group: "main" },
+    { name: "contact_phone", label: "Contact phone", type: "text", group: "main" },
+    { name: "notes", label: "Internal notes", type: "textarea", group: "details", hint: "Terms agreed, invoice reference. Never shown publicly." },
+  ],
+});
+
+resources.push({
   key: "curated-itineraries", table: "curated_itineraries", label: "Curated itineraries", singular: "curated itinerary", titleField: "title", hasSlug: true,
   revisions: true, hasStatus: true, hasCover: true, seo: true, softDelete: true, orderBy: { column: "updated_at", ascending: false },
   listColumns: [{ name: "title", label: "Title" }, { name: "theme", label: "Theme" }, { name: "status", label: "Status" }, { name: "updated_at", label: "Updated" }],
@@ -597,6 +611,9 @@ export const adminNav = [
   { href: "/admin/articles", label: "Articles" },
   { href: "/admin/investments", label: "Investments" },
   { href: "/admin/advertisements", label: "Advertisements" },
+  { href: "/admin/advertisers", label: "Advertisers" },
+  { href: "/admin/advertising", label: "Ad performance" },
+  { href: "/admin/subscriptions", label: "Subscriptions" },
   { href: "/admin/pages", label: "Pages" },
   { href: "/admin/testimonials", label: "Testimonials" },
   { href: "/admin/homepage", label: "Homepage" },

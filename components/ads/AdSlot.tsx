@@ -5,7 +5,7 @@ import { Container } from "@/components/ui";
 import { getActiveAd } from "@/lib/content/public";
 
 /** Paid placement. Always labelled, links through /api/ads/[id]/click so clicks are counted. */
-export async function AdSlot({ placement }: { placement: "homepage_banner" | "directory_top" }) {
+export async function AdSlot({ placement }: { placement: "homepage_banner" | "directory_top" | "search_top" | "culture_top" | "district_top" }) {
   const ad = await getActiveAd(placement);
   if (!ad) return null;
   return (

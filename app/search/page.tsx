@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { EmptyState, PageHeader, Pagination } from "@/components/layout/blocks";
+import { AdSlot } from "@/components/ads/AdSlot";
 import { SearchBox } from "@/components/layout/SearchBox";
 import { Badge, Container } from "@/components/ui";
 import { listAreas, toPage } from "@/lib/content/public";
@@ -19,6 +20,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
   return (
     <>
       <PageHeader title="Search" intro="Places, ceremonies, hotels, restaurants, schools, sports, transport, businesses and stories." crumbs={[{ label: "Search" }]} />
+      {q && <AdSlot placement="search_top" />}
       <Container className="space-y-8 py-10">
         <SearchBox defaultValue={q} className="max-w-2xl border border-line shadow-none" />
         {q && (

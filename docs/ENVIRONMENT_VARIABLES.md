@@ -6,6 +6,7 @@ Set locally in `.env.local` (git-ignored) and in production in Vercel → Projec
 |---|---|---|---|
 | `NEXT_PUBLIC_SUPABASE_URL` | Yes | Yes | Supabase project URL |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (or legacy `NEXT_PUBLIC_SUPABASE_ANON_KEY`) | Yes | Yes | Public key. Safe because RLS limits it |
+| `RESEND_BASE_URL` | No | Yes | Test only: points the email sender at a mock server. Leave unset in production |
 | `NEXT_PUBLIC_SITE_URL` | Yes | Yes | Canonical origin, e.g. `https://www.example.com` (the VisitAsanteman domain is not confirmed yet; never hard-code it). Used in sitemap, emails, canonical tags |
 | `NEXT_PUBLIC_GA_ID` | No | Yes | Google Analytics `G-…` ID. Analytics is off if blank |
 | `NEXT_PUBLIC_GSC_VERIFICATION` | No | Yes | Search Console meta-tag token |

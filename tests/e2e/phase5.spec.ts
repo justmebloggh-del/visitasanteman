@@ -94,7 +94,7 @@ test("ads: only active, dated, published ads show, always labelled Sponsored; cl
   await page.goto("/admin/advertisements/new");
   await hydrated(page);
   await page.getByLabel("Internal title").fill(adTitle);
-  await page.getByLabel("Advertiser").fill("Lakeside Co");
+  await page.getByLabel("Advertiser name shown publicly").fill("Lakeside Co");
   await page.getByLabel("Placement").selectOption("homepage_banner");
   await page.getByLabel("Status", { exact: true }).selectOption("published");
   await page.getByLabel("Headline").fill("Stay by the lake");
@@ -145,7 +145,7 @@ test("editors cannot manage advertisements", async ({ page }) => {
   await page.goto("/admin/advertisements/new");
   await hydrated(page);
   await page.getByLabel("Internal title").fill("Editor ad");
-  await page.getByLabel("Advertiser").fill("X");
+  await page.getByLabel("Advertiser name shown publicly").fill("X");
   await page.getByLabel("Placement").selectOption("directory_top");
   await page.getByLabel("Link").fill("https://example.com");
   await page.getByLabel("Starts (Ghana time)").fill(utc(-1));

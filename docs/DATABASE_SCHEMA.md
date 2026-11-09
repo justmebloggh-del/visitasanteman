@@ -178,3 +178,12 @@ Research drafts (unpublished, unchecked): 13 education institutions (from the ow
 | `search_site(q, kinds, area, limit, offset)` | Site-wide search over published districts, destinations, attractions, communities, ceremonies, accommodation, food, venues, markets, businesses, experiences, events, institutions, sports venues and clubs, transport and articles. **Security invoker**, so row level security applies: visitors only ever get published records. Whole-word full-text plus partial-name matching, alternative spellings of attractions, communities and districts, exact/prefix boost, wildcard characters escaped |
 | `curated_itineraries` | Public trip ideas. A staff member builds a plan in the travel planner and publishes it as a curated itinerary (`make_curated_itinerary`, staff only, own plans only, switches sharing on). Publishing needs a plan attached and an approver. The public reads it through `curated_itinerary_view` (unpublished places show as unavailable) and copies it with `copy_curated_itinerary` (only still-published places are copied) |
 | Placeholders | The nine itinerary titles from the brief exist as **empty drafts** with no places; nothing is invented |
+
+## VisitAsanteman Phase 7 additions (migrations `20261119000001` to `20261119000003`)
+| Item | Purpose |
+|---|---|
+| `ad_placement` values | `search_top`, `culture_top`, `district_top` (plus the existing homepage banner and directory top). Slots are placed on search results, culture pages and district pages; every ad is labelled "Sponsored" |
+| `advertisers` | Advertiser records (contact, internal notes). Administrators only; invisible to everyone else. `advertisements.advertiser_id` links an ad to one |
+| `ad_stats_daily` | Impressions and clicks per ad per day, written only by `record_ad_event` (which ignores draft, unpublished and out-of-date ads). Administrators read it for the Ad performance report |
+| Counter privileges (fix) | The earlier column-level revoke on `advertisements.impressions/clicks` did not work while table-level UPDATE was granted, so an administrator could edit counters through the API. Now UPDATE is granted by column, excluding the counters |
+| `business_subscriptions` | History of every plan a listing has had (start, planned end, ended), recorded by trigger when `listings.plan_id` changes. Owners read their own history; administrators manage it. `set_subscription_end` and `end_overdue_subscriptions` are administrator-only. **Plans never touch verification** |

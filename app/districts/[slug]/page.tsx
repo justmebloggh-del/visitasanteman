@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { AdSlot } from "@/components/ads/AdSlot";
 import { Breadcrumbs, CardGrid, ContentCard, Photo } from "@/components/layout/blocks";
 import { breadcrumbLd, buildMetadata, JsonLd } from "@/components/layout/seo";
 import { Map } from "@/components/maps/Map";
@@ -59,6 +60,7 @@ export default async function DistrictPage({ params }: { params: Promise<{ slug:
         </Container>
       </div>
 
+      <AdSlot placement="district_top" />
       <Container className="space-y-12 py-10">
         {area.summary && <p className="max-w-3xl text-lg text-ink/90">{area.summary}</p>}
         {total === 0 && (

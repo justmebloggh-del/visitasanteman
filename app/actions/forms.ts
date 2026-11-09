@@ -43,6 +43,22 @@ export async function submitEnquiry(_prev: FormState, formData: FormData): Promi
     return FAILED;
   }
 
+  // Tell the business: the contact email on its public listing (best effort; the portal always shows the enquiry).
+  if (d.listing_id || d.experience_id) {
+    const pub = createPublicClient();
+    const { data: target } = d.listing_id
+      ? await pub.from("listings").select("name,email").eq("id", d.listing_id).maybeSingle()
+      : await pub.from("experiences").select("title,provider:listings!provider_listing_id(email)").eq("id", d.experience_id!).maybeSingle();
+    const t = target as { name?: string; title?: string; email?: string | null; provider?: { email?: string | null } | null } | null;
+    const to = t?.email ?? t?.provider?.email;
+    if (to) {
+      await sendEmail({
+        to, replyTo: d.email, subject: `New enquiry about ${t?.name ?? t?.title ?? "your listing"}`,
+        text: `${d.name} (${d.email}${d.phone ? `, ${d.phone}` : ""}) sent an enquiry through VisitAsanteman:\n\n${d.message}\n\nReply to this email to answer them, or manage enquiries in your partner portal.`,
+      });
+    }
+  }
+
   // Optional staff notification. Saved enquiry is the source of truth; email is a bonus.
   const notify = process.env.ENQUIRY_NOTIFY_EMAIL;
   if (notify) {

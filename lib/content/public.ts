@@ -460,7 +460,7 @@ export async function getInvestment(slug: string) {
 // ── Advertising: only published ads inside their dates are visible (enforced by RLS) ──
 export interface AdItem { id: string; title: string; advertiser_name: string; placement: string; headline: string | null; body: string | null; link_url: string; cover: MediaRef | null }
 
-export async function getActiveAd(placement: "homepage_banner" | "directory_top"): Promise<AdItem | null> {
+export async function getActiveAd(placement: "homepage_banner" | "directory_top" | "search_top" | "culture_top" | "district_top"): Promise<AdItem | null> {
   const rows = await run<AdItem[]>("ads", () => sb().from("advertisements").select(`id,title,advertiser_name,placement,headline,body,link_url,${COVER}`).eq("placement", placement).order("starts_at", { ascending: false }).limit(5) as never, []);
   if (!rows.length) return null;
   return rows[Math.floor(Math.random() * rows.length)];   // simple rotation between concurrent ads

@@ -93,6 +93,39 @@ export async function deleteResource(resourceKey: string, id: string) {
   redirect(`/admin/${def.key}?${error ? "error=1" : "deleted=1"}`);
 }
 
+/* ───────────── Subscriptions ───────────── */
+export async function assignPlan(fd: FormData) {
+  await requireAdmin();
+  const listing = String(fd.get("listing_id") ?? ""), plan = String(fd.get("plan_id") ?? ""), ends = String(fd.get("ends") ?? "");
+  const uuid = /^[0-9a-f-]{36}$/i;
+  if (!uuid.test(listing) || !uuid.test(plan) || (ends && !/^\d{4}-\d{2}-\d{2}$/.test(ends))) redirect("/admin/subscriptions?error=1");
+  const supabase = await createClient();
+  const { error } = await supabase.from("listings").update({ plan_id: plan }).eq("id", listing);
+  if (!error && ends) await supabase.rpc("set_subscription_end", { p_listing: listing, p_ends: `${ends}T23:59:59Z` });
+  if (error) console.error("[admin plan]", error.message);
+  flush();
+  redirect(`/admin/subscriptions?${error ? "error=1" : "saved=1"}`);
+}
+
+export async function setPlanEnd(listingId: string, fd: FormData) {
+  await requireAdmin();
+  const ends = String(fd.get("ends") ?? "");
+  if (ends && !/^\d{4}-\d{2}-\d{2}$/.test(ends)) redirect("/admin/subscriptions?error=1");
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("set_subscription_end", { p_listing: listingId, p_ends: ends ? `${ends}T23:59:59Z` : null });
+  if (error) console.error("[admin plan end]", error.message);
+  redirect(`/admin/subscriptions?${error ? "error=1" : "saved=1"}`);
+}
+
+export async function endOverduePlans() {
+  await requireAdmin();
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("end_overdue_subscriptions");
+  if (error) console.error("[admin plan expiry]", error.message);
+  flush();
+  redirect(`/admin/subscriptions?${error ? "error=1" : `ended=${Number(data ?? 0)}`}`);
+}
+
 /* ───────────── Business verification ───────────── */
 export async function decideVerification(listingId: string, decision: string, fd: FormData) {
   await requireAdmin();

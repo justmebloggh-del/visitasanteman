@@ -32,6 +32,13 @@ The full matrix is in [AUTHENTICATION](AUTHENTICATION.md).
 - A protected forest, shrine, dam or river is not automatically a visitor attraction. Set *Visitor access* honestly and explain permits and rules in *Access, permits and visitor rules*. Anything other than "Open to visitors" shows a notice on the public page.
 - **Import research** takes a CSV (download the template). Check the preview, then import. Imported rows are always unpublished drafts marked *Research identified*; status or verification columns in a file are ignored. Every row needs a source. Duplicates (same name or alternative spelling, or repeated in the file) are skipped; places within 200 m of an existing one are flagged. Columns are matched by heading, not mapped by hand. Templates exist for attractions and communities only.
 
+## Advertising and subscriptions
+- **Advertisers** (Admin → Advertisers): record who is paying and the terms (internal notes, never public). When creating an advertisement, pick the advertiser record and enter the name shown publicly.
+- **Placements:** homepage banner, top of directory pages, top of search results, culture and heritage pages, top of district pages. An ad shows only while published and inside its dates, always labelled **Sponsored**. Paid promotion never affects verification or editorial content.
+- **Ad performance** (Admin → Ad performance): views, clicks, click rate and the last 14 days per ad.
+- **Subscriptions** (Admin → Subscriptions): assign a plan to a business listing, optionally with an end date; every change is kept as history. A plan lapses when an administrator runs **End overdue plans** (automatic expiry needs a scheduler, which is not set up). Plans are arranged with the business; there is no online purchase.
+- **Notifications:** when a visitor sends an enquiry about a listing or experience, an email goes to the contact address on that listing if there is one (needs `RESEND_API_KEY` and `EMAIL_FROM`). The enquiry always appears in the partner portal. Partners see page views, enquiries and booking requests per listing for the last 30 days on their dashboard.
+
 ## Search, map, experiences and curated itineraries
 - **Search** (`/search`, and suggestions in the search box) covers every published section. A record appears only after it is published; alternative spellings you enter on attractions, communities and districts are searched too.
 - **Map** (`/map`): categories now include education, sports and transport; there is a list view. Only places with coordinates appear. On any edit form with latitude and longitude, **click the map or drag the pin** to fill them in, but only place a pin where you have confirmed the location on site or from an official source.

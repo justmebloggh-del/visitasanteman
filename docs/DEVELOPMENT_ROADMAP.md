@@ -18,6 +18,20 @@ Legend: ✅ built and checked · 🟡 built, needs live-environment testing · �
 | Culture module content tables, travel-guide and gallery detail pages, new experience categories | ⬜ | Phase 2 of the brief |
 | Scheduled status, per-district editor scoping, revision restore | ⬜ | Not built |
 
+## VisitAsanteman Phase 7: bookings and commercial system (this branch)
+| Item | Status | Notes |
+|---|---|---|
+| Booking requests, reservation management, cancellations, refunds recorded | ✅ | Built in earlier phases; unchanged |
+| Online payments (Paystack, server-verified, signed webhook) | 🟡 | Tested only against a mock gateway. **Not tested with live keys.** Hubtel not built |
+| Enquiry notifications to the business | ✅ | Emailed to the listing's public contact address (mock-tested; real Resend untested) |
+| Advertisers, more placements, labelled "Sponsored", daily statistics, performance report | ✅ | Also fixed: ad counters were editable by administrators through the API |
+| Subscription history, end dates, manual expiry | ✅ | Automatic expiry and online plan purchase not built; a paid plan never verifies |
+| Partner analytics: views, enquiries, booking requests per listing | ✅ | Counts of requests, not confirmed sales |
+| Commission reporting, payouts to businesses | ⬜ | Commission is recorded per booking; payouts are arranged outside the site |
+| Event tickets, availability calendar for tours, restaurant reservation capacity | ⬜ | Not built |
+| Sponsored articles, newsletter sponsorships, corporate campaigns | ⬜ | Manage manually; labelling rules in place for ads only |
+| Partner support desk | ⬜ | Not built |
+
 ## VisitAsanteman Phase 6: experiences, map, search, travel planning (this branch)
 | Item | Status | Notes |
 |---|---|---|

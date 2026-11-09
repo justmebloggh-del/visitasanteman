@@ -273,6 +273,42 @@ select pg_temp.t('Q13 a visitor can copy it into their own plans', :visitor, 'au
 select pg_temp.visible('Q14 the copy holds only still-published places', :visitor, 'authenticated', 'select 1 from itinerary_items i join travel_itineraries t on t.id = i.itinerary_id where t.user_id = ''00000000-0000-0000-0000-00000000a007'' and t.title = ''Editor itinerary''', 1);
 select pg_temp.visible('Q15 the visitor cannot see the original plan', :visitor, 'authenticated', 'select 1 from travel_itineraries where id = ''00000000-0000-0000-0000-0000000000fa''', 0);
 
+-- ── Advertising and subscriptions (Phase 7) ──
+insert into advertisers (id, name, notes) values ('00000000-0000-0000-0000-0000000000fb', 'Test advertiser', 'internal note');
+select pg_temp.t('A02 anon cannot even query advertisers', null, 'anon', 'select 1 from advertisers limit 1', false);
+select pg_temp.visible('A03 an editor cannot see advertisers', :editor, 'authenticated', 'select 1 from advertisers', 0);
+select pg_temp.visible('A04 an administrator can', :admin, 'authenticated', 'select 1 from advertisers', 1);
+select pg_temp.t('A05 an editor cannot create an advertiser', :editor, 'authenticated', 'insert into advertisers (name) values (''x'')', false);
+
+insert into advertisements (id, title, advertiser_name, placement, link_url, starts_at, ends_at, status, advertiser_id) values
+  ('00000000-0000-0000-0000-0000000000fc', 'Live ad', 'Test advertiser', 'search_top', 'https://example.org', now() - interval '1 day', now() + interval '1 day', 'published', '00000000-0000-0000-0000-0000000000fb'),
+  ('00000000-0000-0000-0000-0000000000fd', 'Draft ad', 'Test advertiser', 'search_top', 'https://example.org', now() - interval '1 day', now() + interval '1 day', 'draft', null),
+  ('00000000-0000-0000-0000-0000000000fe', 'Expired ad', 'Test advertiser', 'culture_top', 'https://example.org', now() - interval '3 day', now() - interval '1 day', 'published', null);
+select pg_temp.t('A06 anon records an impression on a live ad', null, 'anon', 'select record_ad_event(''00000000-0000-0000-0000-0000000000fc'', ''impression'')', true);
+select pg_temp.t('A07 anon records a click on a live ad', null, 'anon', 'select record_ad_event(''00000000-0000-0000-0000-0000000000fc'', ''click'')', true);
+select pg_temp.t('A08 events on a draft ad are ignored', null, 'anon', 'select record_ad_event(''00000000-0000-0000-0000-0000000000fd'', ''impression'')', true);
+select pg_temp.t('A09 events on an expired ad are ignored', null, 'anon', 'select record_ad_event(''00000000-0000-0000-0000-0000000000fe'', ''click'')', true);
+select pg_temp.t('A10 an unknown event type is refused', null, 'anon', 'select record_ad_event(''00000000-0000-0000-0000-0000000000fc'', ''purchase'')', false);
+select pg_temp.visible('A11 only the live ad counted (1 impression, 1 click) and only it has daily statistics', :admin, 'authenticated', 'select 1 from ad_stats_daily where ad_id = ''00000000-0000-0000-0000-0000000000fc'' and impressions = 1 and clicks = 1 and (select count(*) from ad_stats_daily) = 1', 1);
+select pg_temp.t('A12 the browser cannot edit the counters', :admin, 'authenticated', 'update advertisements set impressions = 999999 where id = ''00000000-0000-0000-0000-0000000000fc''', false);
+select pg_temp.t('A13 anon cannot read daily statistics', null, 'anon', 'select 1 from ad_stats_daily', false);
+select pg_temp.visible('A14 an editor cannot read daily statistics', :editor, 'authenticated', 'select 1 from ad_stats_daily', 0);
+select pg_temp.visible('A15 anon sees only the live ad', null, 'anon', 'select 1 from advertisements where id in (''00000000-0000-0000-0000-0000000000fc'', ''00000000-0000-0000-0000-0000000000fd'', ''00000000-0000-0000-0000-0000000000fe'')', 1);
+
+select pg_temp.t('P01 an administrator assigns a plan', :admin, 'authenticated', 'update listings set plan_id = (select id from subscription_plans where slug = ''standard'') where id = ''00000000-0000-0000-0000-0000000000f7''', true);
+select pg_temp.visible('P02 the subscription was recorded as active', :admin, 'authenticated', 'select 1 from business_subscriptions where listing_id = ''00000000-0000-0000-0000-0000000000f7'' and status = ''active''', 1);
+select pg_temp.t('P03 changing the plan ends the old subscription and starts a new one', :admin, 'authenticated', 'update listings set plan_id = (select id from subscription_plans where slug = ''premium'') where id = ''00000000-0000-0000-0000-0000000000f7''', true);
+select pg_temp.visible('P04 history shows the earlier plans ended and one active', :admin, 'authenticated', 'select 1 from business_subscriptions where listing_id = ''00000000-0000-0000-0000-0000000000f7'' having count(*) filter (where status = ''ended'') = 2 and count(*) filter (where status = ''active'') = 1', 1);
+select pg_temp.visible('P05 the owner can read their own subscription history', :partner, 'authenticated', 'select 1 from business_subscriptions where listing_id = ''00000000-0000-0000-0000-0000000000f7''', 3);
+select pg_temp.visible('P06 a visitor cannot read it', :visitor, 'authenticated', 'select 1 from business_subscriptions', 0);
+select pg_temp.t('P07 an editor cannot set an end date', :editor, 'authenticated', 'select set_subscription_end(''00000000-0000-0000-0000-0000000000f7'', now())', false);
+select pg_temp.t('P08 the owner cannot extend their own plan', :partner, 'authenticated', 'select set_subscription_end(''00000000-0000-0000-0000-0000000000f7'', now() + interval ''1 year'')', false);
+select pg_temp.t('P09 an administrator sets an end date in the past', :admin, 'authenticated', 'select set_subscription_end(''00000000-0000-0000-0000-0000000000f7'', now() - interval ''1 day'')', true);
+select pg_temp.t('P10 an editor cannot end plans', :editor, 'authenticated', 'select end_overdue_subscriptions()', false);
+select pg_temp.t('P11 an administrator ends overdue plans', :admin, 'authenticated', 'select end_overdue_subscriptions()', true);
+select pg_temp.visible('P12 the listing lost its plan and the subscription ended', :admin, 'authenticated', 'select 1 from listings l where l.id = ''00000000-0000-0000-0000-0000000000f7'' and l.plan_id is null and not exists (select 1 from business_subscriptions where listing_id = l.id and status = ''active'')', 1);
+select pg_temp.visible('P13 plans never touch verification', :admin, 'authenticated', 'select 1 from listings where id = ''00000000-0000-0000-0000-0000000000f7'' and verification_decision = ''suspended'' and not is_verified', 1);
+
 -- ── Roles, plans: never writable by editors ──
 select pg_temp.rows('R01 regional editor cannot change roles', :regional, 'authenticated', format('update user_roles set role = ''admin'' where user_id = %L', :visitor), 0);
 select pg_temp.rows('R02 content editor cannot change roles', :editor, 'authenticated', format('update user_roles set role = ''admin'' where user_id = %L', :visitor), 0);
