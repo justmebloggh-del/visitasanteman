@@ -143,3 +143,13 @@ Only attractions have the verification gate so far. Other record types (hospital
 - **Verified and located.** Publishing also needs a verified record and an active district (same triggers as attractions).
 - **Dates are never assumed.** `date_confirmed` needs a start time (check constraint). Unconfirmed dates are not shown, not listed on the calendar, not exported to `.ics` and not put in structured data.
 RLS matches other content (public sees published; staff manage; delete is admin only).
+
+## VisitAsanteman Phase 4 additions (migrations `20261116000001`, `20261116000002`)
+| Item | Purpose |
+|---|---|
+| New `listing_type` values | Boutique hotel, homestay, conference centre, event venue, wedding venue, café, bakery, traditional food vendor, caterer, market, shopping centre, craft producer, jeweller, manufacturer, agribusiness, food producer, professional services. Which public section a type belongs to is decided in one place: `listingSection()` in `config/site.ts` |
+| `price_range`, `capacity`, `accessibility`, `booking_method` on listings | Search filters and facts, as stated by the business |
+| `verification_decision` (pending, verified, rejected, suspended), `verification_requested_at`, `verification_reason` | Business verification workflow. Owners can only **ask** (`request_verification(listing)`, owner-only, one update); administrators decide. The badge `is_verified` and the decision are kept in sync by trigger. A paid plan never changes either |
+| Source fields on listings | `source_organisation`, `source_url`, `source_published_at`, `researched_at`, `research_notes` for team-researched records |
+| Function updates | `create_booking`, `itinerary_view` and `nearby_places` now know the new types (table requests: restaurants and cafés; stays: incl. boutique hotels and homestays; links to `/venues` and `/markets`) |
+| Research drafts | Five market records (Kumasi Central Market/Kejetia, Mampong, Tepa, Ejura-Sekyedumase, Fumso) from the owner's summary of the ARCC profile: **unpublished drafts**, unchecked, with no address, hours, coordinates or contacts. Two are linked to districts by name only |

@@ -93,6 +93,21 @@ export async function deleteResource(resourceKey: string, id: string) {
   redirect(`/admin/${def.key}?${error ? "error=1" : "deleted=1"}`);
 }
 
+/* ───────────── Business verification ───────────── */
+export async function decideVerification(listingId: string, decision: string, fd: FormData) {
+  await requireAdmin();
+  if (!["verified", "rejected", "suspended", "pending"].includes(decision)) redirect("/admin/verification?error=1");
+  const reason = String(fd.get("reason") ?? "").trim().slice(0, 1000);
+  if ((decision === "rejected" || decision === "suspended") && !reason) redirect("/admin/verification?error=reason");
+  const patch: Record<string, unknown> = { verification_decision: decision, verification_reason: decision === "verified" || decision === "pending" ? null : reason };
+  if (decision === "suspended") patch.status = "archived";          // a suspended business disappears from the public site
+  const supabase = await createClient();
+  const { error } = await supabase.from("listings").update(patch).eq("id", listingId);
+  if (error) console.error("[admin verification]", error.message);
+  flush();
+  redirect(`/admin/verification?${error ? "error=1" : "saved=1"}`);
+}
+
 /* ───────────── Rooms & menu items ───────────── */
 export async function addChild(kind: "rooms" | "menu", listingId: string, redirectTo: string, fd: FormData) {
   await requireStaff();

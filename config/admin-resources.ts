@@ -1,4 +1,4 @@
-import { ceremonyKindLabels, attendanceLabels, stageLabels, accommodationTypes, businessTypes, experienceCategoryLabels, eventStatusLabels, listingTypeLabels, restaurantTypes, type ListingType } from "@/config/site";
+import { marketTypes, venueTypes, priceRangeLabels, ceremonyKindLabels, attendanceLabels, stageLabels, accommodationTypes, businessTypes, experienceCategoryLabels, eventStatusLabels, listingTypeLabels, restaurantTypes, type ListingType } from "@/config/site";
 
 export type FieldType =
   | "text" | "textarea" | "markdown" | "number" | "select" | "checkbox" | "datetime" | "tags" | "url" | "email"
@@ -110,8 +110,19 @@ export const listingFields = (types: ListingType[], food: boolean, stay: boolean
   { name: "price_note", label: "Price note", type: "text", group: "details" },
   { name: "amenities", label: "Facilities", type: "tags", group: "details", hint: "Comma separated, e.g. Wi-Fi, Parking." },
   ...(food ? [{ name: "cuisines", label: "Cuisines / food types", type: "tags", group: "details", hint: "Comma separated." } as FieldDef] : []),
+  { name: "price_range", label: "Price range", type: "select", group: "details", options: Object.entries(priceRangeLabels).map(([value, label]) => ({ value, label })), hint: "Only if the business has told you how to describe its prices." },
+  { name: "capacity", label: "Capacity (guests, seats or visitors)", type: "number", group: "details", hint: "As stated by the business." },
+  { name: "booking_method", label: "How to book or enquire", type: "text", group: "details" },
+  { name: "accessibility", label: "Accessibility", type: "textarea", group: "details" },
+  { name: "source_organisation", label: "Source organisation (researched records)", type: "text", group: "details", hint: "For records researched by the team rather than submitted by the business." },
+  { name: "source_url", label: "Source link", type: "url", group: "details" },
+  { name: "source_published_at", label: "Source publication date", type: "date", group: "details" },
+  { name: "researched_at", label: "Date researched", type: "date", group: "details" },
+  { name: "research_notes", label: "Research notes (internal)", type: "textarea", group: "details" },
   { name: "is_featured", label: "Featured on homepage", type: "checkbox", adminOnly: true, group: "main" },
-  { name: "is_verified", label: "Verified badge", type: "checkbox", adminOnly: true, group: "main", hint: "Tick only after the business has been checked." },
+  { name: "is_verified", label: "Verified badge", type: "checkbox", adminOnly: true, group: "main", hint: "Tick only after the business has been checked. Paying for a plan never verifies a business." },
+  { name: "verification_decision", label: "Verification decision", type: "select", required: true, adminOnly: true, group: "main", options: [{ value: "pending", label: "Pending" }, { value: "verified", label: "Verified" }, { value: "rejected", label: "Rejected" }, { value: "suspended", label: "Suspended" }] },
+  { name: "verification_reason", label: "Reason shown to the owner (rejected or suspended)", type: "textarea", adminOnly: true, group: "main" },
   { name: "plan_id", label: "Subscription plan", type: "relation", relation: { table: "subscription_plans", label: "name" }, adminOnly: true, group: "main", hint: "Set by administrators. Paid plans are arranged with the owner; there is no online payment yet." },
 ];
 
@@ -176,7 +187,7 @@ export const resources: ResourceDef[] = [
     publicPath: (r) => `/accommodation/${r.slug}`, fields: listingFields(accommodationTypes, false, true),
   },
   {
-    area: true, revisions: true, key: "restaurants", table: "listings", label: "Restaurants", singular: "restaurant", titleField: "name", hasSlug: true,
+    area: true, revisions: true, key: "restaurants", table: "listings", label: "Food and dining", singular: "restaurant", titleField: "name", hasSlug: true,
     typeFilter: { column: "type", values: restaurantTypes }, hasStatus: true, hasCover: true, galleryEntity: "listing", children: "menu",
     seo: true, softDelete: true, orderBy: { column: "updated_at", ascending: false },
     listColumns: [{ name: "name", label: "Name" }, { name: "status", label: "Status" }, { name: "updated_at", label: "Updated" }],
@@ -427,6 +438,23 @@ resources.push(
   },
 );
 
+resources.push(
+  {
+    key: "venues", table: "listings", label: "Event venues", singular: "venue", titleField: "name", hasSlug: true,
+    typeFilter: { column: "type", values: venueTypes }, hasStatus: true, hasCover: true, galleryEntity: "listing", area: true, revisions: true,
+    seo: true, softDelete: true, orderBy: { column: "updated_at", ascending: false },
+    listColumns: [{ name: "name", label: "Name" }, { name: "type", label: "Type" }, { name: "status", label: "Status" }, { name: "updated_at", label: "Updated" }],
+    publicPath: (r) => `/venues/${r.slug}`, fields: listingFields(venueTypes, false, false),
+  },
+  {
+    key: "markets", table: "listings", label: "Markets and shopping", singular: "market", titleField: "name", hasSlug: true,
+    typeFilter: { column: "type", values: marketTypes }, hasStatus: true, hasCover: true, galleryEntity: "listing", area: true, revisions: true,
+    seo: true, softDelete: true, orderBy: { column: "updated_at", ascending: false },
+    listColumns: [{ name: "name", label: "Name" }, { name: "type", label: "Type" }, { name: "status", label: "Status" }, { name: "updated_at", label: "Updated" }],
+    publicPath: (r) => `/markets/${r.slug}`, fields: listingFields(marketTypes, false, false),
+  },
+);
+
 resources.push({
   key: "ceremonies", table: "ceremonies", label: "Ceremonies and festivals", singular: "ceremony", titleField: "name", hasSlug: true,
   area: true, revisions: true, hasStatus: true, hasCover: true, seo: true, softDelete: true, orderBy: { column: "updated_at", ascending: false },
@@ -471,10 +499,13 @@ export const adminNav = [
   { href: "/admin/destinations", label: "Destinations" },
   { href: "/admin/ceremonies", label: "Ceremonies & festivals" },
   { href: "/admin/accommodation", label: "Accommodation" },
-  { href: "/admin/restaurants", label: "Restaurants" },
+  { href: "/admin/restaurants", label: "Food & dining" },
+  { href: "/admin/venues", label: "Event venues" },
+  { href: "/admin/markets", label: "Markets" },
   { href: "/admin/experiences", label: "Experiences" },
   { href: "/admin/events", label: "Events" },
   { href: "/admin/businesses", label: "Businesses" },
+  { href: "/admin/verification", label: "Business verification" },
   { href: "/admin/subscription-plans", label: "Subscription plans" },
   { href: "/admin/articles", label: "Articles" },
   { href: "/admin/investments", label: "Investments" },

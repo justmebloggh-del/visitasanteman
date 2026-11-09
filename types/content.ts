@@ -52,6 +52,8 @@ export interface Listing extends Seo, Cover {
   price_currency: string; price_note: string | null; amenities: string[]; cuisines: string[];
   is_featured: boolean; is_verified: boolean; community_id: string | null;
   community: { name: string; slug: string } | null;
+  price_range: string | null; capacity: number | null; accessibility: string | null; booking_method: string | null;
+  source_organisation: string | null; source_url: string | null; source_published_at: string | null; researched_at: string | null;
 }
 
 export interface RoomType {

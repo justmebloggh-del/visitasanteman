@@ -20,7 +20,9 @@ const explore = [
 ];
 const plan = [
   { href: "/accommodation", label: "Accommodation" },
-  { href: "/restaurants", label: "Restaurants" },
+  { href: "/restaurants", label: "Food and dining" },
+  { href: "/venues", label: "Event venues" },
+  { href: "/markets", label: "Markets and shopping" },
   { href: "/business-directory", label: "Business directory" },
   { href: "/travel-guide", label: "Travel guide" },
   { href: "/travel-planner", label: "Travel planner" },

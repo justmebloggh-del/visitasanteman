@@ -1,4 +1,4 @@
-import { PAGE_SIZE, type ListingType } from "@/config/site";
+import { listingSection, PAGE_SIZE, type ListingType } from "@/config/site";
 import { supabaseConfigured } from "@/lib/env";
 import { createPublicClient } from "@/lib/supabase/server";
 import type {
@@ -130,7 +130,7 @@ const LISTING = `*, ${COVER}, community:communities(name,slug)`;
 
 export async function listListings(
   types: ListingType[],
-  o: { q?: string; type?: string; community?: string; area?: string; maxPrice?: number; page?: number; limit?: number; featured?: boolean },
+  o: { q?: string; type?: string; community?: string; area?: string; priceRange?: string; minCapacity?: number; facility?: string; maxPrice?: number; page?: number; limit?: number; featured?: boolean },
 ) {
   const page = o.page ?? 1;
   const [from, to] = o.limit ? [0, o.limit - 1] : range(page);
@@ -147,6 +147,9 @@ export async function listListings(
       q = q.eq("community_id", c?.id ?? "00000000-0000-0000-0000-000000000000");
     }
     if (o.area) q = q.eq("administrative_area_id", await areaId(o.area));
+    if (o.priceRange && ["budget", "mid_range", "upscale"].includes(o.priceRange)) q = q.eq("price_range", o.priceRange);
+    if (o.minCapacity && o.minCapacity > 0) q = q.gte("capacity", o.minCapacity);
+    if (o.facility) q = q.contains("amenities", [o.facility]);
     const { data, count, error } = await q.range(from, to);
     if (error) throw error;
     return paged((data ?? []) as unknown as Listing[], count ?? 0, page);
@@ -154,6 +157,14 @@ export async function listListings(
     console.error("[content:listings]", e);
     return paged<Listing>([], 0, page);
   }
+}
+
+/** Facilities that published listings of these types actually list, for the filter. */
+export async function getFacilityOptions(types: ListingType[]): Promise<string[]> {
+  const rows = await run<{ amenities: string[] }[]>("facilities", () => sb().from("listings").select("amenities").in("type", types).limit(500) as never, []);
+  const counts = new Map<string, number>();
+  for (const r of rows) for (const a of r.amenities ?? []) counts.set(a, (counts.get(a) ?? 0) + 1);
+  return [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 30).map(([a]) => a);
 }
 
 export async function getListing(slug: string) {
@@ -366,13 +377,12 @@ export async function getMapPoints(): Promise<MapPoint[]> {
     run<Experience[]>("map-exp", () => sb().from("experiences").select("id,slug,title,latitude,longitude").not("latitude", "is", null) as never, []),
     run<EventItem[]>("map-ev", () => sb().from("events").select("id,slug,title,latitude,longitude").not("latitude", "is", null).gte("starts_at", new Date().toISOString()) as never, []),
   ]);
-  const accommodation = new Set(["hotel", "resort", "guesthouse", "lodge", "eco_lodge", "holiday_home", "apartment"]);
   return [
     ...pt(attr).map((r): MapPoint => ({ id: r.id, kind: "attraction", title: r.name, href: `/attractions/${r.slug}`, lat: r.latitude!, lng: r.longitude! })),
     ...pt(comm).map((r): MapPoint => ({ id: r.id, kind: "community", title: r.name, href: `/communities/${r.slug}`, lat: r.latitude!, lng: r.longitude! })),
     ...pt(lst).map((r): MapPoint => {
-      const kind = accommodation.has(r.type) ? "accommodation" : r.type === "restaurant" ? "restaurant" : "business";
-      const base = kind === "accommodation" ? "accommodation" : kind === "restaurant" ? "restaurants" : "business";
+      const base = listingSection(r.type);
+      const kind = base === "accommodation" ? "accommodation" : base === "restaurants" ? "restaurant" : "business";
       return { id: r.id, kind, title: r.name, href: `/${base}/${r.slug}`, lat: r.latitude!, lng: r.longitude! };
     }),
     ...pt(exp).map((r): MapPoint => ({ id: r.id, kind: "experience", title: r.title, href: `/experiences/${r.slug}`, lat: r.latitude!, lng: r.longitude! })),

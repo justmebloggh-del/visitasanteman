@@ -140,6 +140,16 @@ export async function archivePartnerListing(id: string) {
   redirect("/partner/listings?saved=1");
 }
 
+/** Ask the team to verify a listing. The database function enforces ownership; verification itself is an administrator decision. */
+export async function requestVerification(id: string) {
+  await requirePartner();
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("request_verification", { p_listing: id });
+  if (error) console.error("[partner verification]", error.message);
+  revalidatePath("/partner", "layout");
+  redirect(`/partner/listings/${id}?verification=${error ? "error" : "requested"}`);
+}
+
 /* ───────────── Enquiries, settings, plans ───────────── */
 export async function setPartnerEnquiryStatus(id: string, status: string) {
   await requirePartner();

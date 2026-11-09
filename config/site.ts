@@ -30,7 +30,10 @@ export type ListingType =
   | "hotel" | "resort" | "guesthouse" | "lodge" | "eco_lodge" | "holiday_home" | "apartment"
   | "restaurant"
   | "tour_operator" | "tour_guide" | "boat_operator" | "transport" | "event_organiser"
-  | "photography" | "artisan" | "souvenir_shop" | "travel_agency" | "supplier";
+  | "photography" | "artisan" | "souvenir_shop" | "travel_agency" | "supplier"
+  | "boutique_hotel" | "homestay" | "conference_centre" | "event_venue" | "wedding_venue"
+  | "cafe" | "bakery" | "food_vendor" | "caterer"
+  | "market" | "shopping_centre" | "craft_producer" | "jeweller" | "manufacturer" | "agribusiness" | "food_producer" | "professional_services";
 
 export const listingTypeLabels: Record<ListingType, string> = {
   hotel: "Hotel", resort: "Resort", guesthouse: "Guesthouse", lodge: "Lodge", eco_lodge: "Eco-lodge",
@@ -38,16 +41,35 @@ export const listingTypeLabels: Record<ListingType, string> = {
   tour_operator: "Tour operator", tour_guide: "Tour guide", boat_operator: "Boat operator",
   transport: "Transport provider", event_organiser: "Event organiser", photography: "Photography service",
   artisan: "Artisan", souvenir_shop: "Souvenir shop", travel_agency: "Travel agency", supplier: "Local supplier",
+  boutique_hotel: "Boutique hotel", homestay: "Homestay", conference_centre: "Conference centre", event_venue: "Event venue",
+  wedding_venue: "Wedding and reception venue", cafe: "Café", bakery: "Bakery", food_vendor: "Traditional food vendor", caterer: "Catering provider",
+  market: "Market", shopping_centre: "Shopping centre", craft_producer: "Craft producer", jeweller: "Jewellery and goldsmith",
+  manufacturer: "Local manufacturer", agribusiness: "Agribusiness and farm", food_producer: "Food producer", professional_services: "Professional services",
 };
 
+export const priceRangeLabels: Record<string, string> = { budget: "Budget", mid_range: "Mid-range", upscale: "Upscale" };
+
 export const accommodationTypes: ListingType[] = [
-  "hotel", "resort", "guesthouse", "lodge", "eco_lodge", "holiday_home", "apartment",
+  "hotel", "resort", "guesthouse", "lodge", "eco_lodge", "boutique_hotel", "homestay", "holiday_home", "apartment",
 ];
-export const restaurantTypes: ListingType[] = ["restaurant"];
+export const restaurantTypes: ListingType[] = ["restaurant", "cafe", "bakery", "food_vendor", "caterer"];
+export const venueTypes: ListingType[] = ["conference_centre", "event_venue", "wedding_venue"];
+export const marketTypes: ListingType[] = ["market", "shopping_centre"];
 export const businessTypes: ListingType[] = [
   "tour_operator", "tour_guide", "boat_operator", "transport", "event_organiser",
   "photography", "artisan", "souvenir_shop", "travel_agency", "supplier",
+  "craft_producer", "jeweller", "manufacturer", "agribusiness", "food_producer", "professional_services",
 ];
+
+export type ListingSection = "accommodation" | "restaurants" | "venues" | "markets" | "business";
+/** Which public section (and URL base) a listing type belongs to. One place, used by pages, map and sitemap. */
+export function listingSection(type: string): ListingSection {
+  if (accommodationTypes.includes(type as ListingType)) return "accommodation";
+  if (restaurantTypes.includes(type as ListingType)) return "restaurants";
+  if (venueTypes.includes(type as ListingType)) return "venues";
+  if (marketTypes.includes(type as ListingType)) return "markets";
+  return "business";
+}
 
 export const experienceCategoryLabels: Record<string, string> = {
   boat_cruise: "Boat cruises", guided_tour: "Guided tours", fishing: "Fishing", hiking: "Hiking",
@@ -83,8 +105,8 @@ export const accountTypeLabels: Record<BusinessAccountType, string> = {
 
 /** Listing types a partner of each account type may create. */
 export const accountListingTypes: Record<BusinessAccountType, ListingType[]> = {
-  accommodation: accommodationTypes, restaurant: restaurantTypes, tour_operator: ["tour_operator", "travel_agency", "transport"],
-  boat_operator: ["boat_operator"], tour_guide: ["tour_guide"], general: businessTypes,
+  accommodation: [...accommodationTypes, ...venueTypes], restaurant: restaurantTypes, tour_operator: ["tour_operator", "travel_agency", "transport"],
+  boat_operator: ["boat_operator"], tour_guide: ["tour_guide"], general: [...businessTypes, ...marketTypes],
 };
 
 export type ProjectStage = "operational" | "approved" | "proposed" | "under_consideration";

@@ -1,10 +1,10 @@
 import { notFound, redirect } from "next/navigation";
-import { blockDates, partnerAddChild, partnerDeleteChild, savePartnerListing, unblockDate } from "@/app/partner/actions";
+import { blockDates, partnerAddChild, partnerDeleteChild, requestVerification, savePartnerListing, unblockDate } from "@/app/partner/actions";
 import { AdminHeader, StatusBadge } from "@/components/admin/ui";
 import { ResourceForm } from "@/components/admin/ResourceForm";
 import { loadMedia, loadRelations, toClientDef } from "@/components/admin/loadForm";
 import { Button, Field, Input, Notice } from "@/components/ui";
-import { accommodationTypes } from "@/config/site";
+import { accommodationTypes, restaurantTypes } from "@/config/site";
 import { requirePartner } from "@/lib/auth/session";
 import { partnerListingDef } from "@/lib/partner/def";
 import { createClient } from "@/lib/supabase/server";
@@ -23,11 +23,11 @@ export default async function EditPartnerListing({ params, searchParams }: { par
     loadRelations(def), loadMedia(row.cover_media_id, "listing", id),
     row.plan_id ? supabase.from("subscription_plans").select("name,max_photos,analytics").eq("id", row.plan_id).maybeSingle() : supabase.from("subscription_plans").select("name,max_photos,analytics").eq("slug", "free").maybeSingle(),
     accommodationTypes.includes(row.type) ? supabase.from("room_types").select("*").eq("listing_id", id).order("sort_order") : Promise.resolve({ data: [] }),
-    row.type === "restaurant" ? supabase.from("menu_items").select("*").eq("listing_id", id).order("section") : Promise.resolve({ data: [] }),
+    restaurantTypes.includes(row.type) ? supabase.from("menu_items").select("*").eq("listing_id", id).order("section") : Promise.resolve({ data: [] }),
     supabase.from("listing_views").select("day,views").eq("listing_id", id).order("day", { ascending: false }).limit(30),
   ]);
   const plan = planRes.data, rooms = roomsRes.data ?? [], menu = menuRes.data ?? [], views = viewsRes.data ?? [];
-  const isStay = accommodationTypes.includes(row.type), isFood = row.type === "restaurant";
+  const isStay = accommodationTypes.includes(row.type), isFood = restaurantTypes.includes(row.type);
   const today = new Date().toISOString().slice(0, 10);
   const blocked = isStay && rooms.length ? ((await supabase.from("room_blocked_dates").select("room_type_id,day").in("room_type_id", rooms.map((r: { id: string }) => r.id)).gte("day", today).order("day").limit(60)).data ?? []) : [];
   const kind = isStay ? "rooms" : "menu";
@@ -38,6 +38,19 @@ export default async function EditPartnerListing({ params, searchParams }: { par
       {sp.child === "invalid" && <div className="mb-4"><Notice tone="error">Enter a name and a valid price.</Notice></div>}
       {row.status === "published" && <div className="mb-4"><Notice tone="info">This listing is live. If you save changes it will go back to <strong>pending review</strong> and be hidden until our team approves the update.</Notice></div>}
       {row.status === "pending_review" && <div className="mb-4"><Notice tone="info">Awaiting review by our team.</Notice></div>}
+      <section aria-label="Verification" className="mb-6 rounded-2xl border border-line bg-white p-5 text-sm">
+        <h2 className="font-serif text-lg font-semibold text-forest">Verification</h2>
+        {sp.verification === "requested" && <div className="mt-2"><Notice tone="success">Verification requested. Our team will check your details.</Notice></div>}
+        {sp.verification === "error" && <div className="mt-2"><Notice tone="error">That did not work. Please try again.</Notice></div>}
+        {row.verification_decision === "verified" && <p className="mt-2">Your business is <strong>verified</strong>. The badge appears on your public listing.</p>}
+        {row.verification_decision === "suspended" && <p className="mt-2 text-red-700">This listing is <strong>suspended</strong>.{row.verification_reason && <> Reason: {row.verification_reason}</>} Please contact the team.</p>}
+        {row.verification_decision === "rejected" && <p className="mt-2">Verification was <strong>not approved</strong>.{row.verification_reason && <> Reason: {row.verification_reason}</>} Fix the details, then ask again.</p>}
+        {row.verification_decision === "pending" && row.verification_requested_at && <p className="mt-2">Verification requested on {new Date(row.verification_requested_at).toLocaleDateString("en-GB")}. Waiting for our team.</p>}
+        {(row.verification_decision === "rejected" || (row.verification_decision === "pending" && !row.verification_requested_at)) && (
+          <form action={requestVerification.bind(null, id)} className="mt-3"><Button size="sm" variant="outline">Request verification</Button></form>
+        )}
+        <p className="mt-3 text-xs text-muted">Verification is a check by our team that your business and details are genuine. A paid plan never verifies a business.</p>
+      </section>
       <ResourceForm def={toClientDef(def)} id={id} initial={row} relations={relations} isAdmin={false} cover={media.cover} gallery={media.gallery}
         customAction={savePartnerListing.bind(null, id)} uploadFolder={`partners/${user.id}`} cancelHref="/partner/listings" partner maxGallery={plan?.max_photos ?? 3} />
 

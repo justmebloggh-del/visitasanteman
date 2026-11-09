@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { BadgeCheck, Globe, Mail, MessageCircle, Navigation, Phone } from "lucide-react";
+import { SourceNote } from "@/components/listings/AccessNotice";
 import { ViewPing } from "@/components/listings/ViewPing";
 import { AdSlot } from "@/components/ads/AdSlot";
 import { BookingForm } from "@/components/bookings/BookingForm";
@@ -10,9 +11,9 @@ import { FilterBar } from "@/components/layout/FilterBar";
 import { breadcrumbLd, JsonLd } from "@/components/layout/seo";
 import { Map } from "@/components/maps/Map";
 import { Badge, ButtonLink, Container } from "@/components/ui";
-import { listingTypeLabels, type ListingType } from "@/config/site";
+import { listingTypeLabels, priceRangeLabels, restaurantTypes, type ListingType } from "@/config/site";
 import { SITE_URL } from "@/lib/env";
-import { getGallery, getListing, getMenuItems, getReviews, getRoomTypes, listAreas, listCommunities, listListings, toPage } from "@/lib/content/public";
+import { getGallery, getListing, getMenuItems, getReviews, getFacilityOptions, getRoomTypes, listAreas, listCommunities, listListings, toPage } from "@/lib/content/public";
 import { directionsLink, formatPrice, mediaUrl, safeUrl, whatsappLink } from "@/lib/utils";
 import type { Listing } from "@/types/content";
 
@@ -28,20 +29,23 @@ export interface Group {
 }
 
 export async function ListingIndex({ group, searchParams }: {
-  group: Group; searchParams: { q?: string; type?: string; community?: string; area?: string; max?: string; page?: string };
+  group: Group; searchParams: { q?: string; type?: string; community?: string; area?: string; max?: string; price?: string; guests?: string; facility?: string; page?: string };
 }) {
   const page = toPage(searchParams.page);
   const maxPrice = Number(searchParams.max) > 0 ? Number(searchParams.max) : undefined;
-  const [result, communities, areas] = await Promise.all([
-    listListings(group.types, { q: searchParams.q, type: searchParams.type, community: searchParams.community, area: searchParams.area, maxPrice, page }),
-    listCommunities(), listAreas(),
+  const minCapacity = Number(searchParams.guests) > 0 ? Number(searchParams.guests) : undefined;
+  const [result, communities, areas, facilities] = await Promise.all([
+    listListings(group.types, { q: searchParams.q, type: searchParams.type, community: searchParams.community, area: searchParams.area, priceRange: searchParams.price, minCapacity, facility: searchParams.facility, maxPrice, page }),
+    listCommunities(), listAreas(), getFacilityOptions(group.types),
   ]);
   const filters = [
     ...(areas.length ? [{ name: "area", label: "District", options: areas.map((a) => ({ value: a.slug, label: a.name })) }] : []),
     ...(group.types.length > 1 ? [{ name: "type", label: "Type", options: group.types.map((t) => ({ value: t, label: listingTypeLabels[t] })) }] : []),
     { name: "community", label: "Community", options: communities.map((c) => ({ value: c.slug, label: c.name })) },
+    { name: "price", label: "Price range", options: Object.entries(priceRangeLabels).map(([value, label]) => ({ value, label })) },
+    ...(facilities.length ? [{ name: "facility", label: "Facility", options: facilities.map((f) => ({ value: f, label: f })) }] : []),
   ];
-  const filtered = !!(searchParams.q || searchParams.type || searchParams.community || searchParams.area || maxPrice);
+  const filtered = !!(searchParams.q || searchParams.type || searchParams.community || searchParams.area || searchParams.price || searchParams.facility || minCapacity || maxPrice);
 
   return (
     <>
@@ -50,13 +54,19 @@ export async function ListingIndex({ group, searchParams }: {
       <Container className="py-10">
         <FilterBar
           action={`/${group.base}`} q={searchParams.q} filters={filters}
-          values={{ area: searchParams.area, type: searchParams.type, community: searchParams.community, max: searchParams.max }}
-          extra={group.withPrice ? (
-            <div className="lg:w-40">
-              <label htmlFor="f-max" className="mb-1.5 block text-xs font-medium text-muted">Max price (GHS)</label>
-              <input id="f-max" name="max" type="number" min={1} defaultValue={searchParams.max} className="h-11 w-full rounded-lg border border-line px-3.5 text-sm" />
+          values={{ area: searchParams.area, type: searchParams.type, community: searchParams.community, max: searchParams.max, price: searchParams.price, facility: searchParams.facility, guests: searchParams.guests }}
+          extra={<>
+            {group.withPrice && (
+              <div className="lg:w-40">
+                <label htmlFor="f-max" className="mb-1.5 block text-xs font-medium text-muted">Max price (GHS)</label>
+                <input id="f-max" name="max" type="number" min={1} defaultValue={searchParams.max} className="h-11 w-full rounded-lg border border-line px-3.5 text-sm" />
+              </div>
+            )}
+            <div className="lg:w-32">
+              <label htmlFor="f-guests" className="mb-1.5 block text-xs font-medium text-muted">Capacity (at least)</label>
+              <input id="f-guests" name="guests" type="number" min={1} defaultValue={searchParams.guests} className="h-11 w-full rounded-lg border border-line px-3.5 text-sm" />
             </div>
-          ) : null}
+          </>}
         />
         <p className="mb-6 mt-6 text-sm text-muted" aria-live="polite">{result.total} {result.total === 1 ? "result" : "results"}</p>
         {result.items.length === 0 ? (
@@ -73,20 +83,21 @@ export async function ListingIndex({ group, searchParams }: {
           </CardGrid>
         )}
         <Pagination page={result.page} pageCount={result.pageCount} basePath={`/${group.base}`}
-          params={{ q: searchParams.q, type: searchParams.type, community: searchParams.community, area: searchParams.area, max: searchParams.max }} />
+          params={{ q: searchParams.q, type: searchParams.type, community: searchParams.community, area: searchParams.area, max: searchParams.max, price: searchParams.price, facility: searchParams.facility, guests: searchParams.guests }} />
       </Container>
     </>
   );
 }
 
 const ldType = (t: string) =>
-  ["hotel", "resort", "guesthouse", "lodge", "eco_lodge"].includes(t) ? "Hotel" : t === "restaurant" ? "Restaurant" : "LocalBusiness";
+  ["hotel", "resort", "guesthouse", "lodge", "eco_lodge", "boutique_hotel"].includes(t) ? "Hotel" : ["restaurant", "cafe", "bakery"].includes(t) ? "Restaurant" : "LocalBusiness";
 
 export async function ListingDetail({ group, slug }: { group: Group; slug: string }) {
   const listing = await getListing(slug);
   if (!listing || !group.types.includes(listing.type as ListingType)) notFound();
-  const isStay = listing.type !== "restaurant" && group.base === "accommodation";
-  const isFood = listing.type === "restaurant";
+  const isStay = group.base === "accommodation";
+  const isFood = restaurantTypes.includes(listing.type as ListingType);
+  const takesTables = listing.type === "restaurant" || listing.type === "cafe";
 
   const [gallery, rooms, menu, nearby, reviews] = await Promise.all([
     getGallery("listing", listing.id),
@@ -207,12 +218,13 @@ export async function ListingDetail({ group, slug }: { group: Group; slug: strin
               {dir && <a href={dir} target="_blank" rel="noopener noreferrer" className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-forest/30 px-5 text-sm font-medium text-forest hover:bg-forest-soft"><Navigation className="size-4" aria-hidden />Directions</a>}
             </div>
           </div>
-          <Facts items={[{ label: "Address", value: listing.address }, { label: "Opening hours", value: listing.opening_hours }]} />
+          <Facts items={[{ label: "Address", value: listing.address }, { label: "Opening hours", value: listing.opening_hours }, { label: "Price range", value: listing.price_range ? priceRangeLabels[listing.price_range] : null }, { label: "Capacity", value: listing.capacity ? String(listing.capacity) : null }, { label: "How to book", value: listing.booking_method }, { label: "Accessibility", value: listing.accessibility }]} />
+          <SourceNote organisation={listing.source_organisation} url={listing.source_url} publishedAt={listing.source_published_at} checkedAt={listing.researched_at} />
           <div className="rounded-2xl border border-line bg-white p-5" id="enquire">
-            {isStay || isFood ? (
+            {isStay || takesTables ? (
               <>
-                <h2 className="mb-3 text-xl font-semibold text-forest">{isFood ? "Request a table" : "Send a booking request"}</h2>
-                <BookingForm kind={isFood ? "table" : "accommodation"} listingId={listing.id}
+                <h2 className="mb-3 text-xl font-semibold text-forest">{takesTables ? "Request a table" : "Send a booking request"}</h2>
+                <BookingForm kind={takesTables ? "table" : "accommodation"} listingId={listing.id}
                   rooms={rooms.map((r) => ({ id: r.id, name: r.name, price: formatPrice(r.price_per_night, listing.price_currency), maxGuests: r.max_guests }))} />
                 <details className="mt-5 border-t border-line pt-4 text-sm"><summary className="cursor-pointer font-medium text-lake-dark">Just have a question?</summary>
                   <div className="mt-3"><EnquiryForm kind="general" lockKind listingId={listing.id} subject={listing.name} /></div></details>

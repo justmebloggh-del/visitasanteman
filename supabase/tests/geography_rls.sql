@@ -203,6 +203,28 @@ select pg_temp.visible('C10 editor sees drafts too', :editor, 'authenticated', '
 select pg_temp.t('C11 content editor cannot publish a ceremony', :editor, 'authenticated',
   'update ceremonies set status = ''published'' where slug = ''c-draft''', false);
 
+-- ── Business verification (Phase 4) ──
+insert into listings (id, slug, type, name, status, owner_id) values ('00000000-0000-0000-0000-0000000000f7', 'owned-cafe', 'cafe', 'Owned cafe', 'draft', '00000000-0000-0000-0000-00000000a006');
+select pg_temp.t('B01 anon cannot request verification', null, 'anon', 'select request_verification(''00000000-0000-0000-0000-0000000000f7'')', false);
+select pg_temp.t('B02 a visitor cannot request verification for someone else''s listing', :visitor, 'authenticated', 'select request_verification(''00000000-0000-0000-0000-0000000000f7'')', false);
+select pg_temp.t('B03 the owner can request verification', :partner, 'authenticated', 'select request_verification(''00000000-0000-0000-0000-0000000000f7'')', true);
+select pg_temp.visible('B04 the request is recorded and still pending', :partner, 'authenticated', 'select 1 from listings where id = ''00000000-0000-0000-0000-0000000000f7'' and verification_requested_at is not null and verification_decision = ''pending'' and not is_verified', 1);
+select pg_temp.t('B05 the owner cannot verify their own listing', :partner, 'authenticated', 'update listings set verification_decision = ''verified'' where id = ''00000000-0000-0000-0000-0000000000f7''', false);
+select pg_temp.t('B06 the owner cannot tick the verified badge', :partner, 'authenticated', 'update listings set is_verified = true where id = ''00000000-0000-0000-0000-0000000000f7''', false);
+select pg_temp.t('B07 the owner cannot fake a verification request time directly', :partner, 'authenticated', 'update listings set verification_requested_at = now() + interval ''1 day'' where id = ''00000000-0000-0000-0000-0000000000f7''', false);
+select pg_temp.t('B08 the owner cannot change the stated reason', :partner, 'authenticated', 'update listings set verification_reason = ''x'' where id = ''00000000-0000-0000-0000-0000000000f7''', false);
+select pg_temp.t('B09 a regional editor cannot decide verification', :regional, 'authenticated', 'update listings set verification_decision = ''verified'' where id = ''00000000-0000-0000-0000-0000000000f7''', false);
+select pg_temp.t('B09b an administrator assigns a paid plan', :admin, 'authenticated', 'update listings set plan_id = (select id from subscription_plans where slug = ''premium'') where id = ''00000000-0000-0000-0000-0000000000f7''', true);
+select pg_temp.visible('B10 a paid plan does not verify', :admin, 'authenticated', 'select 1 from listings where id = ''00000000-0000-0000-0000-0000000000f7'' and not is_verified and verification_decision = ''pending'' and plan_id is not null', 1);
+select pg_temp.t('B11 an administrator can verify', :admin, 'authenticated', 'update listings set verification_decision = ''verified'' where id = ''00000000-0000-0000-0000-0000000000f7''', true);
+select pg_temp.visible('B12 the badge follows the decision', :admin, 'authenticated', 'select 1 from listings where id = ''00000000-0000-0000-0000-0000000000f7'' and is_verified and verified_at is not null', 1);
+select pg_temp.t('B13 a verified listing cannot request again', :partner, 'authenticated', 'select request_verification(''00000000-0000-0000-0000-0000000000f7'')', false);
+select pg_temp.t('B14 un-ticking the badge resets the decision', :admin, 'authenticated', 'update listings set is_verified = false where id = ''00000000-0000-0000-0000-0000000000f7''', true);
+select pg_temp.visible('B15 decision is back to pending', :admin, 'authenticated', 'select 1 from listings where id = ''00000000-0000-0000-0000-0000000000f7'' and verification_decision = ''pending'' and not is_verified', 1);
+select pg_temp.t('B16 an administrator can suspend', :admin, 'authenticated', 'update listings set verification_decision = ''suspended'', verification_reason = ''test'' where id = ''00000000-0000-0000-0000-0000000000f7''', true);
+select pg_temp.t('B17 a suspended listing cannot request verification', :partner, 'authenticated', 'select request_verification(''00000000-0000-0000-0000-0000000000f7'')', false);
+select pg_temp.visible('B18 researched market drafts are hidden from anon', null, 'anon', 'select 1 from listings where type = ''market''', 0);
+
 -- ── Roles, plans: never writable by editors ──
 select pg_temp.rows('R01 regional editor cannot change roles', :regional, 'authenticated', format('update user_roles set role = ''admin'' where user_id = %L', :visitor), 0);
 select pg_temp.rows('R02 content editor cannot change roles', :editor, 'authenticated', format('update user_roles set role = ''admin'' where user_id = %L', :visitor), 0);

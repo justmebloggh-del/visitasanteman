@@ -18,6 +18,19 @@ Legend: ✅ built and checked · 🟡 built, needs live-environment testing · �
 | Culture module content tables, travel-guide and gallery detail pages, new experience categories | ⬜ | Phase 2 of the brief |
 | Scheduled status, per-district editor scoping, revision restore | ⬜ | Not built |
 
+## VisitAsanteman Phase 4: hospitality and business (this branch)
+| Item | Status | Notes |
+|---|---|---|
+| More listing types (boutique hotels, homestays, venues, cafés, bakeries, vendors, caterers, markets, craft and other businesses) | ✅ | Booking and planner functions updated |
+| Event venues (`/venues`) and markets (`/markets`) directories and admin | ✅ | |
+| Filters: district, type, price range, capacity, facility, max price | ✅ | |
+| Business verification workflow and admin queue; owner request button | ✅ | 93 SQL checks; paid plans never verify |
+| Partner portal for the new types | ✅ | Account types map to the new listing types; verification status shown |
+| Research drafts: 5 markets | 🟡 | Unchecked, unpublished |
+| Verified businesses, hotels, restaurants and prices | ⬜ | **None researched or loaded.** Needs real businesses to register or staff to verify |
+| Availability search, partner support desk, partner performance beyond page views | ⬜ | Not built |
+| Online payments | 🟡 | Built earlier; still untested with live Paystack |
+
 ## VisitAsanteman Phase 3: culture, heritage and events (this branch)
 | Item | Status | Notes |
 |---|---|---|
