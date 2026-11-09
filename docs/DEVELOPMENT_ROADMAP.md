@@ -2,6 +2,22 @@
 
 Legend: ✅ built and checked · 🟡 built, needs live-environment testing · ⬜ not started
 
+## VisitAsanteman rebrand, Phase 1: regional foundation (this branch: `rebrand/visitasanteman`)
+| Item | Status | Notes |
+|---|---|---|
+| Git baseline, branch | ✅ | Baseline commit "Visit Lake Bosomtwe before VisitAsanteman rebrand" |
+| Geography schema: regions, administrative areas, traditional areas, localities, destinations | ✅ | Migration `20261113000002`; links added to communities, attractions, listings, events, experiences |
+| Publish guard (no publishing without an active district) | ✅ | DB trigger; friendly message in admin |
+| Roles `regional_editor`, `media_manager`; status `approved`; approve/publish restricted | ✅ | RLS + triggers; matrix in AUTHENTICATION |
+| Revision history (`content_revisions`) | ✅ | Read-only list on edit pages; restore from admin not built |
+| Admin for geography, district/destination pickers, verification fields | ✅ | Config-driven |
+| Rebrand: name, wordmark, nav (11 items + Plan Your Visit), homepage sections A to M, stored copy migration, PWA names/icons | ✅ | Text wordmark; no official logo yet |
+| New routes: districts, destinations, culture hub (+5 sub-pages), advertise, partner-with-us, about/our-mission, about/partners | ✅ | Culture pages are CMS-managed and show "being prepared" |
+| District filter on directories; sitemap; redirect map | ✅ | Redirect list holds only menu aliases (no old public URLs exist) |
+| Districts (MMDAs) loaded; Lake Bosomtwe backfill and draft `lake-bosomtwe` destination | 🟡 | Migration `20261113000004`. **43 entries (1 metropolitan, 17 municipal, 25 district) from a secondary source** (citypopulation.de, crediting Ghana Statistical Service, retrieved 2026-11-09) because the Local Government Service site was unreachable. **All loaded inactive and flagged unverified**: nothing is public or publishable into them until a regional editor checks each against the official list and activates it. The ten Lake Bosomtwe communities and the draft destination point at `Bosomtwe` |
+| Culture module content tables, travel-guide and gallery detail pages, new experience categories | ⬜ | Phase 2 of the brief |
+| Scheduled status, per-district editor scoping, revision restore | ⬜ | Not built |
+
 ## Phase 1: Website + CMS
 | Item | Status | Notes |
 |---|---|---|

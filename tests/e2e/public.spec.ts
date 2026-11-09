@@ -1,7 +1,7 @@
 import { hydrated } from "./helpers";
 import { expect, test } from "@playwright/test";
 
-const pages = ["/", "/explore", "/attractions", "/communities", "/accommodation", "/restaurants", "/experiences", "/events", "/events?view=calendar", "/travel-guide", "/business-directory", "/articles", "/gallery", "/map", "/contact", "/about", "/search?q=lake", "/login", "/register", "/forgot-password"];
+const pages = ["/", "/explore", "/attractions", "/communities", "/accommodation", "/restaurants", "/experiences", "/events", "/events?view=calendar", "/travel-guide", "/business-directory", "/articles", "/gallery", "/map", "/contact", "/about", "/districts", "/destinations", "/culture", "/culture/history", "/culture/traditions", "/culture/festivals", "/culture/crafts", "/culture/food", "/advertise", "/partner-with-us", "/about/our-mission", "/about/partners", "/search?q=heritage", "/login", "/register", "/forgot-password"];
 
 test.describe("public site", () => {
   for (const path of pages) {
@@ -16,7 +16,7 @@ test.describe("public site", () => {
   }
 
   test("unknown slugs return 404", async ({ page }) => {
-    for (const p of ["/attractions/nope", "/accommodation/nope", "/events/nope", "/articles/nope"]) {
+    for (const p of ["/attractions/nope", "/accommodation/nope", "/events/nope", "/articles/nope", "/districts/nope", "/destinations/nope"]) {
       expect((await page.goto(p))?.status()).toBe(404);
     }
   });

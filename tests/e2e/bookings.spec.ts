@@ -1,6 +1,6 @@
 import { createHmac } from "node:crypto";
 import { expect, test, type Page } from "@playwright/test";
-import { sql, unique, hydrated } from "./helpers";
+import { sql, unique, hydrated, testAreaId } from "./helpers";
 import { startMockPaystack } from "./mock-paystack";
 
 // Needs local Supabase + the app started with PAYMENTS_ENABLED=true, PAYSTACK_SECRET_KEY=sk_test_mock,
@@ -60,7 +60,7 @@ test("setup: partner owner with a published lodge, one room, a 10% plan", async 
   sql(`update profiles set business_account_type='accommodation' where id in ('${uid(ownerEmail)}','${uid(otherEmail)}')`);
   sql(`update user_roles set role='admin' where user_id='${uid(adminEmail)}'`);
   sql(`update subscription_plans set commission_percent=10 where slug='free'`);
-  listingId = sql(`insert into listings(slug,type,name,status,owner_id,summary) values ('${slug}','lodge','Booking Test Lodge','published','${uid(ownerEmail)}','For booking tests') returning id`).split("\n")[0];
+  listingId = sql(`insert into listings(slug,type,name,status,owner_id,summary,administrative_area_id) values ('${slug}','lodge','Booking Test Lodge','published','${uid(ownerEmail)}','For booking tests','${testAreaId()}') returning id`).split("\n")[0];
   sql(`insert into room_types(listing_id,name,units,max_guests,price_per_night) values ('${listingId}','Double',1,2,300) returning id`);
   expect(listingId).toMatch(/[0-9a-f-]{36}/);
 });

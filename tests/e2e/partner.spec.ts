@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { sql, unique, hydrated } from "./helpers";
+import { sql, unique, hydrated, testAreaId } from "./helpers";
 
 test.describe.configure({ mode: "serial" });
 test.skip(({ isMobile }) => isMobile, "desktop only");
@@ -88,6 +88,11 @@ test("admin approves; listing goes public; partner cannot self-verify", async ({
   await expect(page).toHaveURL(/verify-email/);
   sql(`update user_roles set role='admin' where user_id=(select id from auth.users where email='${admin}')`);
   await login(page, admin);
+  await page.goto("/admin/accommodation?status=pending_review");
+  // Partners do not choose a district; staff assign one before publishing (the database requires it).
+  await page.getByRole("row", { name: new RegExp(bizName) }).getByRole("button", { name: "Publish" }).click();
+  await expect(page).toHaveURL(/error=1/);
+  sql(`update listings set administrative_area_id='${testAreaId()}' where slug='${slug}'`);
   await page.goto("/admin/accommodation?status=pending_review");
   await page.getByRole("row", { name: new RegExp(bizName) }).getByRole("button", { name: "Publish" }).click();
   await expect(page.getByText("Saved.")).toBeVisible();

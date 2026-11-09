@@ -1,5 +1,7 @@
 # VisitAsanteman: Rebranding and Migration Assessment
 
+> **Update (Phase 1 implemented):** this assessment is kept as written on 2026-11-09. See DEVELOPMENT_ROADMAP.md for what was built. Corrections found during implementation: the unit suite has 4 files and 31 tests at baseline (not 18); the old logo files were moved to `docs/archive/`; the district list was loaded as inactive and unverified from a secondary source because no official source was reachable.
+
 Date: 2026-11-09 | Status: assessment only. No application code or database has been changed.
 Covers brief tasks 1 to 7 (inspect, preserve, audit, assess, geography, schema, routes).
 

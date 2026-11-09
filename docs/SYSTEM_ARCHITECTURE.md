@@ -61,3 +61,11 @@ Investment pages always show the project's real stage and a notice for concepts;
 
 ## Not built yet (by design)
 Multilingual support, Hubtel, downloadable investment briefs. See the roadmap.
+
+## Regional layer (VisitAsanteman Phase 1)
+- **Geography is the spine.** Region → administrative area (MMDA) → community → locality, with destinations (e.g. Lake Bosomtwe) inside one area and traditional areas as an optional overlay. Every publishable item carries an `administrative_area_id`; a database trigger refuses to publish without an active one.
+- **Public routes:** `/districts`, `/districts/[slug]`, `/destinations`, `/destinations/[slug]`, culture hub pages (`/culture/*`, CMS-managed and showing "being prepared" until written), `/advertise`, `/partner-with-us`, `/about/our-mission`, `/about/partners`. Existing directories gained a **District** filter (`?area=<slug>`). Data access for all of it is in `lib/content/public.ts` (`listAreas`, `getArea`, `listDestinations`, ...).
+- **Editorial workflow and roles** are enforced by database triggers and RLS (see AUTHENTICATION); the admin only mirrors them.
+- **Brand in one place:** `config/site.ts` (names, tagline, menu) and `components/brand/Wordmark.tsx` (the logo; text wordmark until a real logo exists).
+- **Redirects:** `config/redirects.ts`, applied by `next.config.ts`. The canonical origin always comes from `NEXT_PUBLIC_SITE_URL`.
+- **Design tokens** still use the names `lake` for the blue accent (#287D9B). Those are internal CSS variable names, not visible branding.

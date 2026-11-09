@@ -1,6 +1,8 @@
-# Visit Lake Bosomtwe
+# VisitAsanteman
 
-Destination tourism platform for Lake Bosomtwe (Bosomtwe District, Ashanti Region, Ghana): public website, built-in CMS/admin, and a data model ready for the business portal, bookings and payments.
+Tourism platform for the whole Ashanti Region of Ghana: public website, built-in CMS/admin, business partner portal, bookings, travel planner, investment and advertising. Content is organised by district (metropolitan, municipal and district assemblies). Lake Bosomtwe is one destination within it.
+
+> **Rebrand note.** The project began as *Visit Lake Bosomtwe*. Phase 1 of the VisitAsanteman rebrand (regional geography, roles and workflow, new navigation and pages) is described in [docs/VisitAsanteman-rebrand-assessment.md](docs/VisitAsanteman-rebrand-assessment.md) and [docs/DEVELOPMENT_ROADMAP.md](docs/DEVELOPMENT_ROADMAP.md). The product brief is [docs/VisitAsanteman-brief-v1.md](docs/VisitAsanteman-brief-v1.md).
 
 **Status:** Phases 1 to 3 implemented (website + CMS, business partner portal, bookings/payments/reviews) most of Phase 4 (travel planner, nearby, recommendations, AI assistant, PWA) and Phase 5 (investment portal, advertising). Payments are off until tested with real Paystack keys. See [docs/DEVELOPMENT_ROADMAP.md](docs/DEVELOPMENT_ROADMAP.md) for what is done and what is next.
 
@@ -22,8 +24,15 @@ where user_id = (select id from auth.users where email = 'you@example.com');
 ```
 The admin lives at `/admin`.
 
+**Districts.** The list of Ashanti metropolitan, municipal and district assemblies is not hard-coded. The migrations load 43 Ashanti districts as **inactive and unverified** (from a secondary source); a regional editor must check each against the official list and activate it (see [docs/DEPLOYMENT_GUIDE.md](docs/DEPLOYMENT_GUIDE.md)). Content cannot be published until it belongs to an active district.
+
 ## Scripts
-`npm run dev` · `build` · `lint` · `typecheck` · `test` (unit) · `test:e2e` (Playwright)
+`npm run dev` · `build` · `lint` · `typecheck` · `test` (unit) · `test:e2e` (Playwright, needs a production build and local Supabase)
+
+Database permission checks (one rolled-back transaction, prints PASS/FAIL per check):
+```bash
+psql postgresql://postgres:postgres@127.0.0.1:54322/postgres -v ON_ERROR_STOP=1 -f supabase/tests/geography_rls.sql
+```
 
 ## Documentation
 | Doc | Purpose |
@@ -37,6 +46,7 @@ The admin lives at `/admin`.
 | [PAYMENTS](docs/PAYMENTS.md) | Booking lifecycle, payment security, go-live steps |
 | [BUSINESS_PARTNER_GUIDE](docs/BUSINESS_PARTNER_GUIDE.md) | Listing a business, review flow, plans |
 | [DEVELOPMENT_ROADMAP](docs/DEVELOPMENT_ROADMAP.md) | Phases, status, open items |
+| [CONTENT_PLAN](docs/CONTENT_PLAN.md) | District-by-district content and verification plan |
 
 ## Content rule
 Nothing in this repo invents facts. Attractions, communities, businesses, prices, coordinates and history are entered by administrators and published only when verified.

@@ -62,7 +62,7 @@ export function Header() {
       </nav>
 
       {open && (
-        <div id="mobile-menu" className="fixed inset-x-0 top-16 bottom-0 overflow-y-auto bg-white px-4 pb-10 pt-4 xl:hidden">
+        <div id="mobile-menu" className="fixed inset-x-0 top-16 h-[calc(100dvh-4rem)] overflow-y-auto bg-white px-4 pb-10 pt-4 xl:hidden">
           <ButtonLink href={planVisit.href} onClick={() => setOpen(false)} className="w-full">{planVisit.label}</ButtonLink>
           <nav aria-label="Mobile" className="mt-2 flex flex-col">
             {mainNav.map((n) => (

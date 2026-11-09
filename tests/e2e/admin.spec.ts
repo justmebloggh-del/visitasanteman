@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { sql, unique } from "./helpers";
+import { sql, TEST_AREA_NAME, testAreaId, unique } from "./helpers";
 
 // Needs a LOCAL Supabase (npx supabase start) with email confirmation off. Desktop project only.
 test.describe.configure({ mode: "serial" });
@@ -45,9 +45,11 @@ test.describe("auth, roles and CMS publishing", () => {
     await page.getByRole("button", { name: "Log in" }).click();
     await page.waitForURL("/");
 
+    testAreaId();
     await page.goto("/admin/attractions/new");
     await page.getByLabel("Name", { exact: true }).fill(title);
     await page.getByLabel("Short summary").fill("An automated test attraction.");
+    await page.getByLabel("District / municipality / metropolis").selectOption({ label: TEST_AREA_NAME });
     await page.getByRole("button", { name: /Create attraction/ }).click();
     await expect(page).toHaveURL(/\/admin\/attractions\?saved=1/);
 

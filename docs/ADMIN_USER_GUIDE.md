@@ -1,12 +1,13 @@
 # Admin user guide
 
-Sign in, then open **Admin** in the top bar (or `/admin`). Editors, administrators and super administrators can enter.
+Sign in, then open **Admin** in the top bar (or `/admin`). Content editors, regional editors, administrators and super administrators can enter; media managers see only the Media library.
 
 ## Publishing content
-1. Pick a section (Attractions, Communities, Accommodation, Restaurants, Experiences, Events, Businesses, Articles).
+1. Pick a section (Attractions, Communities, Destinations, Accommodation, Restaurants, Experiences, Events, Businesses, Articles).
 2. **New**, fill in the form, upload a main photograph (describe it in the alt-text box first).
-3. Leave **Status** as *Draft* while working. Choose *Published* to make it public. Pages update within about a minute.
-4. Use **Unpublish** in the list to take something down. **Delete** (administrators) archives the item; it is not erased.
+3. Work in *Draft*, then **Send for review**. A regional editor or administrator **Approves** and **Publishes**. Pages update within about a minute.
+4. Choose a **district** (or a community or destination, which supplies it). The database refuses to publish content without an active district.
+5. Use **Unpublish** in the list to take something down. **Delete** (administrators) archives the item; it is not erased.
 
 ## Rules for trustworthy content
 - Only enter facts, prices, hours and coordinates you have confirmed. Leave a field blank rather than guessing.
@@ -17,16 +18,27 @@ Sign in, then open **Admin** in the top bar (or `/admin`). Editors, administrato
 ## Roles
 | Role | Can |
 |---|---|
-| Editor | Create/edit/publish content, upload media, handle enquiries |
-| Administrator | Editor + delete, verification badges, featured flags, settings, view audit-relevant data |
+| Content editor | Create and edit drafts, send for review, upload media, handle enquiries |
+| Regional tourism editor | Content editor + approve, publish, verify content, manage regions and districts |
+| Media manager | Media library only |
+| Administrator | Regional editor + delete, listing badges, featured flags, plans, ads, settings |
 | Super administrator | Administrator + change user roles |
+
+The full matrix is in [AUTHENTICATION](AUTHENTICATION.md).
+
+## Geography (Admin → Geography)
+- **Regions** and **Districts** (metropolitan, municipal and district assemblies) are managed by regional editors and administrators. Record the **source** and the date it was checked for every district.
+- **Traditional areas** and **Localities** are optional. Traditional-area text is culturally sensitive: publish only what the appropriate custodians have reviewed.
+- **Destinations** (e.g. Lake Bosomtwe) belong to one district and appear at `/destinations`.
+- Each edit page for content shows **Revision history**, the earlier versions of that item.
+- **Verification**: *Content verified* and *Last verified on* can be set by regional editors and administrators. Anyone can write internal *Verification notes*.
 
 ## Other screens
 - **Homepage**: headings, on/off for each section, hero photograph. Empty sections never show.
 - **Media library**: upload, edit alt text/caption/credit, delete unused files. Put photos in folder `gallery` to show them on the public Gallery page.
 - **Enquiries**: reply by email, mark read/replied/closed. These are requests, not confirmed bookings.
 - **Newsletter**: view and export subscribers as CSV.
-- **Pages**: write About, Explore, Travel Guide, Privacy, Terms in Markdown (`## Heading`, `**bold**`, `- list`, `[text](https://…)`).
+- **Pages**: write About, Our mission, Partners, Explore, Travel Guide, Culture & Heritage (and its five sub-pages), Privacy, Terms in Markdown (`## Heading`, `**bold**`, `- list`, `[text](https://…)`).
 - **Settings**: contact details, social links, map start view.
 
 ## Business listing requests

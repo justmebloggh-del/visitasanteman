@@ -24,7 +24,7 @@ erDiagram
 | Table | Purpose | Public read |
 |---|---|---|
 | `profiles`, `user_roles` | Person details; role (separate table so users cannot edit it) | Own row; staff read all |
-| `communities` | Settlements around the lake (names seeded as **drafts**) | Published |
+| `communities` | Towns and villages (10 Lake Bosomtwe-area names seeded as **drafts**) | Published |
 | `attraction_categories`, `attractions` | Directory of places to see | Published |
 | `listings` | Hotels, restaurants, tour operators, guides, boats, artisans… (`type` enum) | Published |
 | `room_types`, `menu_items` | Child data of a listing | If parent is published |
@@ -43,7 +43,7 @@ erDiagram
 ## Conventions
 - UUID primary keys; `created_at`/`updated_at` maintained by trigger.
 - Soft delete via `deleted_at` on content tables; RLS hides soft-deleted rows from the public.
-- `status`: `draft` → `pending_review` → `published` → `archived`.
+- `status`: `draft` → `pending_review` (in review) → `approved` → `published` → `archived`.
 - Latitude/longitude are nullable with range checks. They are never defaulted or guessed.
 - Currency columns default to `GHS`; no exchange rates are stored.
 - `sources` (attractions/communities) is a **public** field shown on the page. RLS cannot hide single columns, so it is deliberately not an internal note.
@@ -53,8 +53,10 @@ erDiagram
 |---|---|
 | Anonymous | Read published content; insert into `enquiries` / `newsletter_subscribers` (status forced to `new`) |
 | Visitor / partner | Same as anonymous, plus read/update own profile and read own role |
-| Editor | Create/update all content and media; no deletes; cannot change `is_verified`, `is_featured`, `owner_id` on listings (DB trigger) |
-| Admin | Editor + delete content, read audit log, manage settings, read users |
+| Content editor | Create/update content drafts and media; cannot approve, publish or verify; no deletes; cannot change `is_verified`, `is_featured`, `owner_id` on listings (DB triggers) |
+| Regional editor | Content editor + approve, publish, verify, manage regions and districts |
+| Media manager | Media library only |
+| Admin | Regional editor + delete content, read audit log, manage settings, read users |
 | Super admin | Admin + change user roles |
 
 Verified by running both migrations plus an RLS test script (24 checks) against a throwaway Postgres: anonymous cannot read drafts, future-dated articles, unverified testimonials, enquiries, roles or audit logs; a visitor cannot promote themselves; an editor cannot delete or verify; only a super admin can change roles.
@@ -99,3 +101,23 @@ Verified by running both migrations plus an RLS test script (24 checks) against 
 
 ## Planned tables (later phases)
 Phase 4: `travel_itineraries`, `itinerary_items`, `saved_places`. Phase 5: `investment_opportunities`, `investor_enquiries`, `advertisements`, `advertisement_campaigns`.
+
+## VisitAsanteman Phase 1 additions (migrations `20261113000001` to `20261113000003`)
+Geography: **Region → Administrative area (MMDA) → Community → Locality.** Traditional areas are a separate many-to-many overlay.
+
+| Item | Purpose |
+|---|---|
+| `regions` | Ashanti row seeded. `source`, `source_url`, `verified_at` record where a record came from |
+| `administrative_areas` | Metropolitan, municipal and district assemblies. Migration `20261113000004` loads 43 rows **inactive and unverified** from a secondary source; they must be checked and activated by a regional editor. Public read when `is_active` |
+| `traditional_areas`, `community_traditional_areas` | Optional overlay; status workflow and verification fields, culturally sensitive |
+| `localities` | Optional neighbourhoods inside a community |
+| `destinations` | A place worth planning a trip around (e.g. Lake Bosomtwe), always inside one administrative area |
+| `administrative_area_id` | Added to communities, attractions, listings, events, experiences (`on delete restrict`) |
+| `destination_id` | Added to attractions, listings, events, experiences, articles (`on delete set null`) |
+| `last_verified_at`, `verification_notes` | Added to communities, attractions, listings, events, experiences (and destinations, traditional areas) |
+| `content_revisions` | Previous version of a row each time it changes (communities, attractions, listings, experiences, events, articles, pages, destinations, traditional areas). Readable by staff only; written only by trigger. `audit_logs` remains admin-only |
+| Enum additions | `app_role`: `regional_editor`, `media_manager`. `content_status`: `approved` |
+
+Triggers (run in this order on content tables): `tg_a_derive_area` (area from community or destination), `tg_b_publish_area` (no publishing without an active area), `tg_c_workflow` (approve/publish needs `can_approve()`), `tg_d_verification` (only approvers change verification flags), `tg_e_revision`. `auth.uid()` being null (migrations, service role, direct SQL) is treated as a non-user session and skips the role checks; end users never do.
+
+Not done in this phase: a separate `scheduled` status, restoring a revision from the admin, per-district scoping of regional editors (a regional editor currently works across the whole region).

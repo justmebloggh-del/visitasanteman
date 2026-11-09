@@ -77,3 +77,8 @@ insert into pages (slug, title, status) values
   ('terms', 'Terms and Conditions', 'draft')
 on conflict (slug) do nothing;
 
+
+-- Fresh databases: the communities above are inserted after the migrations ran, so link them here.
+update communities set administrative_area_id = (select id from administrative_areas where slug = 'bosomtwe')
+where administrative_area_id is null
+  and slug in ('abono', 'abrodwum', 'amakom', 'ankaase', 'pipie', 'adwafo', 'kuntanase', 'esereso', 'brodekwano', 'old-brodekwano');

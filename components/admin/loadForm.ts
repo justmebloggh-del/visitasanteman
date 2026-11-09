@@ -15,8 +15,13 @@ export async function loadRelations(def: ResourceDef) {
   const out: Record<string, { value: string; label: string }[]> = {};
   for (const f of def.fields) {
     if (!f.relation) continue;
-    const { data } = await supabase.from(f.relation.table).select(`id, ${f.relation.label}`).order(f.relation.label).limit(500);
-    out[f.name] = ((data ?? []) as unknown as Record<string, string>[]).map((r) => ({ value: r.id, label: r[f.relation!.label] }));
+    // Districts that have not been activated yet cannot be used to publish; say so in the picker.
+    const withActive = f.relation.table === "administrative_areas";
+    const { data } = await supabase.from(f.relation.table).select(withActive ? `id, ${f.relation.label}, is_active` : `id, ${f.relation.label}`).order(f.relation.label).limit(500);
+    out[f.name] = ((data ?? []) as unknown as Record<string, string | boolean>[]).map((r) => ({
+      value: String(r.id),
+      label: String(r[f.relation!.label]) + (withActive && r.is_active === false ? " (not yet activated)" : ""),
+    }));
   }
   return out;
 }

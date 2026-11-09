@@ -25,7 +25,7 @@ export default async function SharedPlan({ params }: { params: Promise<{ token: 
       <Container className="max-w-4xl space-y-8 py-10">
         {plan.notes && <p className="whitespace-pre-line">{plan.notes}</p>}
         <PlanDays plan={plan} editable={false} />
-        {points.length > 0 && <Map points={points} center={[points[0].lng ?? Number(m.center_lng ?? -1.41), points[0].lat ?? Number(m.center_lat ?? 6.5)]} zoom={12} />}
+        {points.length > 0 && <Map points={points} center={[points[0].lng ?? Number(m.center_lng ?? -1.6), points[0].lat ?? Number(m.center_lat ?? 6.7)]} zoom={12} />}
         <ButtonLink href="/travel-planner">Make your own plan</ButtonLink>
       </Container>
     </>

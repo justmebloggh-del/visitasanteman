@@ -14,7 +14,7 @@ export default async function MapPage() {
   return (
     <>
       <PageHeader title="Tourism map" intro="Filter by category, search for a place, then open it for details and directions." crumbs={[{ label: "Map" }]} />
-      <Container className="py-8"><Map points={points} filters center={[Number(m.center_lng ?? -1.41), Number(m.center_lat ?? 6.5)]} zoom={Number(m.zoom ?? 11)} /></Container>
+      <Container className="py-8"><Map points={points} filters center={[Number(m.center_lng ?? -1.6), Number(m.center_lat ?? 6.7)]} zoom={Number(m.zoom ?? 8)} /></Container>
     </>
   );
 }

@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { hydrated, sql, unique } from "./helpers";
+import { hydrated, sql, testAreaId, unique } from "./helpers";
 import { startMockPaystack } from "./mock-paystack";
 
 test.describe.configure({ mode: "serial" });
@@ -33,11 +33,12 @@ test.afterAll(() => mock?.close());
 test("setup: published places with verified coordinates", async ({ page }) => {
   await register(page, alice); await register(page, bob);
   const cat = sql(`select id from attraction_categories where slug='natural'`);
-  sql(`insert into attractions(slug,name,status,summary,category_id,latitude,longitude) values
-    ('${tag}-a','${tag} Viewpoint','published','Test viewpoint','${cat}',6.5000,-1.4100),
-    ('${tag}-b','${tag} Boardwalk','published','Test boardwalk','${cat}',6.5030,-1.4100),
-    ('${tag}-far','${tag} Far Away','published','Far',null,7.9000,-1.4100)`);
-  sql(`insert into experiences(slug,title,category,status) values ('${tag}-bird','${tag} Bird Walk','birdwatching','published')`);
+  const area = testAreaId();
+  sql(`insert into attractions(slug,name,status,summary,category_id,latitude,longitude,administrative_area_id) values
+    ('${tag}-a','${tag} Viewpoint','published','Test viewpoint','${cat}',6.5000,-1.4100,'${area}'),
+    ('${tag}-b','${tag} Boardwalk','published','Test boardwalk','${cat}',6.5030,-1.4100,'${area}'),
+    ('${tag}-far','${tag} Far Away','published','Far',null,7.9000,-1.4100,'${area}')`);
+  sql(`insert into experiences(slug,title,category,status,administrative_area_id) values ('${tag}-bird','${tag} Bird Walk','birdwatching','published','${area}')`);
 });
 
 test("nearby places show close, published, located items with distance", async ({ page }) => {
