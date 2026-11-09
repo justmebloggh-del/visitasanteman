@@ -136,7 +136,7 @@ test.describe.serial("roles and the geography admin", () => {
     setRole("editor");
     await login(page);
     await page.goto("/admin/administrative-areas");
-    await expect(page).not.toHaveURL(/administrative-areas/);                 // bounced to the admin home
+    await expect(page).toHaveURL(/\/admin(\?|\/dashboard|$)/);                // bounced to the admin home
     await page.goto("/admin/attractions");
     await expect(page.getByRole("button", { name: "Publish", exact: true })).toHaveCount(0);
   });

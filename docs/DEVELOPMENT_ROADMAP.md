@@ -25,7 +25,7 @@ Legend: ✅ built and checked · 🟡 built, needs live-environment testing · �
 | Cultural calendar (month view, type and district filters) | ✅ | Confirmed dates only |
 | Share and save | ✅ | WhatsApp/Facebook links; `.ics` download for confirmed dates. Accounts and a saved-places list are not built |
 | Homepage block for upcoming confirmed ceremonies | ✅ | Hides when none |
-| Ceremony records (Akwasidae, Papa Festival, Mmoaninko etc.) | ⬜ | **None loaded.** Dates, meanings and attendance rules must come from the traditional authorities; nothing was written from memory |
+| Ceremony records: Akwasidae, Adae Kese, Papa Nantwi (Papa) Festival, Mmoaninko Festival | 🟡 | Migration `20261115000002`: **unpublished research drafts** from web research (Manhyia Palace, Graphic Online, GNA, Ghana Remembers and others), awaiting verification, no confirmed dates, authority approval not given. Sources disagree on cycle length and festival frequency; these are noted. Dates, meaning and visitor rules must be confirmed with Manhyia Palace, the Kumawu Traditional Council and the Offinso Traditional Council before publishing |
 | Culture sub-pages (history, traditions, crafts, food), cultural storytelling | 🟡 | CMS pages exist and say "being prepared"; need verified text |
 | Related transport and accommodation on ceremony pages | 🟡 | Links to district accommodation only; transport directory is Phase 5 |
 | Event management for general events | ✅ | Existing events module, unchanged |

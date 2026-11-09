@@ -106,3 +106,14 @@ test("confirming a date needs a start time", async ({ page }) => {
   await page.getByRole("button", { name: /Create ceremony/ }).click();
   await expect(page.getByText("Enter the start date before confirming it")).toBeVisible();
 });
+
+test("researched ceremony drafts exist but are not public and carry no invented dates", async ({ request }) => {
+  expect(sql(`select count(*) from ceremonies where slug in ('akwasidae','adae-kese','papa-nantwi-festival','mmoaninko-festival') and status='draft' and authority_approved=false and date_confirmed=false and starts_at is null and verification_status='awaiting_verification'`)).toBe("4");
+  for (const s of ["akwasidae", "adae-kese", "papa-nantwi-festival", "mmoaninko-festival"]) {
+    expect((await request.get(`/culture/ceremonies/${s}`, { failOnStatusCode: false })).status()).toBe(404);
+  }
+  // the publish gate refuses them until the authority approves
+  let refused = false;
+  try { sql(`update ceremonies set status='published' where slug='akwasidae'`); } catch { refused = true; }
+  expect(refused).toBe(true);
+});
