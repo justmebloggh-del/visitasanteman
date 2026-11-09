@@ -3,7 +3,7 @@ import { siteConfig } from "@/config/site";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: siteConfig.name, short_name: "Lake Bosomtwe", description: siteConfig.description,
+    name: siteConfig.name, short_name: siteConfig.displayName, description: siteConfig.description,
     start_url: "/", scope: "/", display: "standalone", background_color: "#ffffff", theme_color: "#174b35",
     icons: [
       { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },

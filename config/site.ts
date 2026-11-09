@@ -1,22 +1,30 @@
 export const siteConfig = {
-  name: "Visit Lake Bosomtwe",
-  tagline: "Discover the Extraordinary. Experience the Beauty.",
+  /** Brand name, always written exactly like this. */
+  name: "VisitAsanteman",
+  /** Spoken / spaced form, for sentences. */
+  displayName: "Visit Asanteman",
+  shortName: "Asanteman",
+  tagline: "Discover Ashanti. Experience Our Heritage.",
   description:
-    "Plan your visit to Lake Bosomtwe in Ghana's Ashanti Region: attractions, communities, places to stay, food, experiences and events.",
+    "Plan your visit to the Ashanti Region of Ghana: attractions, culture and heritage, places to stay, food, experiences and events across every district.",
+  region: "Ashanti Region",
 };
 
+// Main menu (desktop bar and mobile menu). "Plan Your Visit" is shown separately as the main action.
 export const mainNav = [
-  { href: "/explore", label: "Explore" },
+  { href: "/", label: "Home" },
+  { href: "/explore", label: "Explore Ashanti" },
   { href: "/attractions", label: "Attractions" },
-  { href: "/accommodation", label: "Accommodation" },
+  { href: "/culture", label: "Culture & Heritage" },
   { href: "/experiences", label: "Experiences" },
-  { href: "/restaurants", label: "Restaurants" },
+  { href: "/accommodation", label: "Where to Stay" },
+  { href: "/restaurants", label: "Food & Dining" },
   { href: "/events", label: "Events" },
   { href: "/travel-guide", label: "Travel Guide" },
-  { href: "/travel-planner", label: "Planner" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
+  { href: "/business-directory", label: "Business Directory" },
+  { href: "/about", label: "About Us" },
 ];
+export const planVisit = { href: "/travel-planner", label: "Plan Your Visit" };
 
 export type ListingType =
   | "hotel" | "resort" | "guesthouse" | "lodge" | "eco_lodge" | "holiday_home" | "apartment"
@@ -42,7 +50,7 @@ export const businessTypes: ListingType[] = [
 ];
 
 export const experienceCategoryLabels: Record<string, string> = {
-  boat_cruise: "Boat cruises", guided_tour: "Guided lake tours", fishing: "Fishing", hiking: "Hiking",
+  boat_cruise: "Boat cruises", guided_tour: "Guided tours", fishing: "Fishing", hiking: "Hiking",
   cycling: "Cycling", birdwatching: "Birdwatching", photography: "Photography tours", cultural: "Cultural tours",
   community: "Community experiences", nature: "Nature exploration", group_excursion: "Group excursions",
   family: "Family activities",

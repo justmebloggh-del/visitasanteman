@@ -9,7 +9,7 @@ import { cn, formatDate } from "@/lib/utils";
 export const revalidate = 60;
 export const metadata: Metadata = buildMetadata({
   title: "Stories, guides and news",
-  description: "Destination news, travel guides, culture and community stories from Lake Bosomtwe.",
+  description: "Destination news, travel guides, culture and community stories from across the Ashanti Region.",
   path: "/articles",
 });
 
@@ -18,7 +18,7 @@ export default async function ArticlesPage({ searchParams }: { searchParams: Pro
   const [result, categories] = await Promise.all([listArticles({ category: sp.category, page: toPage(sp.page) }), getArticleCategories()]);
   return (
     <>
-      <PageHeader title="Stories and travel inspiration" intro="Guides, culture and news from around the lake." crumbs={[{ label: "Articles" }]} />
+      <PageHeader title="Stories and travel inspiration" intro="Guides, culture and news from across the Ashanti Region." crumbs={[{ label: "Articles" }]} />
       <Container className="py-10">
         <nav aria-label="Categories" className="mb-8 flex flex-wrap gap-2">
           <Link href="/articles" className={cn("rounded-full border px-4 py-1.5 text-sm", !sp.category ? "border-forest bg-forest text-white" : "border-line")}>All</Link>

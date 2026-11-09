@@ -8,7 +8,7 @@ import { listInvestments } from "@/lib/content/public";
 import { cn } from "@/lib/utils";
 
 export const revalidate = 60;
-export const metadata: Metadata = buildMetadata({ title: "Invest in Lake Bosomtwe", description: "Tourism investment and partnership opportunities around Lake Bosomtwe, each labelled by its real status: existing, approved, proposed or under consideration.", path: "/investment" });
+export const metadata: Metadata = buildMetadata({ title: "Invest in Ashanti tourism", description: "Tourism investment and partnership opportunities across the Ashanti Region, each labelled by its real status: existing, approved, proposed or under consideration.", path: "/investment" });
 
 export default async function InvestmentIndex({ searchParams }: { searchParams: Promise<{ stage?: string }> }) {
   const sp = await searchParams;
@@ -16,7 +16,7 @@ export default async function InvestmentIndex({ searchParams }: { searchParams: 
   const items = await listInvestments({ stage });
   return (
     <>
-      <PageHeader title="Invest in Lake Bosomtwe" intro="Opportunities and partnerships for sustainable tourism." crumbs={[{ label: "Investment" }]} />
+      <PageHeader title="Invest in Ashanti tourism" intro="Opportunities and partnerships for sustainable tourism." crumbs={[{ label: "Investment" }]} />
       <Container className="py-10">
         <p className="mb-6 max-w-3xl rounded-2xl bg-mist p-4 text-sm text-muted">Every project below is labelled with its real status. <strong>Proposed concepts and opportunities under consideration are not approved or funded projects.</strong> Nothing here is an offer of securities or a guarantee of returns. Do your own due diligence.</p>
         <nav aria-label="Filter by stage" className="mb-8 flex flex-wrap gap-2">

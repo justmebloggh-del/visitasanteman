@@ -103,7 +103,7 @@ test("admin approves; listing goes public; partner cannot self-verify", async ({
 
   const anon = await (await page.context().browser()!.newContext()).newPage();
   await expect.poll(async () => (await anon.goto(`/accommodation/${slug}`))?.status(), { timeout: 90_000, intervals: [3000] }).toBe(200);
-  await expect(anon.getByText("Verified by Visit Lake Bosomtwe")).toBeVisible();
+  await expect(anon.getByText("Verified by VisitAsanteman")).toBeVisible();
 
   // a visitor enquires on the listing; the view is counted
   await anon.getByText("Just have a question?").click();

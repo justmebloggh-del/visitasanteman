@@ -9,17 +9,19 @@ export interface FilterDef {
 }
 
 /** GET form, so filters are shareable URLs, work without JS and are fully server-rendered. */
-export function FilterBar({ action, q, qLabel = "Search by name", filters = [], values, extra }: {
-  action: string; q?: string; qLabel?: string; filters?: FilterDef[]; values: Record<string, string | undefined>;
+export function FilterBar({ action, q, qLabel = "Search by name", hideSearch, filters = [], values, extra }: {
+  action: string; q?: string; qLabel?: string; hideSearch?: boolean; filters?: FilterDef[]; values: Record<string, string | undefined>;
   extra?: React.ReactNode;
 }) {
   const active = Object.values(values).some(Boolean) || !!q;
   return (
     <form action={action} className="grid gap-3 rounded-2xl border border-line bg-white p-4 sm:grid-cols-2 lg:flex lg:items-end">
-      <div className="lg:flex-1">
-        <label htmlFor="f-q" className="mb-1.5 block text-xs font-medium text-muted">{qLabel}</label>
-        <Input id="f-q" name="q" type="search" defaultValue={q} placeholder="Search" />
-      </div>
+      {!hideSearch && (
+        <div className="lg:flex-1">
+          <label htmlFor="f-q" className="mb-1.5 block text-xs font-medium text-muted">{qLabel}</label>
+          <Input id="f-q" name="q" type="search" defaultValue={q} placeholder="Search" />
+        </div>
+      )}
       {filters.map((f) => (
         <div key={f.name} className="lg:w-48">
           <label htmlFor={`f-${f.name}`} className="mb-1.5 block text-xs font-medium text-muted">{f.label}</label>

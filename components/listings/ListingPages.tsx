@@ -12,7 +12,7 @@ import { Map } from "@/components/maps/Map";
 import { Badge, ButtonLink, Container } from "@/components/ui";
 import { listingTypeLabels, type ListingType } from "@/config/site";
 import { SITE_URL } from "@/lib/env";
-import { getGallery, getListing, getMenuItems, getReviews, getRoomTypes, listCommunities, listListings, toPage } from "@/lib/content/public";
+import { getGallery, getListing, getMenuItems, getReviews, getRoomTypes, listAreas, listCommunities, listListings, toPage } from "@/lib/content/public";
 import { directionsLink, formatPrice, mediaUrl, safeUrl, whatsappLink } from "@/lib/utils";
 import type { Listing } from "@/types/content";
 
@@ -28,19 +28,20 @@ export interface Group {
 }
 
 export async function ListingIndex({ group, searchParams }: {
-  group: Group; searchParams: { q?: string; type?: string; community?: string; max?: string; page?: string };
+  group: Group; searchParams: { q?: string; type?: string; community?: string; area?: string; max?: string; page?: string };
 }) {
   const page = toPage(searchParams.page);
   const maxPrice = Number(searchParams.max) > 0 ? Number(searchParams.max) : undefined;
-  const [result, communities] = await Promise.all([
-    listListings(group.types, { q: searchParams.q, type: searchParams.type, community: searchParams.community, maxPrice, page }),
-    listCommunities(),
+  const [result, communities, areas] = await Promise.all([
+    listListings(group.types, { q: searchParams.q, type: searchParams.type, community: searchParams.community, area: searchParams.area, maxPrice, page }),
+    listCommunities(), listAreas(),
   ]);
   const filters = [
+    ...(areas.length ? [{ name: "area", label: "District", options: areas.map((a) => ({ value: a.slug, label: a.name })) }] : []),
     ...(group.types.length > 1 ? [{ name: "type", label: "Type", options: group.types.map((t) => ({ value: t, label: listingTypeLabels[t] })) }] : []),
     { name: "community", label: "Community", options: communities.map((c) => ({ value: c.slug, label: c.name })) },
   ];
-  const filtered = !!(searchParams.q || searchParams.type || searchParams.community || maxPrice);
+  const filtered = !!(searchParams.q || searchParams.type || searchParams.community || searchParams.area || maxPrice);
 
   return (
     <>
@@ -49,7 +50,7 @@ export async function ListingIndex({ group, searchParams }: {
       <Container className="py-10">
         <FilterBar
           action={`/${group.base}`} q={searchParams.q} filters={filters}
-          values={{ type: searchParams.type, community: searchParams.community, max: searchParams.max }}
+          values={{ area: searchParams.area, type: searchParams.type, community: searchParams.community, max: searchParams.max }}
           extra={group.withPrice ? (
             <div className="lg:w-40">
               <label htmlFor="f-max" className="mb-1.5 block text-xs font-medium text-muted">Max price (GHS)</label>
@@ -72,7 +73,7 @@ export async function ListingIndex({ group, searchParams }: {
           </CardGrid>
         )}
         <Pagination page={result.page} pageCount={result.pageCount} basePath={`/${group.base}`}
-          params={{ q: searchParams.q, type: searchParams.type, community: searchParams.community, max: searchParams.max }} />
+          params={{ q: searchParams.q, type: searchParams.type, community: searchParams.community, area: searchParams.area, max: searchParams.max }} />
       </Container>
     </>
   );
@@ -95,7 +96,7 @@ export async function ListingDetail({ group, slug }: { group: Group; slug: strin
     getReviews({ listingId: listing.id }),
   ]);
   const related = nearby.items.filter((l) => l.id !== listing.id).slice(0, 3);
-  const wa = whatsappLink(listing.whatsapp, `Hello, I found ${listing.name} on Visit Lake Bosomtwe.`);
+  const wa = whatsappLink(listing.whatsapp, `Hello, I found ${listing.name} on VisitAsanteman.`);
   const dir = directionsLink(listing.latitude, listing.longitude);
   const website = safeUrl(listing.website);
   const menuBySection = menu.reduce<Record<string, typeof menu>>((acc, m) => { (acc[m.section] ??= []).push(m); return acc; }, {});
@@ -123,7 +124,7 @@ export async function ListingDetail({ group, slug }: { group: Group; slug: strin
           <h1 className="mt-2 text-3xl font-semibold sm:text-5xl">{listing.name}</h1>
           <p className="mt-2 flex flex-wrap items-center gap-2 text-sm text-white/90">
             <Badge tone="blue">{listingTypeLabels[listing.type as ListingType]}</Badge>
-            {listing.is_verified && <Badge tone="gold"><BadgeCheck className="size-3.5" aria-hidden />Verified by Visit Lake Bosomtwe</Badge>}
+            {listing.is_verified && <Badge tone="gold"><BadgeCheck className="size-3.5" aria-hidden />Verified by VisitAsanteman</Badge>}
             {listing.community && <span>{listing.community.name}</span>}
           </p>
         </Container>

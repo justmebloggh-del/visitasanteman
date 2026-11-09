@@ -9,7 +9,7 @@ import { supabaseConfigured } from "@/lib/env";
 import { formatPrice } from "@/lib/utils";
 import { redirect } from "next/navigation";
 
-export const metadata: Metadata = buildMetadata({ title: "List your business", description: "Hotels, restaurants, guides and boat operators can list on Visit Lake Bosomtwe. Every listing is reviewed before it is published.", path: "/partner" });
+export const metadata: Metadata = buildMetadata({ title: "List your business", description: "Hotels, restaurants, guides and boat operators can list on VisitAsanteman. Every listing is reviewed before it is published.", path: "/partner" });
 
 export default async function PartnerLanding() {
   const user = await getSessionUser();
@@ -17,7 +17,7 @@ export default async function PartnerLanding() {
   const plans = supabaseConfigured ? (await createPublicClient().from("subscription_plans").select("*").eq("is_active", true).order("sort_order")).data ?? [] : [];
   return (
     <>
-      <PageHeader title="List your business" intro="Reach visitors planning a trip to Lake Bosomtwe." crumbs={[{ label: "Partners" }]} />
+      <PageHeader title="List your business" intro="Reach visitors planning a trip to the Ashanti Region." crumbs={[{ label: "Partners" }]} />
       <Container className="py-12">
         <ol className="grid gap-4 md:grid-cols-4">
           {["Create a business account and verify your email", "Add your business details, photos and prices", "Submit for review. Our team checks every listing", "Once approved, visitors can find you and send enquiries"].map((t, i) => (

@@ -66,7 +66,7 @@ export default async function CommunityPage({ params }: { params: Promise<{ slug
           </section>
         )}
         {events.items.length > 0 && (
-          <p className="text-sm text-muted">Looking for things happening around the lake? See <Link href="/events" className="text-lake-dark underline">upcoming events</Link> (next: {events.items[0].title}, {formatDate(events.items[0].starts_at)}).</p>
+          <p className="text-sm text-muted">Looking for things happening nearby? See <Link href="/events" className="text-lake-dark underline">upcoming events</Link> (next: {events.items[0].title}, {formatDate(events.items[0].starts_at)}).</p>
         )}
       </Container>
     </>

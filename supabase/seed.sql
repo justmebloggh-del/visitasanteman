@@ -10,7 +10,11 @@ insert into attraction_categories (slug, name, sort_order) values
   ('eco-tourism', 'Eco-tourism', 5),
   ('recreation', 'Recreational facilities', 6),
   ('community', 'Community attractions', 7),
-  ('religious-heritage', 'Religious and heritage sites', 8)
+  ('religious-heritage', 'Religious and heritage sites', 8),
+  ('museums-galleries', 'Museums and galleries', 9),
+  ('markets-crafts', 'Markets and craft centres', 10),
+  ('parks-gardens', 'Parks and gardens', 11),
+  ('waterfalls-forests', 'Waterfalls and forests', 12)
 on conflict (slug) do nothing;
 
 insert into article_categories (slug, name, sort_order) values
@@ -38,33 +42,38 @@ insert into communities (slug, name, status, sort_order) values
 on conflict (slug) do nothing;
 
 insert into homepage_sections (key, title, subtitle, sort_order, config) values
-  ('hero', 'Discover the Extraordinary. Experience the Beauty of Lake Bosomtwe.',
-   'Plan your visit to Ghana''s only natural lake, set in the hills of the Ashanti Region.', 1, '{}'),
-  ('intro', 'Welcome to Lake Bosomtwe', null, 2, '{}'),
-  ('attractions', 'Explore attractions', 'Places to see and things to do around the lake.', 3, '{}'),
-  ('experiences', 'Popular experiences', 'Tours and activities offered by local providers.', 4, '{}'),
-  ('accommodation', 'Where to stay', 'Hotels, lodges and guesthouses near the lake.', 5, '{}'),
-  ('restaurants', 'Food and restaurants', 'Eat well around Lake Bosomtwe.', 6, '{}'),
-  ('communities', 'Discover our communities', 'The towns and villages around the lake.', 7, '{}'),
-  ('events', 'Upcoming events', 'Festivals, celebrations and tourism events.', 8, '{}'),
-  ('articles', 'Travel inspiration', 'Guides, stories and destination news.', 9, '{}'),
-  ('testimonials', 'Visitor feedback', null, 10, '{}'),
-  ('newsletter', 'Stay in the loop', 'Destination news and events, no spam.', 11, '{}')
+  ('hero', 'Discover Ashanti. Experience Our Heritage.',
+   'Plan your visit to the Ashanti Region of Ghana: its places, its people and its heritage, district by district.', 1, '{}'),
+  ('destinations', 'Explore the region', 'Featured destinations and the districts of the Ashanti Region.', 2, '{}'),
+  ('intro', 'Welcome to VisitAsanteman', null, 3, '{}'),
+  ('attractions', 'Explore attractions', 'Places to see and things to do across the Ashanti Region.', 4, '{}'),
+  ('culture', 'Experience Ashanti culture', 'Stories of heritage, festivals, crafts and food, published after they have been checked.', 5, '{}'),
+  ('experiences', 'Popular experiences', 'Tours and activities offered by local providers.', 6, '{}'),
+  ('accommodation', 'Where to stay', 'Hotels, lodges and guesthouses across the Ashanti Region.', 7, '{}'),
+  ('restaurants', 'Food and dining', 'Local kitchens, restaurants and traditional dishes.', 8, '{}'),
+  ('communities', 'Discover our communities', 'Towns and villages of the Ashanti Region.', 9, '{}'),
+  ('events', 'Upcoming events', 'Festivals, celebrations and tourism events.', 10, '{}'),
+  ('plan', 'Plan your visit', 'Build an itinerary, read the travel guide or find places on the map.', 11, '{}'),
+  ('businesses', 'Local tourism businesses', 'Tour operators, guides, makers and other businesses. Every listing is reviewed before it is published.', 12, '{}'),
+  ('articles', 'Travel inspiration', 'Guides, stories and destination news.', 13, '{}'),
+  ('testimonials', 'Visitor feedback', null, 14, '{}'),
+  ('newsletter', 'Stay in the loop', 'Destination news and events, no spam.', 15, '{}')
 on conflict (key) do nothing;
 
 insert into site_settings (key, value) values
-  ('general', '{"site_name": "Visit Lake Bosomtwe", "tagline": "Discover the Extraordinary. Experience the Beauty."}'),
+  ('general', '{"site_name": "VisitAsanteman", "tagline": "Discover Ashanti. Experience Our Heritage."}'),
   ('contact', '{"email": "", "phone": "", "whatsapp": "", "address": ""}'),
   ('social', '{"facebook": "", "instagram": "", "x": "", "youtube": ""}'),
-  ('map', '{"center_lat": 6.5, "center_lng": -1.41, "zoom": 11, "note": "Approximate map centre only; not an attraction coordinate."}')
+  ('map', '{"center_lat": 6.7, "center_lng": -1.6, "zoom": 8, "note": "Approximate regional map view only; not an attraction coordinate."}')
 on conflict (key) do nothing;
 
 -- Static pages start as empty drafts; the public site shows a "being prepared"
 -- notice until an administrator writes and publishes them.
 insert into pages (slug, title, status) values
-  ('about', 'About Visit Lake Bosomtwe', 'draft'),
-  ('explore', 'Explore Lake Bosomtwe', 'draft'),
+  ('about', 'About VisitAsanteman', 'draft'),
+  ('explore', 'Explore the Ashanti Region', 'draft'),
   ('travel-guide', 'Travel Guide', 'draft'),
   ('privacy', 'Privacy Policy', 'draft'),
   ('terms', 'Terms and Conditions', 'draft')
 on conflict (slug) do nothing;
+

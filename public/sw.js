@@ -1,9 +1,9 @@
-/* Visit Lake Bosomtwe service worker.
+/* VisitAsanteman service worker.
    Public pages: network first, cached copy if offline, then /offline.
    Never touches account, admin, partner, booking, payment, auth or API traffic. */
 const VERSION = "v1";
-const PAGES = `vlb-pages-${VERSION}`;
-const ASSETS = `vlb-assets-${VERSION}`;
+const PAGES = `vasa-pages-${VERSION}`;
+const ASSETS = `vasa-assets-${VERSION}`;
 const PRIVATE = ["/admin", "/partner", "/booking", "/account", "/api", "/auth", "/login", "/register", "/forgot-password", "/reset-password", "/verify-email", "/travel-planner", "/plan/"];
 
 self.addEventListener("install", (event) => {

@@ -3,12 +3,12 @@ import type { Group } from "@/components/listings/ListingPages";
 
 export const accommodationGroup: Group = {
   base: "accommodation", detail: "accommodation", title: "Accommodation", types: accommodationTypes, noun: "place to stay", withPrice: true,
-  intro: "Hotels, guesthouses, lodges and holiday homes near Lake Bosomtwe.",
+  intro: "Hotels, guesthouses, lodges and holiday homes across the Ashanti Region.",
   emptyText: "Accommodation providers will appear here once they have been added and approved.",
 };
 export const restaurantGroup: Group = {
   base: "restaurants", detail: "restaurants", title: "Restaurants and local food", types: restaurantTypes, noun: "restaurant",
-  intro: "Local kitchens and restaurants serving Ghanaian dishes around the lake.",
+  intro: "Local kitchens and restaurants serving Ghanaian dishes across the Ashanti Region.",
   emptyText: "Restaurants will appear here once they have been added and approved.",
 };
 export const businessGroup: Group = {

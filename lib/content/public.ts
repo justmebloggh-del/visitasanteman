@@ -34,6 +34,17 @@ const sb = () => createPublicClient();
 /** Strip characters that would alter a PostgREST filter expression. */
 const cleanTerm = (s: string) => s.replace(/[%,()*\\]/g, " ").trim().slice(0, 80);
 
+const NO_MATCH = "00000000-0000-0000-0000-000000000000";
+/** Resolve a district slug to its id (anonymous clients only see active areas). */
+async function areaId(slug: string): Promise<string> {
+  const { data } = await sb().from("administrative_areas").select("id").eq("slug", slug).maybeSingle();
+  return data?.id ?? NO_MATCH;
+}
+async function destinationId(slug: string): Promise<string> {
+  const { data } = await sb().from("destinations").select("id").eq("slug", slug).maybeSingle();
+  return data?.id ?? NO_MATCH;
+}
+
 function paged<T>(items: T[], total: number, page: number): Page<T> {
   return { items, total, page, pageCount: Math.max(1, Math.ceil(total / PAGE_SIZE)) };
 }
@@ -65,7 +76,7 @@ export async function getPage(slug: string): Promise<PageContent | null> {
 // ── Attractions ──
 const ATTRACTION = `*, ${COVER}, category:attraction_categories(name,slug), community:communities(name,slug)`;
 
-export async function listAttractions(o: { q?: string; category?: string; community?: string; page?: number; limit?: number }) {
+export async function listAttractions(o: { q?: string; category?: string; community?: string; area?: string; destination?: string; page?: number; limit?: number }) {
   const page = o.page ?? 1;
   const [from, to] = o.limit ? [0, o.limit - 1] : range(page);
   if (!supabaseConfigured) return paged<Attraction>([], 0, page);
@@ -80,6 +91,8 @@ export async function listAttractions(o: { q?: string; category?: string; commun
       const { data: c } = await sb().from("communities").select("id").eq("slug", o.community).maybeSingle();
       q = q.eq("community_id", c?.id ?? "00000000-0000-0000-0000-000000000000");
     }
+    if (o.area) q = q.eq("administrative_area_id", await areaId(o.area));
+    if (o.destination) q = q.eq("destination_id", await destinationId(o.destination));
     const { data, count, error } = await q.range(from, to);
     if (error) throw error;
     return paged((data ?? []) as unknown as Attraction[], count ?? 0, page);
@@ -98,8 +111,14 @@ export const getAttractionCategories = () =>
   run<{ slug: string; name: string }[]>("attraction-cats", () => sb().from("attraction_categories").select("slug,name").order("sort_order"), []);
 
 // ── Communities ──
-export const listCommunities = () =>
-  run<Community[]>("communities", () => sb().from("communities").select(`*, ${COVER}`).order("sort_order").order("name") as never, []);
+export async function listCommunities(o: { area?: string } = {}) {
+  const id = o.area ? await areaId(o.area) : null;
+  return run<Community[]>("communities", () => {
+    let q = sb().from("communities").select(`*, ${COVER}`).order("sort_order").order("name");
+    if (id) q = q.eq("administrative_area_id", id);
+    return q as never;
+  }, []);
+}
 
 export async function getCommunity(slug: string) {
   const rows = await run<Community[]>("community", () => sb().from("communities").select(`*, ${COVER}`).eq("slug", slug).limit(1) as never, []);
@@ -111,7 +130,7 @@ const LISTING = `*, ${COVER}, community:communities(name,slug)`;
 
 export async function listListings(
   types: ListingType[],
-  o: { q?: string; type?: string; community?: string; maxPrice?: number; page?: number; limit?: number; featured?: boolean },
+  o: { q?: string; type?: string; community?: string; area?: string; maxPrice?: number; page?: number; limit?: number; featured?: boolean },
 ) {
   const page = o.page ?? 1;
   const [from, to] = o.limit ? [0, o.limit - 1] : range(page);
@@ -127,6 +146,7 @@ export async function listListings(
       const { data: c } = await sb().from("communities").select("id").eq("slug", o.community).maybeSingle();
       q = q.eq("community_id", c?.id ?? "00000000-0000-0000-0000-000000000000");
     }
+    if (o.area) q = q.eq("administrative_area_id", await areaId(o.area));
     const { data, count, error } = await q.range(from, to);
     if (error) throw error;
     return paged((data ?? []) as unknown as Listing[], count ?? 0, page);
@@ -150,7 +170,7 @@ export const getMenuItems = (listingId: string) =>
 // ── Experiences ──
 const EXPERIENCE = `*, ${COVER}, provider:listings!provider_listing_id(name,slug,phone,whatsapp,email)`;
 
-export async function listExperiences(o: { q?: string; category?: string; page?: number; limit?: number }) {
+export async function listExperiences(o: { q?: string; category?: string; area?: string; page?: number; limit?: number }) {
   const page = o.page ?? 1;
   const [from, to] = o.limit ? [0, o.limit - 1] : range(page);
   if (!supabaseConfigured) return paged<Experience>([], 0, page);
@@ -158,6 +178,7 @@ export async function listExperiences(o: { q?: string; category?: string; page?:
     let q = sb().from("experiences").select(EXPERIENCE, { count: "exact" }).order("is_featured", { ascending: false }).order("title");
     if (o.q) q = q.ilike("title", `%${cleanTerm(o.q)}%`);
     if (o.category) q = q.eq("category", o.category);
+    if (o.area) q = q.eq("administrative_area_id", await areaId(o.area));
     const { data, count, error } = await q.range(from, to);
     if (error) throw error;
     return paged((data ?? []) as unknown as Experience[], count ?? 0, page);
@@ -173,7 +194,7 @@ export async function getExperience(slug: string) {
 }
 
 // ── Events ──
-export async function listEvents(o: { when?: "upcoming" | "past"; page?: number; limit?: number; month?: string }) {
+export async function listEvents(o: { when?: "upcoming" | "past"; area?: string; page?: number; limit?: number; month?: string }) {
   const page = o.page ?? 1;
   const [from, to] = o.limit ? [0, o.limit - 1] : range(page);
   if (!supabaseConfigured) return paged<EventItem>([], 0, page);
@@ -189,6 +210,7 @@ export async function listEvents(o: { when?: "upcoming" | "past"; page?: number;
     } else {
       q = q.gte("starts_at", now).order("starts_at");
     }
+    if (o.area) q = q.eq("administrative_area_id", await areaId(o.area));
     const { data, count, error } = await q.range(from, to);
     if (error) throw error;
     return paged((data ?? []) as unknown as EventItem[], count ?? 0, page);
@@ -234,6 +256,56 @@ export async function getArticle(slug: string) {
 export const getArticleCategories = () =>
   run<{ slug: string; name: string }[]>("article-cats", () => sb().from("article_categories").select("slug,name").order("sort_order"), []);
 
+// ── Geography: districts (MMDAs) and destinations ──
+export interface AdminArea extends Cover {
+  id: string; slug: string; name: string; kind: "metropolitan" | "municipal" | "district"; capital_name: string | null;
+  summary: string | null; latitude: number | null; longitude: number | null; source: string | null; source_url: string | null;
+  verified_at: string | null; seo_title: string | null; seo_description: string | null;
+  region: { name: string; slug: string } | null;
+}
+export const areaKindLabels = { metropolitan: "Metropolitan Assembly", municipal: "Municipal Assembly", district: "District Assembly" } as const;
+const AREA = `*, ${COVER}, region:regions(name,slug)`;
+
+export const listAreas = () =>
+  run<AdminArea[]>("areas", () => sb().from("administrative_areas").select(AREA).order("sort_order").order("name") as never, []);
+
+export async function getArea(slug: string) {
+  const rows = await run<AdminArea[]>("area", () => sb().from("administrative_areas").select(AREA).eq("slug", slug).limit(1) as never, []);
+  return rows[0] ?? null;
+}
+
+/** How many published items each district has, so the site can list only districts with something to show. */
+export async function getAreaContentCounts(): Promise<Record<string, number>> {
+  const tables = ["attractions", "communities", "listings", "experiences", "events"];
+  const lists = await Promise.all(tables.map((t) =>
+    run<{ administrative_area_id: string | null }[]>(`area-count-${t}`, () => sb().from(t).select("administrative_area_id").not("administrative_area_id", "is", null) as never, [])));
+  const counts: Record<string, number> = {};
+  for (const rows of lists) for (const r of rows) if (r.administrative_area_id) counts[r.administrative_area_id] = (counts[r.administrative_area_id] ?? 0) + 1;
+  return counts;
+}
+
+export interface DestinationItem extends Seo, Cover {
+  id: string; slug: string; name: string; summary: string | null; description: string | null; directions: string | null;
+  latitude: number | null; longitude: number | null; sources: string | null; content_verified: boolean;
+  administrative_area_id: string; area: { name: string; slug: string } | null;
+}
+const DESTINATION = `*, ${COVER}, area:administrative_areas(name,slug)`;
+
+export async function listDestinations(o: { area?: string; limit?: number } = {}) {
+  const id = o.area ? await areaId(o.area) : null;
+  return run<DestinationItem[]>("destinations", () => {
+    let q = sb().from("destinations").select(DESTINATION).order("sort_order").order("name");
+    if (id) q = q.eq("administrative_area_id", id);
+    if (o.limit) q = q.limit(o.limit);
+    return q as never;
+  }, []);
+}
+
+export async function getDestination(slug: string) {
+  const rows = await run<DestinationItem[]>("destination", () => sb().from("destinations").select(DESTINATION).eq("slug", slug).limit(1) as never, []);
+  return rows[0] ?? null;
+}
+
 // ── Misc ──
 export const getTestimonials = (limit = 3) =>
   run<Testimonial[]>("testimonials", () => sb().from("testimonials").select("id,author_name,author_origin,quote,rating").order("created_at", { ascending: false }).limit(limit) as never, []);
@@ -278,12 +350,15 @@ export async function getMapPoints(): Promise<MapPoint[]> {
 export async function getSitemapEntries() {
   const slugs = (table: string, col = "slug") =>
     run<{ slug: string; updated_at: string }[]>(`sitemap-${table}`, () => sb().from(table).select(`${col}, updated_at`).eq("noindex", false) as never, []);
-  const [attractions, communities, listings, experiences, events, articles, investments] = await Promise.all([
+  const [areas, counts] = await Promise.all([listAreas(), getAreaContentCounts()]);
+  const [attractions, communities, listings, experiences, events, articles, investments, destinations] = await Promise.all([
     slugs("attractions"), slugs("communities"),
     run<{ slug: string; type: string; updated_at: string }[]>("sitemap-listings", () => sb().from("listings").select("slug,type,updated_at").eq("noindex", false) as never, []),
-    slugs("experiences"), slugs("events"), slugs("articles"), slugs("investment_opportunities"),
+    slugs("experiences"), slugs("events"), slugs("articles"), slugs("investment_opportunities"), slugs("destinations"),
   ]);
-  return { attractions, communities, listings, experiences, events, articles, investments };
+  // Districts without any published content are left out of the sitemap (thin pages).
+  const districts = areas.filter((a) => (counts[a.id] ?? 0) > 0).map((a) => ({ slug: a.slug, updated_at: a.verified_at ?? new Date().toISOString() }));
+  return { attractions, communities, listings, experiences, events, articles, investments, destinations, districts };
 }
 
 // ── Reviews (only published, booking-verified ones are public) ──

@@ -50,7 +50,7 @@ export default async function Enquiries({ searchParams }: { searchParams: Promis
               <p className="mt-3 whitespace-pre-line text-sm">{e.message}</p>
               {Object.keys(e.details ?? {}).length > 0 && <p className="mt-2 text-xs text-muted">{Object.entries(e.details).map(([k, v]) => `${k.replace("_", " ")}: ${v}`).join(" · ")}</p>}
               <div className="mt-4 flex flex-wrap gap-2">
-                <ButtonLink href={`mailto:${e.email}?subject=${encodeURIComponent("Re: your enquiry to Visit Lake Bosomtwe")}`} size="sm">Reply by email</ButtonLink>
+                <ButtonLink href={`mailto:${e.email}?subject=${encodeURIComponent("Re: your enquiry to VisitAsanteman")}`} size="sm">Reply by email</ButtonLink>
                 {["read", "replied", "closed"].filter((s) => s !== e.status).map((s) => <form key={s} action={setEnquiryStatus.bind(null, e.id, s)}><Button size="sm" variant="outline">Mark {s}</Button></form>)}
                 {isAdmin(user.role) && <form action={deleteEnquiry.bind(null, e.id)}><Button size="sm" variant="danger">Delete</Button></form>}
               </div>

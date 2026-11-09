@@ -1,7 +1,7 @@
 /** Interest-based suggestions. Rule-based on purpose: transparent, free, and uses only published platform data. */
 export const INTERESTS = [
   { id: "nature", label: "Nature" }, { id: "culture", label: "Culture and heritage" }, { id: "adventure", label: "Adventure" },
-  { id: "relaxation", label: "Relaxation by the lake" }, { id: "family", label: "Family" }, { id: "photography", label: "Photography" },
+  { id: "relaxation", label: "Relaxation and nature" }, { id: "family", label: "Family" }, { id: "photography", label: "Photography" },
   { id: "birdwatching", label: "Birdwatching" },
 ] as const;
 

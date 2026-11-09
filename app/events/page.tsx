@@ -5,27 +5,30 @@ import { EmptyState, PageHeader, Pagination } from "@/components/layout/blocks";
 import { buildMetadata } from "@/components/layout/seo";
 import { Badge, Container } from "@/components/ui";
 import { eventStatusLabels } from "@/config/site";
-import { listEvents, toPage } from "@/lib/content/public";
+import { listAreas, listEvents, toPage } from "@/lib/content/public";
 import { cn, formatDate } from "@/lib/utils";
 
 export const revalidate = 60;
 export const metadata: Metadata = buildMetadata({
-  title: "Events and festivals at Lake Bosomtwe",
-  description: "Festivals, cultural celebrations and tourism events around Lake Bosomtwe.",
+  title: "Events and festivals in the Ashanti Region",
+  description: "Festivals, cultural celebrations and tourism events across the Ashanti Region.",
   path: "/events",
 });
 
-export default async function EventsPage({ searchParams }: { searchParams: Promise<{ view?: string; when?: string; month?: string; page?: string }> }) {
+export default async function EventsPage({ searchParams }: { searchParams: Promise<{ view?: string; when?: string; month?: string; area?: string; page?: string }> }) {
   const sp = await searchParams;
   const view = sp.view === "calendar" ? "calendar" : "list";
   const now = new Date();
   const month = /^\d{4}-\d{2}$/.test(sp.month ?? "") ? sp.month! : `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}`;
   const when = sp.when === "past" ? "past" : "upcoming";
-  const result = await listEvents(view === "calendar" ? { month, limit: 100 } : { when, page: toPage(sp.page) });
+  const [result, areas] = await Promise.all([
+    listEvents(view === "calendar" ? { month, area: sp.area, limit: 100 } : { when, area: sp.area, page: toPage(sp.page) }),
+    listAreas(),
+  ]);
 
   return (
     <>
-      <PageHeader title="Events and festivals" intro="What is happening around the lake." crumbs={[{ label: "Events" }]} />
+      <PageHeader title="Events and festivals" intro="What is happening across the Ashanti Region." crumbs={[{ label: "Events" }]} />
       <Container className="py-10">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div className="flex gap-2" role="group" aria-label="View">
@@ -39,6 +42,19 @@ export default async function EventsPage({ searchParams }: { searchParams: Promi
             </div>
           )}
         </div>
+
+        {areas.length > 0 && (
+          <form action="/events" className="mb-6 flex flex-wrap items-end gap-2">
+            {view === "calendar" && <input type="hidden" name="view" value="calendar" />}
+            {view === "list" && when === "past" && <input type="hidden" name="when" value="past" />}
+            <div><label htmlFor="ev-area" className="mb-1.5 block text-xs font-medium text-muted">District</label>
+              <select id="ev-area" name="area" defaultValue={sp.area ?? ""} className="h-11 rounded-lg border border-line bg-white px-3 text-sm">
+                <option value="">All districts</option>
+                {areas.map((a) => <option key={a.id} value={a.slug}>{a.name}</option>)}
+              </select></div>
+            <button type="submit" className="h-11 rounded-lg bg-forest px-4 text-sm font-medium text-white">Apply</button>
+          </form>
+        )}
 
         {view === "calendar" ? <Calendar month={month} events={result.items} /> : result.items.length === 0 ? (
           <EmptyState title={when === "past" ? "No past events" : "No upcoming events listed"} text="Events appear here once organisers have confirmed the details." />
@@ -62,7 +78,7 @@ export default async function EventsPage({ searchParams }: { searchParams: Promi
             ))}
           </ul>
         )}
-        {view === "list" && <Pagination page={result.page} pageCount={result.pageCount} basePath="/events" params={{ when: when === "past" ? "past" : undefined }} />}
+        {view === "list" && <Pagination page={result.page} pageCount={result.pageCount} basePath="/events" params={{ when: when === "past" ? "past" : undefined, area: sp.area }} />}
       </Container>
     </>
   );

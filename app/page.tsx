@@ -8,9 +8,9 @@ import { ButtonLink, Container } from "@/components/ui";
 import { AdSlot } from "@/components/ads/AdSlot";
 import { Map } from "@/components/maps/Map";
 import { SearchBox } from "@/components/layout/SearchBox";
-import { stageLabels, eventStatusLabels, experienceCategoryLabels, listingTypeLabels, accommodationTypes, restaurantTypes, type ListingType } from "@/config/site";
+import { stageLabels, eventStatusLabels, experienceCategoryLabels, listingTypeLabels, accommodationTypes, businessTypes, restaurantTypes, planVisit, type ListingType } from "@/config/site";
 import {
-  getHomepageSections, getTestimonials, listArticles, listAttractions, listCommunities, listEvents,
+  getAreaContentCounts, getHomepageSections, getTestimonials, listAreas, listArticles, listAttractions, listCommunities, listDestinations, listEvents,
   listExperiences, listListings, getMapPoints, getSettings, listInvestments,
 } from "@/lib/content/public";
 import { formatDate, formatPrice, mediaUrl } from "@/lib/utils";
@@ -18,7 +18,7 @@ import { formatDate, formatPrice, mediaUrl } from "@/lib/utils";
 export const revalidate = 60;
 
 export default async function HomePage() {
-  const [sections, attractions, experiences, stays, food, communities, events, articles, testimonials, points, settings, investments] = await Promise.all([
+  const [sections, attractions, experiences, stays, food, communities, events, articles, testimonials, points, settings, investments, areas, areaCounts, destinations, businesses, cultureStories] = await Promise.all([
     getHomepageSections(),
     listAttractions({ limit: 6 }),
     listExperiences({ limit: 3 }),
@@ -31,7 +31,13 @@ export default async function HomePage() {
     getMapPoints(),
     getSettings(),
     listInvestments({ limit: 3 }),
+    listAreas(),
+    getAreaContentCounts(),
+    listDestinations({ limit: 6 }),
+    listListings(businessTypes, { limit: 3 }),
+    listArticles({ category: "culture-heritage", limit: 3 }),
   ]);
+  const activeAreas = areas.filter((a) => (areaCounts[a.id] ?? 0) > 0);
   const mapCfg = settings.map ?? {};
   const contact = settings.contact ?? {};
 
@@ -53,12 +59,12 @@ export default async function HomePage() {
           <Container className="flex min-h-[78vh] flex-col justify-center py-20">
             <p className="mb-4 text-sm font-medium uppercase tracking-[0.2em] text-gold">Ashanti Region, Ghana</p>
             <h1 className="max-w-3xl text-4xl font-semibold leading-tight sm:text-6xl">
-              {hero?.title ?? "Discover the Extraordinary. Experience the Beauty of Lake Bosomtwe."}
+              {hero?.title ?? "Discover Ashanti. Experience Our Heritage."}
             </h1>
-            {hero?.subtitle && <p className="mt-5 max-w-xl text-lg text-white/85">{hero.subtitle}</p>}
+            <p className="mt-5 max-w-xl text-lg text-white/85">{hero?.subtitle || "Plan your visit to the Ashanti Region of Ghana: its places, its people and its heritage, district by district."}</p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <ButtonLink href="/explore" variant="accent" size="lg">Explore now</ButtonLink>
-              <ButtonLink href="/travel-guide" variant="light" size="lg">Plan your visit</ButtonLink>
+              <ButtonLink href="/explore" variant="accent" size="lg">Explore Ashanti</ButtonLink>
+              <ButtonLink href={planVisit.href} variant="light" size="lg">{planVisit.label}</ButtonLink>
             </div>
             <SearchBox className="mt-10 max-w-xl" />
           </Container>
@@ -68,7 +74,7 @@ export default async function HomePage() {
       {/* Main calls to action */}
       <Container className="relative z-10 -mt-8">
         <ul className="grid gap-3 rounded-2xl border border-line bg-white p-3 shadow-lg sm:grid-cols-2 lg:grid-cols-5">
-          {[["/explore", "Explore Lake Bosomtwe"], ["/accommodation", "Find accommodation"], ["/experiences", "Discover experiences"], ["/travel-guide", "Plan your visit"], ["/partner", "Become a tourism partner"]].map(([href, label]) => (
+          {[["/districts", "Browse by district"], ["/attractions", "Discover attractions"], ["/accommodation", "Find accommodation"], ["/experiences", "Things to do"], ["/partner", "Become a tourism partner"]].map(([href, label]) => (
             <li key={href}><Link href={href} className="flex h-12 items-center justify-center rounded-xl bg-mist px-3 text-center text-sm font-medium text-forest hover:bg-forest hover:text-white">{label}</Link></li>
           ))}
         </ul>
@@ -80,7 +86,25 @@ export default async function HomePage() {
       {on("intro") && sections.intro?.body && (
         <Block title={sections.intro.title} subtitle={sections.intro.subtitle}>
           <p className="max-w-3xl whitespace-pre-line text-lg leading-relaxed text-ink/90">{sections.intro.body}</p>
-          <ButtonLink href="/explore" variant="outline" className="mt-6">Read more about the lake</ButtonLink>
+          <ButtonLink href="/about" variant="outline" className="mt-6">Read more about VisitAsanteman</ButtonLink>
+        </Block>
+      )}
+
+      {/* B. Explore the region: featured destinations and browse by district */}
+      {on("destinations") && (destinations.length > 0 || activeAreas.length > 0) && (
+        <Block title={sections.destinations?.title ?? "Explore the region"} subtitle={sections.destinations?.subtitle ?? "Featured destinations and the districts of the Ashanti Region."} more={{ href: "/districts", label: "All districts" }}>
+          {destinations.length > 0 && (
+            <CardGrid>
+              {destinations.map((d) => <ContentCard key={d.id} href={`/destinations/${d.slug}`} title={d.name} summary={d.summary} media={d.cover} meta={d.area?.name} />)}
+            </CardGrid>
+          )}
+          {activeAreas.length > 0 && (
+            <ul className={`flex flex-wrap gap-2 ${destinations.length > 0 ? "mt-8" : ""}`} aria-label="Browse by district">
+              {activeAreas.map((a) => (
+                <li key={a.id}><Link href={`/districts/${a.slug}`} className="inline-block rounded-full border border-line bg-white px-4 py-2 text-sm font-medium text-forest hover:bg-forest hover:text-white">{a.name}</Link></li>
+              ))}
+            </ul>
+          )}
         </Block>
       )}
 
@@ -90,6 +114,15 @@ export default async function HomePage() {
             {attractions.items.map((a) => (
               <ContentCard key={a.id} href={`/attractions/${a.slug}`} title={a.name} summary={a.summary} media={a.cover} meta={a.community?.name ?? a.category?.name} badge={a.category?.name} />
             ))}
+          </CardGrid>
+        </Block>
+      )}
+
+      {/* D. Experience Ashanti culture: only verified, published stories */}
+      {on("culture") && cultureStories.items.length > 0 && (
+        <Block title={sections.culture?.title ?? "Experience Ashanti culture"} subtitle={sections.culture?.subtitle} more={{ href: "/culture", label: "Culture & heritage" }}>
+          <CardGrid>
+            {cultureStories.items.map((a) => <ContentCard key={a.id} href={`/articles/${a.slug}`} title={a.title} summary={a.excerpt} media={a.cover} meta={a.category?.name} />)}
           </CardGrid>
         </Block>
       )}
@@ -187,6 +220,34 @@ export default async function HomePage() {
         </Block>
       )}
 
+      {/* I. Plan your visit: always available, these are working tools */}
+      <Block title={sections.plan?.title ?? "Plan your visit"} subtitle={sections.plan?.subtitle ?? "Build an itinerary, read the travel guide or find places on the map."}>
+        <ul className="grid gap-4 md:grid-cols-3">
+          {[
+            { href: "/travel-planner", title: "Travel planner", text: "Choose places and arrange them into a day-by-day plan you can save and share." },
+            { href: "/travel-guide", title: "Travel guide", text: "Practical information for getting here and getting around." },
+            { href: "/map", title: "Tourism map", text: "See places with verified locations on an interactive map." },
+          ].map((c) => (
+            <li key={c.href}><Link href={c.href} className="block h-full rounded-2xl border border-line bg-white p-6 transition hover:shadow-md">
+              <h3 className="font-serif text-xl font-semibold text-forest">{c.title}</h3><p className="mt-2 text-sm text-muted">{c.text}</p>
+            </Link></li>
+          ))}
+        </ul>
+      </Block>
+
+      {/* J. Local tourism businesses */}
+      <Block tone="mist" title={sections.businesses?.title ?? "Local tourism businesses"} subtitle={sections.businesses?.subtitle ?? "Tour operators, guides, makers and other businesses. Every listing is reviewed before it is published."} more={{ href: "/business-directory", label: "Business directory" }}>
+        {businesses.items.length > 0 && (
+          <div className="mb-8"><CardGrid>
+            {businesses.items.map((l) => <ContentCard key={l.id} href={`/business/${l.slug}`} title={l.name} summary={l.summary} media={l.cover} meta={listingTypeLabels[l.type as ListingType]} badge={l.is_verified ? "Verified" : null} />)}
+          </CardGrid></div>
+        )}
+        <div className="flex flex-wrap gap-3">
+          <ButtonLink href="/partner">Register your business</ButtonLink>
+          <ButtonLink href="/advertise" variant="outline">Advertise with VisitAsanteman</ButtonLink>
+        </div>
+      </Block>
+
       {on("investment") && investments.length > 0 && (
         <Block title={sections.investment?.title} subtitle={sections.investment?.subtitle} more={{ href: "/investment", label: "All opportunities" }}>
           <CardGrid>
@@ -196,8 +257,8 @@ export default async function HomePage() {
       )}
 
       {points.length > 0 && (
-        <Block title="Explore the map" subtitle="Attractions, places to stay, food and events with verified locations." more={{ href: "/map", label: "Open full map" }}>
-          <Map points={points} center={[Number(mapCfg.center_lng ?? -1.41), Number(mapCfg.center_lat ?? 6.5)]} zoom={Number(mapCfg.zoom ?? 11)} />
+        <Block title="Explore the map" subtitle="Attractions, places to stay, food and events with verified locations across the region." more={{ href: "/map", label: "Open full map" }}>
+          <Map points={points} center={[Number(mapCfg.center_lng ?? -1.6), Number(mapCfg.center_lat ?? 6.7)]} zoom={Number(mapCfg.zoom ?? 8)} />
         </Block>
       )}
 
@@ -215,9 +276,12 @@ export default async function HomePage() {
       {/* Partner CTA + newsletter */}
       <Container className="mt-20 grid gap-6 lg:grid-cols-2">
         <div className="rounded-3xl bg-forest p-8 text-white sm:p-10">
-          <h2 className="text-2xl font-semibold sm:text-3xl">Run a tourism business here?</h2>
-          <p className="mt-3 text-white/85">Hotels, restaurants, guides and boat operators can ask to be listed. Every listing is reviewed before it is published.</p>
-          <ButtonLink href="/partner" variant="accent" className="mt-6">Become a tourism partner <ArrowRight className="size-4" /></ButtonLink>
+          <h2 className="text-2xl font-semibold sm:text-3xl">Partnerships and investment</h2>
+          <p className="mt-3 text-white/85">Organisations that want to support tourism in the region can talk to us, and tourism businesses can ask to be listed. Every listing is reviewed before it is published.</p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <ButtonLink href="/partner-with-us" variant="accent">Partner with us <ArrowRight className="size-4" /></ButtonLink>
+            <ButtonLink href="/partner" variant="light">List your business</ButtonLink>
+          </div>
         </div>
         {on("newsletter") && (
           <div className="rounded-3xl border border-line bg-mist p-8 sm:p-10">

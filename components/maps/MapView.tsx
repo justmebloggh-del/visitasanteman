@@ -112,7 +112,7 @@ export function MapView({ points, center, zoom = 11, filters = false, className 
       )}
       <div ref={container} className="h-[420px] w-full overflow-hidden rounded-2xl border border-line sm:h-[560px]" role="region" aria-label="Interactive map" />
       {points.length === 0 && (
-        <p className="text-sm text-muted">No places with verified coordinates have been added yet. The map shows the Lake Bosomtwe area until they are.</p>
+        <p className="text-sm text-muted">No places with verified coordinates have been added yet. The map shows the Ashanti Region until they are.</p>
       )}
     </div>
   );

@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   title: { default: `${siteConfig.name} | ${siteConfig.tagline}`, template: `%s | ${siteConfig.name}` },
   description: siteConfig.description,
   openGraph: { siteName: siteConfig.name, type: "website", locale: "en_GH" },
-  appleWebApp: { capable: true, title: "Lake Bosomtwe", statusBarStyle: "default" },
+  appleWebApp: { capable: true, title: siteConfig.displayName, statusBarStyle: "default" },
   verification: process.env.NEXT_PUBLIC_GSC_VERIFICATION ? { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION } : undefined,
 };
 
@@ -31,7 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-white focus:px-4 focus:py-2">
           Skip to content
         </a>
-        <JsonLd data={{ "@context": "https://schema.org", "@type": "Organization", name: siteConfig.name, url: SITE_URL, logo: `${SITE_URL}/brand/logo.png` }} />
+        <JsonLd data={{ "@context": "https://schema.org", "@type": "Organization", name: siteConfig.name, url: SITE_URL }} />
         <Header />
         <main id="main" className="flex-1">{children}</main>
         <Footer />
