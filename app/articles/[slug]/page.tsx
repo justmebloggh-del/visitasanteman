@@ -35,9 +35,9 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         {a.tags.length > 0 && <ul className="mt-8 flex flex-wrap gap-2">{a.tags.map((t) => <li key={t}><Badge>{t}</Badge></li>)}</ul>}
         <p className="mt-8 flex flex-wrap gap-4 border-t border-line pt-5 text-sm">
           <span className="text-muted">Share:</span>
-          <a className="text-lake-dark hover:underline" target="_blank" rel="noopener noreferrer" href={share("https://www.facebook.com/sharer/sharer.php?u=")}>Facebook</a>
-          <a className="text-lake-dark hover:underline" target="_blank" rel="noopener noreferrer" href={share("https://wa.me/?text=")}>WhatsApp</a>
-          <a className="text-lake-dark hover:underline" target="_blank" rel="noopener noreferrer" href={share("https://twitter.com/intent/tweet?url=")}>X</a>
+          <a className="text-lake-dark underline underline-offset-2 hover:no-underline" target="_blank" rel="noopener noreferrer" href={share("https://www.facebook.com/sharer/sharer.php?u=")}>Facebook</a>
+          <a className="text-lake-dark underline underline-offset-2 hover:no-underline" target="_blank" rel="noopener noreferrer" href={share("https://wa.me/?text=")}>WhatsApp</a>
+          <a className="text-lake-dark underline underline-offset-2 hover:no-underline" target="_blank" rel="noopener noreferrer" href={share("https://twitter.com/intent/tweet?url=")}>X</a>
         </p>
       </Container>
       {related.length > 0 && <Container className="pb-4"><h2 className="mb-5 text-2xl font-semibold text-forest">Related articles</h2><CardGrid>{related.map((r) => <ContentCard key={r.id} href={`/articles/${r.slug}`} title={r.title} summary={r.excerpt} media={r.cover} />)}</CardGrid></Container>}

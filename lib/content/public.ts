@@ -401,14 +401,15 @@ export async function getSitemapEntries() {
   const slugs = (table: string, col = "slug") =>
     run<{ slug: string; updated_at: string }[]>(`sitemap-${table}`, () => sb().from(table).select(`${col}, updated_at`).eq("noindex", false) as never, []);
   const [areas, counts] = await Promise.all([listAreas(), getAreaContentCounts()]);
-  const [attractions, communities, listings, experiences, events, articles, investments, destinations, ceremonies, institutions, sportsVenues, sportsClubs, transport] = await Promise.all([
+  const [attractions, communities, listings, experiences, events, articles, investments, destinations, ceremonies, institutions, sportsVenues, sportsClubs, transport, pages] = await Promise.all([
     slugs("attractions"), slugs("communities"),
     run<{ slug: string; type: string; updated_at: string }[]>("sitemap-listings", () => sb().from("listings").select("slug,type,updated_at").eq("noindex", false) as never, []),
     slugs("experiences"), slugs("events"), slugs("articles"), slugs("investment_opportunities"), slugs("destinations"), slugs("ceremonies"), slugs("institutions"), slugs("sports_venues"), slugs("sports_clubs"), slugs("transport_providers"),
+    run<{ slug: string; updated_at: string }[]>("sitemap-pages", () => sb().from("pages").select("slug,updated_at").eq("noindex", false) as never, []),
   ]);
   // Districts without any published content are left out of the sitemap (thin pages).
   const districts = areas.filter((a) => (counts[a.id] ?? 0) > 0).map((a) => ({ slug: a.slug, updated_at: a.verified_at ?? new Date().toISOString() }));
-  return { attractions, communities, listings, experiences, events, articles, investments, destinations, districts, ceremonies, institutions, sportsVenues, sportsClubs, transport };
+  return { attractions, communities, listings, experiences, events, articles, investments, destinations, districts, ceremonies, institutions, sportsVenues, sportsClubs, transport, pages };
 }
 
 // ── Reviews (only published, booking-verified ones are public) ──

@@ -631,5 +631,6 @@ export const adminNav = [
   { href: "/admin/users", label: "Users" },
   { group: "System" },
   { href: "/admin/analytics", label: "Analytics" },
+  { href: "/admin/readiness", label: "Launch readiness" },
   { href: "/admin/settings", label: "Settings" },
 ] as const;

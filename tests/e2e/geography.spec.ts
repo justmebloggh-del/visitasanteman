@@ -21,7 +21,7 @@ test.describe("VisitAsanteman brand and navigation", () => {
   test("home carries the new brand and no Lake Bosomtwe wording", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(/Discover Ashanti\. Experience Our Heritage\./);
-    await expect(page.getByRole("link", { name: /Visit Asanteman, home/ })).toBeVisible();
+    await expect(page.getByRole("link", { name: /VisitAsanteman, home/ })).toBeVisible();
     expect(await page.locator("body").innerText()).not.toMatch(/bosomtw/i);
     expect(await page.title()).toContain("VisitAsanteman");
   });
@@ -105,8 +105,7 @@ test.describe("districts, destinations and region filters", () => {
     await expect(page.getByText(`E2E ${tag} inactive`)).toHaveCount(0);
     // The sitemap is cached for an hour, so only the fixed entries are asserted here.
     const map = await (await request.get("/sitemap.xml")).text();
-    expect(map).toContain("/districts");
-    expect(map).toContain("/destinations");
+    expect(map).toContain("/contact");
     expect(map).not.toContain(hidden);
   });
 

@@ -66,11 +66,12 @@ test("site-wide search finds every kind of published record, filters, and hides 
 
 test("the home search box offers suggestions as you type", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("combobox").first().fill(word);
-  await expect(page.getByRole("listbox", { name: "Suggestions" })).toBeVisible();
-  await expect(page.getByRole("option").first()).toContainText(word);
+  await page.getByRole("searchbox").first().fill(word);
+  const list = page.getByRole("list", { name: "Search suggestions" });
+  await expect(list).toBeVisible();
+  await expect(list.getByRole("link").first()).toContainText(word);
   await page.keyboard.press("Escape");
-  await expect(page.getByRole("listbox", { name: "Suggestions" })).toHaveCount(0);
+  await expect(list).toHaveCount(0);
 });
 
 test("the map includes education, sports and transport places and offers a list view", async ({ page }) => {

@@ -10,7 +10,7 @@ export default function RegisterPage() {
     <>
       <h1 className="mb-5 text-center text-2xl font-semibold text-forest">Create your account</h1>
       <AuthForm mode="register" action={register} />
-      <p className="mt-5 text-center text-sm text-muted">Already registered? <Link href="/login" className="text-lake-dark hover:underline">Log in</Link></p>
+      <p className="mt-5 text-center text-sm text-muted">Already registered? <Link href="/login" className="text-lake-dark underline underline-offset-2 hover:no-underline">Log in</Link></p>
     </>
   );
 }

@@ -4,7 +4,9 @@ Tourism platform for the whole Ashanti Region of Ghana: public website, built-in
 
 > **Rebrand note.** The project began as *Visit Lake Bosomtwe*. Phase 1 of the VisitAsanteman rebrand (regional geography, roles and workflow, new navigation and pages) is described in [docs/VisitAsanteman-rebrand-assessment.md](docs/VisitAsanteman-rebrand-assessment.md) and [docs/DEVELOPMENT_ROADMAP.md](docs/DEVELOPMENT_ROADMAP.md). The product brief is [docs/VisitAsanteman-brief-v1.md](docs/VisitAsanteman-brief-v1.md).
 
-**Status:** Phases 1 to 3 implemented (website + CMS, business partner portal, bookings/payments/reviews) most of Phase 4 (travel planner, nearby, recommendations, AI assistant, PWA) and Phase 5 (investment portal, advertising). Payments are off until tested with real Paystack keys. See [docs/DEVELOPMENT_ROADMAP.md](docs/DEVELOPMENT_ROADMAP.md) for what is done and what is next.
+**Status (VisitAsanteman rebrand, all eight phases built on the `rebrand/visitasanteman` branch, not yet deployed):** see [docs/LAUNCH_READINESS.md](docs/LAUNCH_READINESS.md) for audit results and what is still needed before launch.
+
+**Original status:** Phases 1 to 3 implemented (website + CMS, business partner portal, bookings/payments/reviews) most of Phase 4 (travel planner, nearby, recommendations, AI assistant, PWA) and Phase 5 (investment portal, advertising). Payments are off until tested with real Paystack keys. See [docs/DEVELOPMENT_ROADMAP.md](docs/DEVELOPMENT_ROADMAP.md) for what is done and what is next.
 
 ## Stack
 Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS 4 · Supabase (Postgres, Auth, Storage, RLS) · MapLibre + OpenStreetMap · Zod · Vitest · Playwright
@@ -46,6 +48,7 @@ psql postgresql://postgres:postgres@127.0.0.1:54322/postgres -v ON_ERROR_STOP=1 
 | [PAYMENTS](docs/PAYMENTS.md) | Booking lifecycle, payment security, go-live steps |
 | [BUSINESS_PARTNER_GUIDE](docs/BUSINESS_PARTNER_GUIDE.md) | Listing a business, review flow, plans |
 | [DEVELOPMENT_ROADMAP](docs/DEVELOPMENT_ROADMAP.md) | Phases, status, open items |
+| [LAUNCH_READINESS](docs/LAUNCH_READINESS.md) | Audit results and what is left before launch |
 | [CONTENT_PLAN](docs/CONTENT_PLAN.md) | District-by-district content and verification plan |
 
 ## Content rule

@@ -51,7 +51,7 @@ export async function ManageBookings({ back, canRefund, sp }: { back: string; ca
                 <StatusBadge value={b.status} />
               </div>
               <p className="mt-1 text-sm">{when} · {b.guests} guest{b.guests > 1 ? "s" : ""}{b.total_amount != null && <> · <strong>{formatPrice(Number(b.total_amount), b.currency)}</strong></>}{b.commission_amount != null && <span className="text-muted"> (commission {formatPrice(Number(b.commission_amount), b.currency)})</span>}</p>
-              <p className="text-sm"><strong>{b.customer_name}</strong> · <a className="text-lake-dark hover:underline" href={`mailto:${b.customer_email}`}>{b.customer_email}</a>{b.customer_phone && <> · {b.customer_phone}</>}</p>
+              <p className="text-sm"><strong>{b.customer_name}</strong> · <a className="text-lake-dark underline underline-offset-2 hover:no-underline" href={`mailto:${b.customer_email}`}>{b.customer_email}</a>{b.customer_phone && <> · {b.customer_phone}</>}</p>
               {b.notes && <p className="mt-2 whitespace-pre-line text-sm text-ink/80">{b.notes}</p>}
               {b.cancellation_reason && <p className="mt-2 text-sm text-red-700">Cancelled by {b.cancelled_by}: {b.cancellation_reason}</p>}
               {b.payments.length > 0 && <p className="mt-2 text-xs text-muted">Payments: {b.payments.map((p) => `${p.reference} ${p.status}${p.method ? ` (${p.method})` : ""}`).join("; ")}</p>}

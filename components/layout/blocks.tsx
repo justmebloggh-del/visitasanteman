@@ -79,6 +79,8 @@ export function CardGrid({ children }: { children: React.ReactNode }) {
 export function EmptyState({ title, text, action }: { title: string; text?: string; action?: { href: string; label: string } }) {
   return (
     <div className="rounded-2xl border border-dashed border-line bg-mist px-6 py-14 text-center">
+      {/* An empty or filtered-out list is a thin page: keep it out of search results (React hoists this into the head). */}
+      <meta name="robots" content="noindex, follow" />
       <Inbox className="mx-auto size-9 text-forest/40" aria-hidden />
       <h3 className="mt-3 text-lg font-semibold text-forest">{title}</h3>
       {text && <p className="mx-auto mt-1 max-w-md text-sm text-muted">{text}</p>}

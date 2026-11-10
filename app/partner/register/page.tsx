@@ -11,7 +11,7 @@ export default function RegisterBusiness() {
       <h1 className="mb-2 text-3xl font-semibold text-forest">Register your business</h1>
       <p className="mb-6 text-sm text-muted">We will email you a link to verify your address. Then you can add your listing.</p>
       <BusinessRegisterForm />
-      <p className="mt-5 text-sm text-muted">Already registered? <Link href="/login?next=/partner/activate" className="text-lake-dark hover:underline">Log in</Link></p>
+      <p className="mt-5 text-sm text-muted">Already registered? <Link href="/login?next=/partner/activate" className="text-lake-dark underline underline-offset-2 hover:no-underline">Log in</Link></p>
     </Container>
   );
 }

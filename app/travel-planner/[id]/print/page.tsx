@@ -18,7 +18,7 @@ export default async function PrintPlan({ params }: { params: Promise<{ id: stri
   if (!plan) notFound();
   return (
     <Container className="max-w-3xl py-8">
-      <div className="no-print mb-6 flex items-center justify-between"><Link href={`/travel-planner/${id}`} className="text-sm text-lake-dark hover:underline">Back to editor</Link><PrintButton /></div>
+      <div className="no-print mb-6 flex items-center justify-between"><Link href={`/travel-planner/${id}`} className="text-sm text-lake-dark underline underline-offset-2 hover:no-underline">Back to editor</Link><PrintButton /></div>
       <h1 className="text-3xl font-semibold text-forest">{plan.title}</h1>
       <p className="mt-1 text-sm text-muted">VisitAsanteman · {plan.days} day{plan.days > 1 ? "s" : ""} · {plan.travellers} traveller{plan.travellers > 1 ? "s" : ""}</p>
       {plan.notes && <p className="mt-3 whitespace-pre-line text-sm">{plan.notes}</p>}

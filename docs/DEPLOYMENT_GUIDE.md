@@ -27,7 +27,12 @@ Path redirects live in `config/redirects.ts` (permanent, page to page, applied b
 ## 4. Search and analytics
 Create a GA4 property → `NEXT_PUBLIC_GA_ID`. Add the site in Search Console, verify with the meta tag (`NEXT_PUBLIC_GSC_VERIFICATION`), submit `/sitemap.xml`.
 
+## 4b. Security headers and rate limits
+`next.config.ts` sets a Content Security Policy (production only), HSTS, `X-Frame-Options: DENY`, `nosniff`, a referrer policy and a permissions policy. The CSP is built from `NEXT_PUBLIC_SUPABASE_URL` and allows OpenStreetMap tiles and Google Analytics; if you change map or analytics providers, update it there. Check the deployed site's response headers after deploying. Add Vercel Firewall rate limits for `/login`, `/register`, `/forgot-password`, `/contact`, `/search`, `/api/search/suggest` and `/api/ads/*`.
+
 ## 5. Pre-launch checklist
+See [LAUNCH_READINESS.md](LAUNCH_READINESS.md) for the audit results and the full open-items list, and use **Admin → Launch readiness** for the live checklist.
+
 - [ ] Real content published (photos, verified facts, contact details). Empty sections hide themselves, but a nearly empty site should not launch
 - [ ] Privacy and Terms pages written and **legally reviewed** (they start empty)
 - [ ] Email delivery tested (register, reset, enquiry notification)

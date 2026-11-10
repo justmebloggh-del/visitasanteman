@@ -24,7 +24,7 @@ export default async function PartnerEnquiries({ searchParams }: { searchParams:
         {rows.map((e) => (
           <li key={e.id} className="rounded-2xl border border-line bg-white p-5">
             <div className="flex flex-wrap justify-between gap-2"><p className="font-semibold text-forest">{e.name} <span className="font-normal text-muted">· {e.listing?.name} · {formatDate(e.created_at, true)}</span></p><StatusBadge value={e.status} /></div>
-            <p className="text-sm"><a className="text-lake-dark hover:underline" href={`mailto:${e.email}`}>{e.email}</a>{e.phone && <> · {e.phone}</>}</p>
+            <p className="text-sm"><a className="text-lake-dark underline underline-offset-2 hover:no-underline" href={`mailto:${e.email}`}>{e.email}</a>{e.phone && <> · {e.phone}</>}</p>
             <p className="mt-3 whitespace-pre-line text-sm">{e.message}</p>
             {Object.keys(e.details ?? {}).length > 0 && <p className="mt-2 text-xs text-muted">{Object.entries(e.details).map(([k, v]) => `${k.replace("_", " ")}: ${v}`).join(" · ")}</p>}
             <div className="mt-4 flex flex-wrap gap-2">

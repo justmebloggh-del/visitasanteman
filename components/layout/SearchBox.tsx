@@ -40,7 +40,6 @@ export function SearchBox({ className, defaultValue }: { className?: string; def
       <label htmlFor="site-search" className="sr-only">What would you like to discover in Ashanti?</label>
       <input
         id="site-search" name="q" type="search" value={value} autoComplete="off" placeholder="What would you like to discover in Ashanti?"
-        role="combobox" aria-expanded={show} aria-controls={listId} aria-autocomplete="list"
         onChange={(e) => setValue(e.target.value)} onKeyDown={(e) => { if (e.key === "Escape") setOpen(false); }}
         className="min-w-0 flex-1 rounded-full bg-transparent px-4 text-sm text-ink placeholder:text-muted/70 focus:outline-none"
       />
@@ -48,16 +47,16 @@ export function SearchBox({ className, defaultValue }: { className?: string; def
         <Search className="size-4" aria-hidden />Search
       </button>
       {show && (
-        <ul id={listId} role="listbox" aria-label="Suggestions" className="absolute inset-x-2 top-full z-30 mt-2 overflow-hidden rounded-2xl border border-line bg-white text-left shadow-xl">
+        <ul id={listId} aria-label="Search suggestions" className="absolute inset-x-2 top-full z-30 mt-2 overflow-hidden rounded-2xl border border-line bg-white text-left shadow-xl">
           {items.map((s) => (
-            <li key={s.href} role="option" aria-selected={false}>
+            <li key={s.href}>
               <Link href={s.href} className="flex items-baseline justify-between gap-3 px-4 py-2.5 text-sm text-ink hover:bg-forest-soft">
                 <span className="font-medium">{s.title}</span>
                 <span className="shrink-0 text-xs text-muted">{s.type}{s.area ? ` · ${s.area}` : ""}</span>
               </Link>
             </li>
           ))}
-          <li role="presentation" className="border-t border-line px-4 py-2 text-xs text-muted">Press Search for all results</li>
+          <li className="border-t border-line px-4 py-2 text-xs text-muted">Press Search for all results</li>
         </ul>
       )}
     </form>

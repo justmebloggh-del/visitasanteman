@@ -17,8 +17,8 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
       </div>
       <AuthForm mode="login" action={login} next={sp.next} />
       <div className="mt-5 flex justify-between text-sm">
-        <Link href="/forgot-password" className="text-lake-dark hover:underline">Forgot password?</Link>
-        <Link href="/register" className="text-lake-dark hover:underline">Create an account</Link>
+        <Link href="/forgot-password" className="text-lake-dark underline underline-offset-2 hover:no-underline">Forgot password?</Link>
+        <Link href="/register" className="text-lake-dark underline underline-offset-2 hover:no-underline">Create an account</Link>
       </div>
     </>
   );

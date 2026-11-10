@@ -38,7 +38,7 @@ export default async function EditResource({ params, searchParams }: { params: P
   return (
     <>
       <AdminHeader title={String(row[def.titleField] ?? `Edit ${def.singular}`)} intro={`Editing ${def.singular}`}
-        actions={<>{def.hasStatus && <StatusBadge value={String(row.status)} />}{publicHref && <Link href={publicHref} target="_blank" className="inline-flex items-center gap-1 text-sm text-lake-dark hover:underline">View live<ExternalLink className="size-3.5" aria-hidden /></Link>}</>} />
+        actions={<>{def.hasStatus && <StatusBadge value={String(row.status)} />}{publicHref && <Link href={publicHref} target="_blank" className="inline-flex items-center gap-1 text-sm text-lake-dark underline underline-offset-2 hover:no-underline">View live<ExternalLink className="size-3.5" aria-hidden /></Link>}</>} />
       <Flash sp={sp} />
       {row.deleted_at && <div className="mb-4"><Notice tone="error">This item has been deleted (archived). Saving will not restore it.</Notice></div>}
       <ResourceForm def={toClientDef(def)} id={rowId} initial={row} relations={relations} isAdmin={isAdmin(user.role)} canApprove={canApprove(user.role)} cover={media.cover} gallery={media.gallery} />

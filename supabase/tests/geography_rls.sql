@@ -337,6 +337,33 @@ select pg_temp.visible('H03 visitor cannot read revisions', :visitor, 'authentic
 select pg_temp.t('H04 nobody can write revisions directly', :admin, 'authenticated', 'insert into content_revisions (table_name, record_id, snapshot) values (''x'', ''y'', ''{}'')', false);
 select pg_temp.t('H05 nobody can edit revisions', :super, 'authenticated', 'update content_revisions set record_id = ''z''', false);
 
+-- ── Whole-database safety checks (Phase 8) ──
+insert into results select 'Z01 every public table has row level security enabled',
+  not exists (select 1 from pg_tables where schemaname = 'public' and not rowsecurity),
+  coalesce((select string_agg(tablename, ', ') from pg_tables where schemaname = 'public' and not rowsecurity), 'all enabled');
+insert into results select 'Z02 anonymous visitors can write only to the two form tables',
+  not exists (select 1 from information_schema.role_table_grants where grantee = 'anon' and table_schema = 'public'
+              and privilege_type in ('INSERT', 'UPDATE', 'DELETE', 'TRUNCATE') and table_name not in ('enquiries', 'newsletter_subscribers')),
+  coalesce((select string_agg(distinct table_name || ':' || privilege_type, ', ') from information_schema.role_table_grants where grantee = 'anon' and table_schema = 'public'
+            and privilege_type in ('INSERT', 'UPDATE', 'DELETE', 'TRUNCATE') and table_name not in ('enquiries', 'newsletter_subscribers')), 'none');
+insert into results select 'Z03 only the known public functions can be called by anonymous visitors',
+  not exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+              where n.nspname = 'public' and p.prosecdef and p.prorettype <> 'trigger'::regtype and has_function_privilege('anon', p.oid, 'execute')
+                and p.proname not in ('can_approve', 'can_manage_booking', 'can_manage_geography', 'can_manage_media', 'create_booking', 'curated_itinerary_view', 'current_app_role',
+                                      'guest_cancel_booking', 'is_admin', 'is_partner', 'is_staff', 'is_super_admin', 'itinerary_view', 'lookup_booking', 'nearby_places',
+                                      'owns_listing', 'record_ad_event', 'record_listing_view', 'submit_review')),
+  coalesce((select string_agg(p.proname, ', ') from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.prosecdef and p.prorettype <> 'trigger'::regtype and has_function_privilege('anon', p.oid, 'execute')
+              and p.proname not in ('can_approve', 'can_manage_booking', 'can_manage_geography', 'can_manage_media', 'create_booking', 'curated_itinerary_view', 'current_app_role',
+                                    'guest_cancel_booking', 'is_admin', 'is_partner', 'is_staff', 'is_super_admin', 'itinerary_view', 'lookup_booking', 'nearby_places',
+                                    'owns_listing', 'record_ad_event', 'record_listing_view', 'submit_review')), 'known list only');
+insert into results select 'Z04 every security-definer function pins its search_path',
+  not exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.prosecdef
+              and not (p.proconfig is not null and exists (select 1 from unnest(p.proconfig) c where c like 'search_path=%'))),
+  coalesce((select string_agg(p.proname, ', ') from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.prosecdef
+              and not (p.proconfig is not null and exists (select 1 from unnest(p.proconfig) c where c like 'search_path=%'))), 'all pinned');
+insert into results select 'Z05 the audit log and role table cannot be read by anonymous visitors',
+  not has_table_privilege('anon', 'public.audit_logs', 'select') and not has_table_privilege('anon', 'public.user_roles', 'select'), 'checked';
+
 -- Last, because it changes the visitor's role.
 select pg_temp.rows('R04 super admin can change roles', :super, 'authenticated', format('update user_roles set role = ''media_manager'' where user_id = %L', :visitor), 1);
 

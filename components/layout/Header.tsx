@@ -22,7 +22,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-white/95 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="shrink-0" aria-label={`${siteConfig.displayName}, home`}>
+        <Link href="/" className="shrink-0" aria-label={`${siteConfig.name}, home`}>
           <Wordmark />
         </Link>
 

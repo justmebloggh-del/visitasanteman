@@ -18,6 +18,19 @@ Legend: ✅ built and checked · 🟡 built, needs live-environment testing · �
 | Culture module content tables, travel-guide and gallery detail pages, new experience categories | ⬜ | Phase 2 of the brief |
 | Scheduled status, per-district editor scoping, revision restore | ⬜ | Not built |
 
+## VisitAsanteman Phase 8: audit and launch preparation (this branch)
+| Item | Status | Notes |
+|---|---|---|
+| Security headers and CSP; secret scan of the browser bundle | ✅ | Tested on the production build |
+| Database-wide safety checks; anonymous grants tightened | ✅ | 164 SQL checks |
+| SEO audit and fixes; sitemap lists only indexable pages; thin pages noindex | ✅ | |
+| Accessibility audit (axe, WCAG 2.1 AA) and fixes; mobile layout checks | ✅ | Automated only: needs manual keyboard and screen-reader testing |
+| Performance budget | 🟡 | Local production build only: run Lighthouse on staging |
+| Launch readiness checklist in the admin | ✅ | `/admin/readiness` |
+| Documentation | ✅ | `docs/LAUNCH_READINESS.md` |
+| **Production deployment** | ⬜ | **Not done.** Needs your Supabase, Vercel, GitHub and domain; see LAUNCH_READINESS |
+| Search Console, analytics, redirects from an old domain | ⬜ | Needs the domain; wiring exists |
+
 ## VisitAsanteman Phase 7: bookings and commercial system (this branch)
 | Item | Status | Notes |
 |---|---|---|

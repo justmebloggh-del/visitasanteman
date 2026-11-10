@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Quote, Star } from "lucide-react";
@@ -15,9 +16,11 @@ import {
   getAreaContentCounts, getHomepageSections, listCeremonies, getTestimonials, listAreas, listArticles, listAttractions, listCommunities, listDestinations, listEvents,
   listExperiences, listListings, getMapPoints, getSettings, listInvestments,
 } from "@/lib/content/public";
+import { SITE_URL } from "@/lib/env";
 import { formatDate, formatPrice, mediaUrl } from "@/lib/utils";
 
 export const revalidate = 60;
+export const metadata: Metadata = { alternates: { canonical: SITE_URL } };
 
 export default async function HomePage() {
   const [sections, attractions, experiences, stays, food, communities, events, articles, testimonials, points, settings, investments, areas, areaCounts, destinations, businesses, cultureStories, ceremonies, education, sports, transport] = await Promise.all([
@@ -289,7 +292,7 @@ export default async function HomePage() {
         <div className="grid gap-8 lg:grid-cols-3">
           <div className="lg:col-span-2"><EnquiryForm /></div>
           <div className="space-y-2 text-sm text-muted">
-            {contact.email && <p>Email: <a className="text-lake-dark hover:underline" href={`mailto:${contact.email}`}>{contact.email}</a></p>}
+            {contact.email && <p>Email: <a className="text-lake-dark underline underline-offset-2 hover:no-underline" href={`mailto:${contact.email}`}>{contact.email}</a></p>}
             {contact.phone && <p>Phone: {contact.phone}</p>}
             <p>Follow us using the social links in the footer.</p>
           </div>

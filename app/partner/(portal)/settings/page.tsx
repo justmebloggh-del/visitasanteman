@@ -15,7 +15,7 @@ export default async function PartnerSettings() {
     <>
       <AdminHeader title="Settings" intro={`${user.email}${user.accountType ? ` · ${accountTypeLabels[user.accountType]}` : ""}`} />
       <PartnerSettingsForm name={data?.full_name ?? ""} phone={data?.phone ?? ""} />
-      <p className="mt-8 text-sm text-muted">Need to change your password? <Link href="/forgot-password" className="text-lake-dark hover:underline">Send a reset link</Link>. To change your business type or contact the team, <Link href="/contact" className="text-lake-dark hover:underline">get in touch</Link>.</p>
+      <p className="mt-8 text-sm text-muted">Need to change your password? <Link href="/forgot-password" className="text-lake-dark underline underline-offset-2 hover:no-underline">Send a reset link</Link>. To change your business type or contact the team, <Link href="/contact" className="text-lake-dark underline underline-offset-2 hover:no-underline">get in touch</Link>.</p>
     </>
   );
 }

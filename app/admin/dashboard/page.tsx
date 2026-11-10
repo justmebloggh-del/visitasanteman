@@ -77,7 +77,7 @@ export default async function Dashboard() {
               ))}
             </ul>
           )}
-          <Link href="/admin/enquiries" className="mt-3 inline-block text-sm text-lake-dark hover:underline">All enquiries</Link>
+          <Link href="/admin/enquiries" className="mt-3 inline-block text-sm text-lake-dark underline underline-offset-2 hover:no-underline">All enquiries</Link>
         </section>
         <section className="rounded-2xl border border-line bg-white p-5">
           <h2 className="mb-3 font-serif text-lg font-semibold text-forest">Launch checklist</h2>

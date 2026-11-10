@@ -42,7 +42,7 @@ export default async function Enquiries({ searchParams }: { searchParams: Promis
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div>
                   <p className="font-semibold text-forest">{e.name} <span className="font-normal text-muted">· {String(e.kind).replace("_", " ")} · {formatDate(e.created_at, true)}</span></p>
-                  <p className="text-sm"><a className="text-lake-dark hover:underline" href={`mailto:${e.email}`}>{e.email}</a>{e.phone && <> · {e.phone}</>}</p>
+                  <p className="text-sm"><a className="text-lake-dark underline underline-offset-2 hover:no-underline" href={`mailto:${e.email}`}>{e.email}</a>{e.phone && <> · {e.phone}</>}</p>
                   {(e.listing || e.experience || e.investment) && <p className="text-sm text-muted">About: {e.listing?.name ?? e.experience?.title ?? e.investment?.title}</p>}
                 </div>
                 <StatusBadge value={e.status} />

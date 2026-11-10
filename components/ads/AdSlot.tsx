@@ -14,7 +14,7 @@ export async function AdSlot({ placement }: { placement: "homepage_banner" | "di
         <AdImpression adId={ad.id} />
         {ad.cover && <div className="relative h-28 w-full shrink-0 overflow-hidden rounded-xl sm:h-24 sm:w-40"><Photo media={ad.cover} sizes="160px" /></div>}
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-semibold uppercase tracking-wide text-earth">Sponsored · {ad.advertiser_name}</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-ink/80">Sponsored · {ad.advertiser_name}</p>
           {ad.headline && <h2 className="font-serif text-lg font-semibold text-forest">{ad.headline}</h2>}
           {ad.body && <p className="text-sm text-ink/80">{ad.body}</p>}
         </div>
