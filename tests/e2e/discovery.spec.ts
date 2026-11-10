@@ -77,9 +77,14 @@ test("the home search box offers suggestions as you type", async ({ page }) => {
 test("the map includes education, sports and transport places and offers a list view", async ({ page }) => {
   const a = testAreaId();
   sql(`insert into institutions (slug,name,kind,status,administrative_area_id,verification_status,latitude,longitude) values ('${tag}-mapinst','Mapped school ${tag}','senior_high','published','${a}','verified_secondary',6.7,-1.6)`);
-  await expect.poll(async () => { await page.goto("/map"); await page.getByRole("group", { name: "Map categories" }).waitFor({ timeout: 15_000 }).catch(() => undefined); return await page.getByRole("button", { name: "Education" }).count(); }, wait).toBeGreaterThan(0);
-  await page.getByRole("button", { name: "List", exact: true }).click();
-  await expect(page.getByRole("link", { name: `Mapped school ${tag}` })).toBeVisible();
+  // The map page is cached for a minute: reload until the new place appears in the list view.
+  await expect.poll(async () => {
+    await page.goto("/map");
+    await page.getByRole("button", { name: "List", exact: true }).waitFor({ timeout: 15_000 }).catch(() => undefined);
+    await page.getByRole("button", { name: "List", exact: true }).click({ timeout: 5_000 }).catch(() => undefined);
+    return await page.getByRole("link", { name: `Mapped school ${tag}` }).count();
+  }, wait).toBeGreaterThan(0);
+  await expect(page.getByRole("button", { name: "Education" })).toBeVisible();
   await page.getByRole("button", { name: "Map", exact: true }).click();
   await expect(page.getByRole("region", { name: "Interactive map" })).toBeVisible();
 });

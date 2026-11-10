@@ -1,4 +1,4 @@
-import { listingSection, PAGE_SIZE, type ListingType } from "@/config/site";
+import { listingSection, listingTypeLabels, PAGE_SIZE, type ListingType } from "@/config/site";
 import { supabaseConfigured } from "@/lib/env";
 import { createPublicClient } from "@/lib/supabase/server";
 import type {
@@ -211,7 +211,7 @@ export async function listEvents(o: { when?: "upcoming" | "past"; area?: string;
   if (!supabaseConfigured) return paged<EventItem>([], 0, page);
   try {
     const now = new Date().toISOString();
-    let q = sb().from("events").select(`*, ${COVER}`, { count: "exact" });
+    let q = sb().from("events").select(`*, ${COVER}, area:administrative_areas(name,slug)`, { count: "exact" });
     if (o.month && /^\d{4}-\d{2}$/.test(o.month)) {
       const start = new Date(`${o.month}-01T00:00:00Z`);
       const end = new Date(start); end.setUTCMonth(end.getUTCMonth() + 1);
@@ -267,6 +267,59 @@ export async function getArticle(slug: string) {
 
 export const getArticleCategories = () =>
   run<{ slug: string; name: string }[]>("article-cats", () => sb().from("article_categories").select("slug,name").order("sort_order"), []);
+
+// ── Themes (Eat, Wear, See, Feel and tour categories) ──
+export interface ThemeItem { id: string; slug: string; name: string; kind: "experience_theme" | "tour_category"; summary: string | null; cover: MediaRef | null }
+export const listThemes = () =>
+  run<ThemeItem[]>("themes", () => sb().from("themes").select(`id,slug,name,kind,summary,${COVER}`).eq("is_active", true).order("sort_order") as never, []);
+export async function getTheme(slug: string) { return (await listThemes()).find((t) => t.slug === slug) ?? null; }
+/** Published items per theme slug (the database function runs under the visitor's rights, so unpublished items are never counted). */
+export async function getThemeCounts(): Promise<Record<string, number>> {
+  const rows = await run<{ slug: string; items: number }[]>("theme-counts", () => sb().rpc("theme_item_counts") as never, []);
+  return Object.fromEntries(rows.map((r) => [r.slug, Number(r.items)]));
+}
+
+export interface ThemedItem { key: string; kind: string; title: string; summary: string | null; href: string; cover: MediaRef | null; meta?: string }
+/** Every published item (of any type) that carries this theme. Each type is fetched under RLS, so only published records appear. */
+export async function listThemedItems(themeId: string): Promise<ThemedItem[]> {
+  const links = await run<{ entity_type: string; entity_id: string }[]>("theme-links", () => sb().from("theme_links").select("entity_type,entity_id").eq("theme_id", themeId).limit(500) as never, []);
+  const ids = (t: string) => links.filter((l) => l.entity_type === t).map((l) => l.entity_id);
+  const [attr, lst, exp, ev, art] = await Promise.all([
+    ids("attraction").length ? run<Attraction[]>("theme-attr", () => sb().from("attractions").select(`id,slug,name,summary,${COVER}`).in("id", ids("attraction")) as never, []) : [],
+    ids("listing").length ? run<Listing[]>("theme-list", () => sb().from("listings").select(`id,slug,name,type,summary,${COVER}`).in("id", ids("listing")) as never, []) : [],
+    ids("experience").length ? run<Experience[]>("theme-exp", () => sb().from("experiences").select(`id,slug,title,summary,${COVER}`).in("id", ids("experience")) as never, []) : [],
+    ids("event").length ? run<EventItem[]>("theme-ev", () => sb().from("events").select(`id,slug,title,summary,${COVER}`).in("id", ids("event")) as never, []) : [],
+    ids("article").length ? run<Article[]>("theme-art", () => sb().from("articles").select(`id,slug,title,excerpt,${COVER}`).in("id", ids("article")).lte("published_at", new Date().toISOString()) as never, []) : [],
+  ]);
+  return [
+    ...attr.map((a): ThemedItem => ({ key: `a${a.id}`, kind: "Attraction", title: a.name, summary: a.summary, href: `/attractions/${a.slug}`, cover: a.cover })),
+    ...lst.map((l): ThemedItem => ({ key: `l${l.id}`, kind: listingTypeLabels[l.type as ListingType] ?? "Business", title: l.name, summary: l.summary, href: `/${listingSection(l.type)}/${l.slug}`, cover: l.cover })),
+    ...exp.map((e): ThemedItem => ({ key: `x${e.id}`, kind: "Experience", title: e.title, summary: e.summary, href: `/experiences/${e.slug}`, cover: e.cover })),
+    ...ev.map((e): ThemedItem => ({ key: `e${e.id}`, kind: "Event", title: e.title, summary: e.summary, href: `/events/${e.slug}`, cover: e.cover })),
+    ...art.map((a): ThemedItem => ({ key: `t${a.id}`, kind: "Article", title: a.title, summary: a.excerpt, href: `/articles/${a.slug}`, cover: a.cover })),
+  ];
+}
+
+// ── Explore by type: attraction categories with published counts ──
+export interface CategoryCard { id: string; slug: string; name: string; cover: MediaRef | null; count: number }
+export async function getCategoryCards(): Promise<CategoryCard[]> {
+  const [cats, used] = await Promise.all([
+    run<{ id: string; slug: string; name: string; cover: MediaRef | null }[]>("category-cards", () => sb().from("attraction_categories").select(`id,slug,name,${COVER}`).eq("is_featured", true).order("sort_order") as never, []),
+    run<{ category_id: string | null }[]>("category-counts", () => sb().from("attractions").select("category_id").not("category_id", "is", null) as never, []),
+  ]);
+  const n = new Map<string, number>();
+  for (const r of used) if (r.category_id) n.set(r.category_id, (n.get(r.category_id) ?? 0) + 1);
+  return cats.map((c) => ({ ...c, count: n.get(c.id) ?? 0 })).filter((c) => c.count > 0);
+}
+
+// ── Homepage quick links ──
+export interface QuickLink { id: string; label: string; url: string; icon: string }
+/** Enabled links, in order. A link tied to a CMS page is dropped while that page is unpublished (the page is invisible to visitors by RLS). */
+export async function getQuickLinks(): Promise<QuickLink[]> {
+  const rows = await run<(QuickLink & { page_slug: string | null; page: { slug: string } | null })[]>(
+    "quick-links", () => sb().from("quick_links").select("id,label,url,icon,page_slug,page:pages!page_slug(slug)").eq("is_enabled", true).order("sort_order").limit(12) as never, []);
+  return rows.filter((r) => !r.page_slug || r.page).slice(0, 6);
+}
 
 // ── Geography: districts (MMDAs) and destinations ──
 export interface AdminArea extends Cover {
@@ -401,15 +454,16 @@ export async function getSitemapEntries() {
   const slugs = (table: string, col = "slug") =>
     run<{ slug: string; updated_at: string }[]>(`sitemap-${table}`, () => sb().from(table).select(`${col}, updated_at`).eq("noindex", false) as never, []);
   const [areas, counts] = await Promise.all([listAreas(), getAreaContentCounts()]);
-  const [attractions, communities, listings, experiences, events, articles, investments, destinations, ceremonies, institutions, sportsVenues, sportsClubs, transport, pages] = await Promise.all([
+  const [attractions, communities, listings, experiences, events, articles, investments, destinations, ceremonies, institutions, sportsVenues, sportsClubs, transport, galleryRows, pages] = await Promise.all([
     slugs("attractions"), slugs("communities"),
     run<{ slug: string; type: string; updated_at: string }[]>("sitemap-listings", () => sb().from("listings").select("slug,type,updated_at").eq("noindex", false) as never, []),
     slugs("experiences"), slugs("events"), slugs("articles"), slugs("investment_opportunities"), slugs("destinations"), slugs("ceremonies"), slugs("institutions"), slugs("sports_venues"), slugs("sports_clubs"), slugs("transport_providers"),
+    run<{ path: string }[]>("sitemap-gallery", () => sb().from("media").select("path").eq("folder", "gallery").limit(1) as never, []),
     run<{ slug: string; updated_at: string }[]>("sitemap-pages", () => sb().from("pages").select("slug,updated_at").eq("noindex", false) as never, []),
   ]);
   // Districts without any published content are left out of the sitemap (thin pages).
   const districts = areas.filter((a) => (counts[a.id] ?? 0) > 0).map((a) => ({ slug: a.slug, updated_at: a.verified_at ?? new Date().toISOString() }));
-  return { attractions, communities, listings, experiences, events, articles, investments, destinations, districts, ceremonies, institutions, sportsVenues, sportsClubs, transport, pages };
+  return { attractions, communities, listings, experiences, events, articles, investments, destinations, districts, ceremonies, institutions, sportsVenues, sportsClubs, transport, pages, gallery: galleryRows };
 }
 
 // ── Reviews (only published, booking-verified ones are public) ──

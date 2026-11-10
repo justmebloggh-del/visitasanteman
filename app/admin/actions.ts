@@ -16,6 +16,7 @@ const GENERIC: FormState = { ok: false, message: "Could not save. Please try aga
 function friendly(error: { code?: string; message: string }): FormState {
   if (error.code === "23505") return { ok: false, message: "That URL slug is already used. Change the slug and try again.", errors: { slug: "Already in use" } };
   if (error.code === "42501" || /row-level security/i.test(error.message)) return { ok: false, message: "You do not have permission to do that." };
+  if (error.code === "23503") return { ok: false, message: "That value points to something that does not exist. Check the page name or selection.", errors: {} };
   if (error.code === "23514") return { ok: false, message: "One of the values is outside the allowed range. Check prices, dates and coordinates." };
   console.error("[admin]", error.message);
   return GENERIC;
@@ -56,6 +57,16 @@ export async function saveResource(resourceKey: string, id: string | null, _prev
     await supabase.from("media_links").delete().eq("entity_type", def.galleryEntity).eq("entity_id", savedId);
     if (ids.length) {
       const { error } = await supabase.from("media_links").insert(ids.map((media_id, i) => ({ media_id, entity_type: def.galleryEntity, entity_id: savedId, sort_order: i })));
+      if (error) return friendly(error);
+    }
+  }
+
+  if (def.themeEntity && savedId) {
+    // The picker only lists active themes; replace this record's links with the ticked ones.
+    const chosen = parseIdList((fd.getAll("theme_ids") as string[]).join(","));
+    await supabase.from("theme_links").delete().eq("entity_type", def.themeEntity).eq("entity_id", savedId);
+    if (chosen.length) {
+      const { error } = await supabase.from("theme_links").insert(chosen.map((theme_id) => ({ theme_id, entity_type: def.themeEntity, entity_id: savedId })));
       if (error) return friendly(error);
     }
   }
@@ -256,6 +267,10 @@ export async function saveSettings(_prev: FormState, fd: FormData): Promise<Form
     if (v && !safeUrl(v)) errors[k] = "Must start with http:// or https://";
     social[k] = v;
   }
+  const hashtag = s("hashtag", 41).replace(/^#/, "");
+  if (hashtag && !/^[A-Za-z0-9_]{1,40}$/.test(hashtag)) errors.hashtag = "Use letters, numbers and underscores only";
+  const wa = s("whatsapp", 40);
+  if (wa && wa.replace(/\D/g, "").length < 9) errors.whatsapp = "Enter the number with country code, digits only";
   const email = s("email");
   if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) errors.email = "Not a valid email address";
   const lat = Number(s("center_lat")), lng = Number(s("center_lng")), zoom = Number(s("zoom"));
@@ -266,7 +281,7 @@ export async function saveSettings(_prev: FormState, fd: FormData): Promise<Form
 
   const supabase = await createClient();
   const rows = [
-    { key: "general", value: { site_name: s("site_name", 100), tagline: s("tagline", 200) } },
+    { key: "general", value: { site_name: s("site_name", 100), tagline: s("tagline", 200), hashtag: hashtag ? `#${hashtag}` : "" } },
     { key: "contact", value: { email, phone: s("phone", 40), whatsapp: s("whatsapp", 40), address: s("address", 300) } },
     { key: "social", value: social },
     { key: "map", value: { center_lat: lat, center_lng: lng, zoom, note: "Approximate map centre only; not an attraction coordinate." } },

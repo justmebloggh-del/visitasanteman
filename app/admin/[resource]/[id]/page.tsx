@@ -4,7 +4,7 @@ import { ExternalLink } from "lucide-react";
 import { addChild, deleteChild } from "@/app/admin/actions";
 import { AdminHeader, Flash, StatusBadge } from "@/components/admin/ui";
 import { ResourceForm } from "@/components/admin/ResourceForm";
-import { loadMedia, loadRelations, toClientDef } from "@/components/admin/loadForm";
+import { loadMedia, loadRelations, loadThemes, toClientDef } from "@/components/admin/loadForm";
 import { Button, Field, Input, Notice } from "@/components/ui";
 import { resourceMap } from "@/config/admin-resources";
 import { canApprove, isAdmin, requireApprover, requireStaff } from "@/lib/auth/session";
@@ -25,9 +25,10 @@ export default async function EditResource({ params, searchParams }: { params: P
   if (!row) notFound();
 
   const rowId = String(row[def.slugField ?? "id"]);
-  const [relations, media] = await Promise.all([
+  const [relations, media, themes] = await Promise.all([
     loadRelations(def),
     loadMedia(row.cover_media_id ?? null, def.galleryEntity, def.slugField ? undefined : rowId),
+    loadThemes(def, rowId),
   ]);
 
   const here = `/admin/${def.key}/${rowId}`;
@@ -40,8 +41,11 @@ export default async function EditResource({ params, searchParams }: { params: P
       <AdminHeader title={String(row[def.titleField] ?? `Edit ${def.singular}`)} intro={`Editing ${def.singular}`}
         actions={<>{def.hasStatus && <StatusBadge value={String(row.status)} />}{publicHref && <Link href={publicHref} target="_blank" className="inline-flex items-center gap-1 text-sm text-lake-dark underline underline-offset-2 hover:no-underline">View live<ExternalLink className="size-3.5" aria-hidden /></Link>}</>} />
       <Flash sp={sp} />
+      {def.key === "pages" && ["cookie-policy", "privacy", "terms"].includes(rowId) && (
+        <div className="mb-4"><Notice tone="info">This page needs review by someone qualified in data protection and consumer law (in Ghana, the Data Protection Act, 2012 (Act 843)) before it is published. List the cookie categories shown in the site&apos;s cookie settings; do not publish wording nobody has checked.</Notice></div>
+      )}
       {row.deleted_at && <div className="mb-4"><Notice tone="error">This item has been deleted (archived). Saving will not restore it.</Notice></div>}
-      <ResourceForm def={toClientDef(def)} id={rowId} initial={row} relations={relations} isAdmin={isAdmin(user.role)} canApprove={canApprove(user.role)} cover={media.cover} gallery={media.gallery} />
+      <ResourceForm def={toClientDef(def)} id={rowId} initial={row} relations={relations} isAdmin={isAdmin(user.role)} canApprove={canApprove(user.role)} cover={media.cover} gallery={media.gallery} themes={themes} />
 
       {def.children === "rooms" && (
         <section className="mt-10 rounded-2xl border border-line bg-white p-5 sm:p-6">

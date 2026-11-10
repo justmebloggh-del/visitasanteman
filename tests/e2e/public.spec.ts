@@ -36,7 +36,9 @@ test.describe("public site", () => {
     test.skip(!isMobile, "mobile only");
     await page.goto("/");
     await page.getByRole("button", { name: "Open menu" }).click();
-    await page.getByRole("navigation", { name: "Mobile" }).getByRole("link", { name: "Attractions", exact: true }).click();
+    const menu = page.getByRole("navigation", { name: "Mobile" });
+    await menu.getByRole("button", { name: "Explore Ashanti", exact: true }).click();
+    await menu.getByRole("link", { name: "Attractions", exact: true }).click();
     await expect(page).toHaveURL(/\/attractions/);
   });
 });

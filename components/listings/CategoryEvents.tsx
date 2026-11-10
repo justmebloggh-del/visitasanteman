@@ -3,7 +3,7 @@ import { EmptyState, PageHeader, Pagination } from "@/components/layout/blocks";
 import { Badge, Container } from "@/components/ui";
 import { eventStatusLabels } from "@/config/site";
 import { listEvents, toPage } from "@/lib/content/public";
-import { formatDate } from "@/lib/utils";
+import { eventDateText } from "@/lib/utils";
 
 /** Upcoming events of one category (sports, education). Only organiser-confirmed events are published, so nothing is invented. */
 export async function CategoryEvents({ category, title, intro, base, crumbs, page }: {
@@ -22,11 +22,13 @@ export async function CategoryEvents({ category, title, intro, base, crumbs, pag
               <li key={ev.id}>
                 <Link href={`/events/${ev.slug}`} className="flex gap-5 rounded-2xl border border-line bg-white p-5 transition hover:shadow-md">
                   <div className="grid size-16 shrink-0 place-items-center rounded-xl bg-forest text-center text-white">
-                    <div><div className="text-xl font-semibold leading-none">{new Date(ev.starts_at).getUTCDate()}</div>
-                      <div className="text-xs uppercase">{new Intl.DateTimeFormat("en-GB", { month: "short", timeZone: "UTC" }).format(new Date(ev.starts_at))}</div></div>
+                    {ev.date_verified ? (
+                      <div><div className="text-xl font-semibold leading-none">{new Date(ev.starts_at).getUTCDate()}</div>
+                        <div className="text-xs uppercase">{new Intl.DateTimeFormat("en-GB", { month: "short", timeZone: "UTC" }).format(new Date(ev.starts_at))}</div></div>
+                    ) : <div className="text-sm font-semibold">TBC</div>}
                   </div>
                   <div><h2 className="font-serif text-lg font-semibold text-forest">{ev.title}</h2>
-                    <p className="mt-1 text-sm text-muted">{[ev.venue, formatDate(ev.starts_at)].filter(Boolean).join(" · ")}</p>
+                    <p className="mt-1 text-sm text-muted">{[ev.venue, eventDateText(ev)].filter(Boolean).join(" · ")}</p>
                     {ev.event_status !== "scheduled" && <Badge tone="gold" className="mt-2">{eventStatusLabels[ev.event_status]}</Badge>}</div>
                 </Link>
               </li>

@@ -68,3 +68,8 @@ export function safeUrl(url: string | null | undefined): string | null {
 
 /** The current time in milliseconds. A function so server pages can read the clock without tripping the render-purity lint rule. */
 export const nowMs = () => Date.now();
+
+/** An event date as text. Dates are facts only once an administrator has verified them for this occurrence. */
+export function eventDateText(ev: { starts_at: string; date_verified?: boolean }, withTime = false): string {
+  return ev.date_verified ? formatDate(ev.starts_at, withTime) : "Date to be confirmed";
+}

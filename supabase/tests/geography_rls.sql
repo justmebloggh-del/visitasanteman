@@ -309,6 +309,35 @@ select pg_temp.t('P11 an administrator ends overdue plans', :admin, 'authenticat
 select pg_temp.visible('P12 the listing lost its plan and the subscription ended', :admin, 'authenticated', 'select 1 from listings l where l.id = ''00000000-0000-0000-0000-0000000000f7'' and l.plan_id is null and not exists (select 1 from business_subscriptions where listing_id = l.id and status = ''active'')', 1);
 select pg_temp.visible('P13 plans never touch verification', :admin, 'authenticated', 'select 1 from listings where id = ''00000000-0000-0000-0000-0000000000f7'' and verification_decision = ''suspended'' and not is_verified', 1);
 
+-- ── Themes, quick links, event date verification, pages (regional experience) ──
+select pg_temp.visible('T01 anon sees the eight themes', null, 'anon', 'select 1 from themes', 8);
+select pg_temp.t('T02 an editor cannot create a theme', :editor, 'authenticated', 'insert into themes (slug, name, kind) values (''x-theme'', ''X'', ''tour_category'')', false);
+select pg_temp.t('T03 an administrator can create a theme', :admin, 'authenticated', 'insert into themes (slug, name, kind) values (''x-theme'', ''X'', ''tour_category'')', true);
+select pg_temp.t('T04 anon cannot create a theme', null, 'anon', 'insert into themes (slug, name, kind) values (''y-theme'', ''Y'', ''tour_category'')', false);
+select pg_temp.t('T05 an inactive theme is hidden from anon', :admin, 'authenticated', 'update themes set is_active = false where slug = ''x-theme''', true);
+select pg_temp.visible('T06 anon no longer sees it', null, 'anon', 'select 1 from themes where slug = ''x-theme''', 0);
+select pg_temp.t('T07 an editor can attach a theme to an existing record', :editor, 'authenticated', 'insert into theme_links (theme_id, entity_type, entity_id) select id, ''attraction'', ''00000000-0000-0000-0000-0000000000f5'' from themes where slug = ''see''', true);
+select pg_temp.t('T08 a theme cannot be attached to a record that does not exist', :editor, 'authenticated', 'insert into theme_links (theme_id, entity_type, entity_id) select id, ''attraction'', gen_random_uuid() from themes where slug = ''see''', false);
+select pg_temp.t('T09 only the five known entity types are allowed', :editor, 'authenticated', 'insert into theme_links (theme_id, entity_type, entity_id) select id, ''profile'', ''00000000-0000-0000-0000-0000000000f5'' from themes where slug = ''see''', false);
+select pg_temp.t('T10 a visitor cannot attach themes', :visitor, 'authenticated', 'insert into theme_links (theme_id, entity_type, entity_id) select id, ''attraction'', ''00000000-0000-0000-0000-0000000000f5'' from themes where slug = ''eat''', false);
+select pg_temp.t('T11 attach a theme to the published attraction too', :editor, 'authenticated', 'insert into theme_links (theme_id, entity_type, entity_id) select t.id, ''attraction'', a.id from themes t, attractions a where t.slug = ''see'' and a.slug = ''derived''', true);
+select pg_temp.visible('T12 the count covers published items only (f5 is no longer published)', null, 'anon', 'select 1 from theme_item_counts() where slug = ''see'' and items = 1', 1);
+select pg_temp.visible('T13 themes with nothing published count zero', null, 'anon', 'select 1 from theme_item_counts() where slug = ''wear'' and items = 0', 1);
+
+select pg_temp.visible('Q50 anon sees the six enabled quick links', null, 'anon', 'select 1 from quick_links', 6);
+select pg_temp.rows('Q51 a visitor cannot edit quick links', :visitor, 'authenticated', 'update quick_links set label = ''x''', 0);
+select pg_temp.t('Q52 anon cannot edit quick links', null, 'anon', 'update quick_links set label = ''x''', false);
+select pg_temp.t('Q53 a seventh enabled link is refused', :editor, 'authenticated', 'insert into quick_links (label, url, icon) values (''Seventh'', ''/contact'', ''phone'')', false);
+select pg_temp.t('Q54 an editor can disable one and then add another', :editor, 'authenticated', 'update quick_links set is_enabled = false where label = ''Map''', true);
+select pg_temp.t('Q55 the new link now fits', :editor, 'authenticated', 'insert into quick_links (label, url, icon) values (''Contact'', ''/contact'', ''phone'')', true);
+select pg_temp.t('Q56 a link must point to this site or an https address', :editor, 'authenticated', 'update quick_links set url = ''javascript:alert(1)'' where label = ''Contact''', false);
+select pg_temp.visible('Q57 anon does not see disabled links', null, 'anon', 'select 1 from quick_links where label = ''Map''', 0);
+select pg_temp.visible('Q58 quick links tied to unpublished pages are visible rows, hidden by the application', null, 'anon', 'select 1 from quick_links where page_slug is not null', 3);
+select pg_temp.visible('Q59 anon cannot see an unpublished page (so the link join returns nothing)', null, 'anon', 'select 1 from pages where slug in (''getting-around'', ''travel-information'', ''visa-and-entry'', ''cookie-policy'')', 0);
+
+select pg_temp.t('Q60 events carry an unverified date by default', :editor, 'authenticated', 'insert into events (slug, title, starts_at) values (''d-ev2'', ''D ev2'', now() + interval ''2 day'')', true);
+select pg_temp.visible('Q61 and it is not verified', :editor, 'authenticated', 'select 1 from events where slug = ''d-ev2'' and not date_verified', 1);
+
 -- ── Roles, plans: never writable by editors ──
 select pg_temp.rows('R01 regional editor cannot change roles', :regional, 'authenticated', format('update user_roles set role = ''admin'' where user_id = %L', :visitor), 0);
 select pg_temp.rows('R02 content editor cannot change roles', :editor, 'authenticated', format('update user_roles set role = ''admin'' where user_id = %L', :visitor), 0);

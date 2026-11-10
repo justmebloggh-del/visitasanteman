@@ -43,6 +43,7 @@ export interface ResourceDef {
   area?: boolean;                                   // has administrative_area_id (checked before publishing)
   filter?: { column: string; label: string; options: { value: string; label: string }[] };   // extra list filter
   noCreatedBy?: boolean;
+  themeEntity?: "attraction" | "listing" | "experience" | "event" | "article";   // themes can be attached (theme_links)
   verifiable?: boolean;                             // has verification_status and reviewed_by                            // table has no created_by column
 }
 
@@ -130,7 +131,7 @@ export const listingFields = (types: ListingType[], food: boolean, stay: boolean
 
 export const resources: ResourceDef[] = [
   {
-    filter: { column: "verification_status", label: "Verification", options: verificationOptions }, area: true, revisions: true, key: "attractions", table: "attractions", label: "Attractions", singular: "attraction", titleField: "name", hasSlug: true,
+    filter: { column: "verification_status", label: "Verification", options: verificationOptions }, area: true, revisions: true, themeEntity: "attraction", key: "attractions", table: "attractions", label: "Attractions", singular: "attraction", titleField: "name", hasSlug: true,
     hasStatus: true, hasCover: true, galleryEntity: "attraction", seo: true, softDelete: true, orderBy: { column: "updated_at", ascending: false },
     listColumns: [{ name: "name", label: "Name" }, { name: "status", label: "Status" }, { name: "updated_at", label: "Updated" }],
     publicPath: (r) => `/attractions/${r.slug}`,
@@ -182,28 +183,28 @@ export const resources: ResourceDef[] = [
     ],
   },
   {
-    area: true, revisions: true, key: "accommodation", table: "listings", label: "Accommodation", singular: "accommodation listing", titleField: "name", hasSlug: true,
+    area: true, revisions: true, themeEntity: "listing", key: "accommodation", table: "listings", label: "Accommodation", singular: "accommodation listing", titleField: "name", hasSlug: true,
     typeFilter: { column: "type", values: accommodationTypes }, hasStatus: true, hasCover: true, galleryEntity: "listing", children: "rooms",
     seo: true, softDelete: true, orderBy: { column: "updated_at", ascending: false },
     listColumns: [{ name: "name", label: "Name" }, { name: "type", label: "Type" }, { name: "status", label: "Status" }, { name: "updated_at", label: "Updated" }],
     publicPath: (r) => `/accommodation/${r.slug}`, fields: listingFields(accommodationTypes, false, true),
   },
   {
-    area: true, revisions: true, key: "restaurants", table: "listings", label: "Food and dining", singular: "restaurant", titleField: "name", hasSlug: true,
+    area: true, revisions: true, themeEntity: "listing", key: "restaurants", table: "listings", label: "Food and dining", singular: "restaurant", titleField: "name", hasSlug: true,
     typeFilter: { column: "type", values: restaurantTypes }, hasStatus: true, hasCover: true, galleryEntity: "listing", children: "menu",
     seo: true, softDelete: true, orderBy: { column: "updated_at", ascending: false },
     listColumns: [{ name: "name", label: "Name" }, { name: "status", label: "Status" }, { name: "updated_at", label: "Updated" }],
     publicPath: (r) => `/restaurants/${r.slug}`, fields: listingFields(restaurantTypes, true, false),
   },
   {
-    area: true, revisions: true, key: "businesses", table: "listings", label: "Businesses", singular: "business", titleField: "name", hasSlug: true,
+    area: true, revisions: true, themeEntity: "listing", key: "businesses", table: "listings", label: "Businesses", singular: "business", titleField: "name", hasSlug: true,
     typeFilter: { column: "type", values: businessTypes }, hasStatus: true, hasCover: true, galleryEntity: "listing",
     seo: true, softDelete: true, orderBy: { column: "updated_at", ascending: false },
     listColumns: [{ name: "name", label: "Name" }, { name: "type", label: "Type" }, { name: "status", label: "Status" }, { name: "updated_at", label: "Updated" }],
     publicPath: (r) => `/business/${r.slug}`, fields: listingFields(businessTypes, false, false),
   },
   {
-    area: true, revisions: true, key: "experiences", table: "experiences", label: "Experiences", singular: "experience", titleField: "title", hasSlug: true,
+    area: true, revisions: true, themeEntity: "experience", key: "experiences", table: "experiences", label: "Experiences", singular: "experience", titleField: "title", hasSlug: true,
     hasStatus: true, hasCover: true, galleryEntity: "experience", seo: true, softDelete: true, orderBy: { column: "updated_at", ascending: false },
     listColumns: [{ name: "title", label: "Title" }, { name: "category", label: "Type" }, { name: "status", label: "Status" }, { name: "updated_at", label: "Updated" }],
     publicPath: (r) => `/experiences/${r.slug}`,
@@ -232,7 +233,7 @@ export const resources: ResourceDef[] = [
     ],
   },
   {
-    area: true, revisions: true, key: "events", table: "events", label: "Events", singular: "event", titleField: "title", hasSlug: true,
+    area: true, revisions: true, themeEntity: "event", key: "events", table: "events", label: "Events", singular: "event", titleField: "title", hasSlug: true,
     hasStatus: true, hasCover: true, galleryEntity: "event", seo: true, softDelete: true, orderBy: { column: "starts_at", ascending: false },
     listColumns: [{ name: "title", label: "Title" }, { name: "starts_at", label: "Starts" }, { name: "status", label: "Status" }],
     publicPath: (r) => `/events/${r.slug}`,
@@ -243,6 +244,7 @@ export const resources: ResourceDef[] = [
       { name: "event_status", label: "Event status", type: "select", required: true, group: "main", options: Object.entries(eventStatusLabels).map(([value, label]) => ({ value, label })) },
       { name: "starts_at", label: "Starts (Ghana time)", type: "datetime", required: true, group: "main" },
       { name: "ends_at", label: "Ends (Ghana time)", type: "datetime", group: "main" },
+      { name: "date_verified", label: "Date verified with the organisers for this occurrence", type: "checkbox", group: "main", hint: "Untick if the date is provisional. Unverified dates show as “Date to be confirmed”. Traditional festivals do not fall on fixed calendar dates." },
       { name: "summary", label: "Short summary", type: "textarea", group: "main", max: 400 },
       { name: "description", label: "Description", type: "textarea", group: "main" },
       { name: "venue", label: "Venue", type: "text", group: "location" },
@@ -256,7 +258,7 @@ export const resources: ResourceDef[] = [
     ],
   },
   {
-    revisions: true, key: "articles", table: "articles", label: "Articles", singular: "article", titleField: "title", hasSlug: true,
+    revisions: true, themeEntity: "article", key: "articles", table: "articles", label: "Articles", singular: "article", titleField: "title", hasSlug: true,
     hasStatus: true, hasCover: true, galleryEntity: "article", seo: true, softDelete: true, orderBy: { column: "updated_at", ascending: false },
     listColumns: [{ name: "title", label: "Title" }, { name: "status", label: "Status" }, { name: "published_at", label: "Publish date" }],
     publicPath: (r) => `/articles/${r.slug}`,
@@ -293,6 +295,9 @@ export const resources: ResourceDef[] = [
       { name: "title", label: "Title", type: "text", required: true, group: "main" },
       statusField,
       { name: "body", label: "Content (Markdown)", type: "markdown", group: "main", hint: "Use ## for headings, **bold**, [links](https://…), and - for lists." },
+      { name: "last_verified_at", label: "Last verified on", type: "date", group: "details", hint: "Shown publicly. For practical information (travel, entry, safety) record when someone last checked it against the official source." },
+      { name: "source_label", label: "Source", type: "text", group: "details", hint: "Shown publicly, e.g. the name of the official body." },
+      { name: "source_url", label: "Source link", type: "url", group: "details" },
     ],
   },
 ];
@@ -446,14 +451,14 @@ resources.push(
 
 resources.push(
   {
-    key: "venues", table: "listings", label: "Event venues", singular: "venue", titleField: "name", hasSlug: true,
+    themeEntity: "listing", key: "venues", table: "listings", label: "Event venues", singular: "venue", titleField: "name", hasSlug: true,
     typeFilter: { column: "type", values: venueTypes }, hasStatus: true, hasCover: true, galleryEntity: "listing", area: true, revisions: true,
     seo: true, softDelete: true, orderBy: { column: "updated_at", ascending: false },
     listColumns: [{ name: "name", label: "Name" }, { name: "type", label: "Type" }, { name: "status", label: "Status" }, { name: "updated_at", label: "Updated" }],
     publicPath: (r) => `/venues/${r.slug}`, fields: listingFields(venueTypes, false, false),
   },
   {
-    key: "markets", table: "listings", label: "Markets and shopping", singular: "market", titleField: "name", hasSlug: true,
+    themeEntity: "listing", key: "markets", table: "listings", label: "Markets and shopping", singular: "market", titleField: "name", hasSlug: true,
     typeFilter: { column: "type", values: marketTypes }, hasStatus: true, hasCover: true, galleryEntity: "listing", area: true, revisions: true,
     seo: true, softDelete: true, orderBy: { column: "updated_at", ascending: false },
     listColumns: [{ name: "name", label: "Name" }, { name: "type", label: "Type" }, { name: "status", label: "Status" }, { name: "updated_at", label: "Updated" }],
@@ -525,6 +530,46 @@ resources.push(
     ]), [{ name: "kind", label: "Type" }, { name: "facility_status", label: "Operating status" }]),
 );
 
+resources.push(
+  {
+    key: "themes", table: "themes", label: "Themes", singular: "theme", titleField: "name", hasSlug: true, noCreatedBy: true,
+    hasStatus: false, hasCover: true, seo: false, softDelete: false, orderBy: { column: "sort_order", ascending: true },
+    listColumns: [{ name: "name", label: "Name" }, { name: "kind", label: "Kind" }, { name: "is_active", label: "Active" }, { name: "sort_order", label: "Order" }],
+    publicPath: (r) => `/themes/${r.slug}`,
+    fields: [
+      { name: "name", label: "Name", type: "text", required: true, group: "main" },
+      { name: "kind", label: "Kind", type: "select", required: true, group: "main", options: [{ value: "experience_theme", label: "Experience theme (Eat, Wear, See, Feel)" }, { value: "tour_category", label: "Tour category (Nature, Culture, Lifestyle, Heritage)" }] },
+      { name: "summary", label: "Description (written by an administrator)", type: "textarea", group: "main", max: 400, hint: "Shown on the theme page. Leave blank until you have verified wording." },
+      { name: "is_active", label: "Active", type: "checkbox", group: "main", hint: "A theme appears publicly only while it is active and has published content." },
+      { name: "sort_order", label: "Order", type: "number", group: "main" },
+    ],
+  },
+  {
+    key: "attraction-categories", table: "attraction_categories", label: "Attraction categories", singular: "category", titleField: "name", hasSlug: true, noCreatedBy: true,
+    hasStatus: false, hasCover: true, seo: false, softDelete: false, orderBy: { column: "sort_order", ascending: true },
+    listColumns: [{ name: "name", label: "Name" }, { name: "is_featured", label: "On homepage" }, { name: "sort_order", label: "Order" }],
+    fields: [
+      { name: "name", label: "Name", type: "text", required: true, group: "main" },
+      { name: "is_featured", label: "Show on the homepage “Explore by type” grid", type: "checkbox", group: "main", hint: "Categories with no published attractions are hidden automatically." },
+      { name: "sort_order", label: "Order", type: "number", group: "main" },
+    ],
+  },
+);
+
+resources.push({
+  key: "quick-links", table: "quick_links", label: "Homepage quick links", singular: "quick link", titleField: "label", hasSlug: false, noCreatedBy: true,
+  hasStatus: false, hasCover: false, seo: false, softDelete: false, orderBy: { column: "sort_order", ascending: true },
+  listColumns: [{ name: "label", label: "Label" }, { name: "url", label: "Link" }, { name: "is_enabled", label: "Shown" }, { name: "sort_order", label: "Order" }],
+  fields: [
+    { name: "label", label: "Label", type: "text", required: true, group: "main", max: 40 },
+    { name: "url", label: "Link", type: "text", required: true, group: "main", hint: "A page on this site such as /events, or a full https:// address." },
+    { name: "icon", label: "Icon", type: "select", required: true, group: "main", options: ["car", "info", "file-text", "calendar", "map", "compass", "bed", "utensils", "camera", "users", "ticket", "phone"].map((v) => ({ value: v, label: v })) },
+    { name: "page_slug", label: "Hide until this page is published (optional)", type: "text", group: "main", hint: "The short name of a managed page, e.g. getting-around. Leave blank to always show." },
+    { name: "is_enabled", label: "Shown on the homepage", type: "checkbox", group: "main", hint: "At most six links can be shown at once." },
+    { name: "sort_order", label: "Order", type: "number", group: "main" },
+  ],
+});
+
 resources.push({
   key: "advertisers", table: "advertisers", label: "Advertisers", singular: "advertiser", titleField: "name", hasSlug: false,
   hasStatus: false, hasCover: false, seo: false, softDelete: true, noCreatedBy: false, orderBy: { column: "name", ascending: true },
@@ -590,6 +635,8 @@ export const adminNav = [
   { href: "/admin/dashboard", label: "Dashboard" },
   { group: "Content" },
   { href: "/admin/attractions", label: "Attractions" },
+  { href: "/admin/attraction-categories", label: "Attraction categories" },
+  { href: "/admin/themes", label: "Themes" },
   { href: "/admin/import", label: "Import research" },
   { href: "/admin/communities", label: "Communities" },
   { href: "/admin/destinations", label: "Destinations" },
@@ -607,6 +654,7 @@ export const adminNav = [
   { href: "/admin/events", label: "Events" },
   { href: "/admin/businesses", label: "Businesses" },
   { href: "/admin/verification", label: "Business verification" },
+  { href: "/admin/jobs", label: "Jobs moderation" },
   { href: "/admin/subscription-plans", label: "Subscription plans" },
   { href: "/admin/articles", label: "Articles" },
   { href: "/admin/investments", label: "Investments" },
@@ -617,6 +665,7 @@ export const adminNav = [
   { href: "/admin/pages", label: "Pages" },
   { href: "/admin/testimonials", label: "Testimonials" },
   { href: "/admin/homepage", label: "Homepage" },
+  { href: "/admin/quick-links", label: "Homepage quick links" },
   { href: "/admin/media", label: "Media library" },
   { group: "Geography" },
   { href: "/admin/regions", label: "Regions" },

@@ -80,6 +80,7 @@ export interface EventItem extends Seo, Cover {
   starts_at: string; ends_at: string | null; venue: string | null; organiser: string | null;
   ticket_info: string | null; registration_url: string | null; contact_email: string | null;
   contact_phone: string | null; event_status: string; latitude: number | null; longitude: number | null;
+  date_verified: boolean; area?: { name: string; slug: string } | null;
 }
 
 export interface Article extends Seo, Cover {
@@ -89,6 +90,7 @@ export interface Article extends Seo, Cover {
 
 export interface PageContent extends Seo {
   slug: string; title: string; body: string; cover: MediaRef | null;
+  last_verified_at: string | null; source_label: string | null; source_url: string | null;
 }
 
 export interface HomepageSection {

@@ -68,3 +68,14 @@ h1, h2, h3 {
   body > header, body > footer, .no-print { display: none !important; }
   body { background: #fff; }
 }
+
+/* Footer hashtag ticker: slow, pausable, and static for people who prefer reduced motion. */
+.ticker-track { animation: ticker-scroll 60s linear infinite; }
+.ticker-paused { animation-play-state: paused; }
+.ticker-window:hover .ticker-track { animation-play-state: paused; }
+@keyframes ticker-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track { animation: none; }
+  .ticker-track > span:not(:first-child) { display: none; }
+  .ticker-control { display: none; }
+}

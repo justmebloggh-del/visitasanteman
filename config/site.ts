@@ -10,19 +10,32 @@ export const siteConfig = {
   region: "Ashanti Region",
 };
 
-// Main menu (desktop bar and mobile menu). "Plan Your Visit" is shown separately as the main action.
-export const mainNav = [
-  { href: "/", label: "Home" },
-  { href: "/explore", label: "Explore Ashanti" },
-  { href: "/attractions", label: "Attractions" },
-  { href: "/culture", label: "Culture & Heritage" },
-  { href: "/experiences", label: "Experiences" },
-  { href: "/accommodation", label: "Where to Stay" },
-  { href: "/restaurants", label: "Food & Dining" },
-  { href: "/events", label: "Events" },
-  { href: "/travel-guide", label: "Travel Guide" },
-  { href: "/business-directory", label: "Business Directory" },
-  { href: "/about", label: "About Us" },
+/** A top-level menu item: a plain link, or a group of links opened from a button. */
+export interface NavItem { label: string; href?: string; children?: { label: string; href: string }[] }
+
+// Main menu, grouped by what a visitor wants to do. Every link points to a page that exists; pages that are still being
+// written are CMS pages that show "being prepared" until an administrator publishes them.
+export const mainNav: NavItem[] = [
+  { label: "Explore Ashanti", children: [
+    { label: "Destinations", href: "/destinations" }, { label: "Districts", href: "/districts" },
+    { label: "Attractions", href: "/attractions" }, { label: "Map", href: "/map" },
+  ] },
+  { label: "Culture & Heritage", children: [
+    { label: "Culture & Heritage", href: "/culture" }, { label: "Ceremonies & festivals", href: "/culture/ceremonies" }, { label: "Cultural calendar", href: "/culture/calendar" },
+  ] },
+  { label: "Experiences", href: "/experiences" },
+  { label: "Where to Stay", href: "/accommodation" },
+  { label: "Food & Dining", href: "/restaurants" },
+  { label: "Events", href: "/events" },
+  { label: "Plan Your Visit", children: [
+    { label: "Why Ashanti", href: "/why-ashanti" }, { label: "Getting Around", href: "/getting-around" }, { label: "Travel Information", href: "/travel-information" },
+    { label: "Visa and Entry", href: "/visa-and-entry" }, { label: "Travel Planner", href: "/travel-planner" }, { label: "Travel Guide", href: "/travel-guide" },
+  ] },
+  { label: "Media", children: [{ label: "News and Articles", href: "/articles" }, { label: "Gallery", href: "/gallery" }] },
+  { label: "Business Directory", href: "/business-directory" },
+  { label: "Jobs", href: "/jobs" },
+  { label: "About Us", href: "/about" },
+  { label: "Contact", href: "/contact" },
 ];
 export const planVisit = { href: "/travel-planner", label: "Plan Your Visit" };
 

@@ -32,6 +32,16 @@ The full matrix is in [AUTHENTICATION](AUTHENTICATION.md).
 - A protected forest, shrine, dam or river is not automatically a visitor attraction. Set *Visitor access* honestly and explain permits and rules in *Access, permits and visitor rules*. Anything other than "Open to visitors" shows a notice on the public page.
 - **Import research** takes a CSV (download the template). Check the preview, then import. Imported rows are always unpublished drafts marked *Research identified*; status or verification columns in a file are ignored. Every row needs a source. Duplicates (same name or alternative spelling, or repeated in the file) are skipped; places within 200 m of an existing one are flagged. Columns are matched by heading, not mapped by hand. Templates exist for attractions and communities only.
 
+## Navigation, quick links, themes and the homepage
+- **Menu:** grouped by what visitors want to do (Explore Ashanti, Culture & Heritage, Experiences, Where to Stay, Food & Dining, Events, Plan Your Visit, Media, Business Directory, About Us, Contact). The links are set in `config/site.ts`. Pages for Why Ashanti, Getting Around, Travel Information and Visa and Entry are managed under **Pages**; until you publish them they show “being prepared”. For practical pages fill **Last verified on** and **Source**: they are shown publicly. Do not publish visa, health, safety or transport facts that have not been checked against an official source.
+- **Homepage quick links** (Admin → Homepage quick links): up to six. Give a link a *page name* to hide it until that page is published.
+- **Themes** (Admin → Themes): Eat, Wear, See, Feel and the four tour categories exist without descriptions. Write the description yourself once wording is verified. Tick themes on any attraction, listing, experience, event or article form. A theme appears on the homepage, and its page exists, only when it has published content.
+- **Explore by type** (Admin → Attraction categories): add a cover photo, tick *Show on the homepage* and set the order. Categories with no published attractions never appear.
+- **Browse by district** appears automatically for districts with published places.
+- **Events:** tick *Date verified* only when the organisers have confirmed the date for this occurrence; otherwise visitors see “Date to be confirmed”.
+- **WhatsApp:** enter the number under Settings to show the floating “Chat on WhatsApp” button (a plain link, no tracking); leave it blank to hide it. **Campaign hashtag** in Settings sets the footer ticker text (empty hides it).
+- **Cookies:** the banner offers Accept all, Reject all and Customise with equal prominence. Optional cookies (Functional, Analytics, Advertising) are off until the visitor agrees; Google Analytics loads only after Analytics consent. The **Cookie policy** page is an empty draft: have the wording written and reviewed by someone qualified before publishing (Ghana Data Protection Act, 2012, Act 843).
+
 ## Advertising and subscriptions
 - **Advertisers** (Admin → Advertisers): record who is paying and the terms (internal notes, never public). When creating an advertisement, pick the advertiser record and enter the name shown publicly.
 - **Placements:** homepage banner, top of directory pages, top of search results, culture and heritage pages, top of district pages. An ad shows only while published and inside its dates, always labelled **Sponsored**. Paid promotion never affects verification or editorial content.
@@ -98,3 +108,9 @@ Businesses ask to be listed through the contact form (type *List my business*). 
 ## Advertisements (Admin → Advertisements, administrators only)
 - Create an ad, set **placement**, link, and start/end times (Ghana time), then set status to **Published**. It shows only inside its dates and is always labelled “Sponsored”.
 - *Views* and *Clicks* update automatically. Ads are sold and invoiced manually; there is no online purchase flow.
+
+## Jobs moderation (Admin → Jobs moderation)
+- **Vacancies in review:** read the vacancy, then *Publish (30 days)*, *Send back to draft* or *Reject and close*. A district must be set before publishing. Regional editors and administrators can publish; editors can only view.
+- **Employers:** administrators verify, suspend or reset employers. Suspending hides all of the employer's vacancies at once. Verify only after you have checked the organisation yourself. Payment never verifies an employer.
+- **Reports:** job seekers report vacancies that ask for money, look fake, discriminate or mislead. Administrators mark them actioned or dismissed.
+- Applications and CVs are private and never appear in the admin. Job seekers are never charged to apply.

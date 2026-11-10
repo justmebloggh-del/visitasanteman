@@ -6,7 +6,8 @@ const email = `${unique("geo")}@example.com`;
 const password = "E2e-password-123";
 const tag = unique("geo").toLowerCase();
 
-const NAV = ["Home", "Explore Ashanti", "Attractions", "Culture & Heritage", "Experiences", "Where to Stay", "Food & Dining", "Events", "Travel Guide", "Business Directory", "About Us"];
+const SIMPLE = ["Experiences", "Where to Stay", "Food & Dining", "Events", "Business Directory", "About Us", "Contact"];
+const GROUPS = ["Explore Ashanti", "Culture & Heritage", "Plan Your Visit", "Media"];
 
 async function login(page: Page) {
   await page.goto("/login");
@@ -26,11 +27,12 @@ test.describe("VisitAsanteman brand and navigation", () => {
     expect(await page.title()).toContain("VisitAsanteman");
   });
 
-  test("desktop menu lists all eleven items and Plan Your Visit", async ({ page, isMobile }) => {
+  test("desktop menu lists the grouped items and Plan Your Visit", async ({ page, isMobile }) => {
     test.skip(isMobile, "desktop only");
     await page.goto("/");
     const nav = page.getByRole("navigation", { name: "Main" });
-    for (const label of NAV) await expect(nav.getByRole("link", { name: label, exact: true })).toBeVisible();
+    for (const label of SIMPLE) await expect(nav.getByRole("link", { name: label, exact: true })).toBeVisible();
+    for (const label of GROUPS) await expect(nav.getByRole("button", { name: label, exact: true })).toBeVisible();
     await expect(page.getByRole("banner").getByRole("link", { name: "Plan Your Visit" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Search" })).toBeVisible();
   });
@@ -41,7 +43,8 @@ test.describe("VisitAsanteman brand and navigation", () => {
     await expect(page.getByRole("link", { name: "Search" })).toBeVisible();
     await page.getByRole("button", { name: "Open menu" }).click();
     const menu = page.getByRole("navigation", { name: "Mobile" });
-    for (const label of NAV) await expect(menu.getByRole("link", { name: label, exact: true })).toBeVisible();
+    for (const label of SIMPLE) await expect(menu.getByRole("link", { name: label, exact: true })).toBeVisible();
+    for (const label of GROUPS) await expect(menu.getByRole("button", { name: label, exact: true })).toBeVisible();
     await expect(page.locator("#mobile-menu").getByRole("link", { name: "Plan Your Visit" })).toBeVisible();
     await page.locator("#mobile-menu").getByRole("link", { name: "Plan Your Visit" }).click();
     await expect(page).toHaveURL(/travel-planner/);

@@ -5,7 +5,7 @@ import type { ResourceDef } from "@/config/admin-resources";
 import { createClient } from "@/lib/supabase/server";
 
 export const toClientDef = (def: ResourceDef): ClientDef => ({
-  key: def.key, singular: def.singular, fields: def.fields, hasSlug: def.hasSlug, hasCover: def.hasCover,
+  themeEntity: def.themeEntity, key: def.key, singular: def.singular, fields: def.fields, hasSlug: def.hasSlug, hasCover: def.hasCover,
   galleryEntity: def.galleryEntity, seo: def.seo, slugReadOnly: false,
 });
 
@@ -39,4 +39,15 @@ export async function loadMedia(coverId: string | null, entityType?: string, ent
     gallery = ((data ?? []) as unknown as { media: MediaItem | null }[]).map((r) => r.media).filter((m): m is MediaItem => !!m);
   }
   return { cover, gallery };
+}
+
+/** All active themes, and the ones already attached to this record, for the theme picker. */
+export async function loadThemes(def: ResourceDef, rowId?: string): Promise<{ options: { id: string; name: string; kind: string }[]; selected: string[] }> {
+  if (!def.themeEntity) return { options: [], selected: [] };
+  const supabase = await createClient();
+  const [{ data: themes }, { data: links }] = await Promise.all([
+    supabase.from("themes").select("id,name,kind").eq("is_active", true).order("sort_order"),
+    rowId ? supabase.from("theme_links").select("theme_id").eq("entity_type", def.themeEntity).eq("entity_id", rowId) : Promise.resolve({ data: [] }),
+  ]);
+  return { options: themes ?? [], selected: (links ?? []).map((l: { theme_id: string }) => l.theme_id) };
 }

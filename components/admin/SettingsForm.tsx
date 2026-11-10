@@ -18,10 +18,10 @@ export function SettingsForm({ s }: { s: S }) {
   return (
     <form action={action} onReset={(e) => e.preventDefault()} className="space-y-6">
       {state.message && <Notice tone={state.ok ? "success" : "error"}>{state.message}</Notice>}
-      <Card title="General">{f("site_name", "Site name", g.site_name)}{f("tagline", "Tagline", g.tagline)}</Card>
+      <Card title="General">{f("site_name", "Site name", g.site_name)}{f("tagline", "Tagline", g.tagline)}{f("hashtag", "Campaign hashtag (footer ticker)", g.hashtag ?? "#VisitAsanteman", { hint: "Letters and numbers, with or without the #." })}</Card>
       <Card title="Contact details (shown in the footer and contact page)">
         {f("email", "Email", c.email, { type: "email" })}{f("phone", "Phone", c.phone)}
-        {f("whatsapp", "WhatsApp number", c.whatsapp, { hint: "Digits with country code, e.g. 233XXXXXXXXX." })}{f("address", "Address", c.address)}
+        {f("whatsapp", "WhatsApp number", c.whatsapp, { hint: "Digits with country code, e.g. 233XXXXXXXXX. Switches on the floating “Chat on WhatsApp” button; leave blank to hide it." })}{f("address", "Address", c.address)}
       </Card>
       <Card title="Social media (full links)">{f("facebook", "Facebook", so.facebook, { type: "url" })}{f("instagram", "Instagram", so.instagram, { type: "url" })}{f("x", "X / Twitter", so.x, { type: "url" })}{f("youtube", "YouTube", so.youtube, { type: "url" })}</Card>
       <Card title="Map starting view">

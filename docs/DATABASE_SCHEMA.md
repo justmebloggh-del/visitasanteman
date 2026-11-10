@@ -187,3 +187,28 @@ Research drafts (unpublished, unchecked): 13 education institutions (from the ow
 | `ad_stats_daily` | Impressions and clicks per ad per day, written only by `record_ad_event` (which ignores draft, unpublished and out-of-date ads). Administrators read it for the Ad performance report |
 | Counter privileges (fix) | The earlier column-level revoke on `advertisements.impressions/clicks` did not work while table-level UPDATE was granted, so an administrator could edit counters through the API. Now UPDATE is granted by column, excluding the counters |
 | `business_subscriptions` | History of every plan a listing has had (start, planned end, ended), recorded by trigger when `listings.plan_id` changes. Owners read their own history; administrators manage it. `set_subscription_end` and `end_overdue_subscriptions` are administrator-only. **Plans never touch verification** |
+
+## Regional experience additions (migrations `20261121000001`, `20261121000002`; branch `feature/regional-experience`)
+| Item | Purpose |
+|---|---|
+| `pages.last_verified_at`, `source_label`, `source_url` | Shown publicly on a CMS page: when practical information (travel, entry) was last checked, and against what source |
+| New CMS pages (empty drafts) | `why-ashanti`, `getting-around`, `travel-information`, `visa-and-entry`, `cookie-policy`. No visa, health, safety, transport or legal text is written by the system |
+| `quick_links` | Up to six homepage links (label, https or on-site URL, icon from a fixed list, order, enabled). A link with `page_slug` is hidden until that page is published. Public read of enabled rows; staff write; a trigger refuses a seventh enabled link |
+| `events.date_verified` | A date is a fact only when verified for this occurrence. Otherwise the site shows "Date to be confirmed" (homepage strip, list, detail page) and omits the structured-data date; unverified events are left off the calendar grid |
+| `attraction_categories.cover_media_id`, `is_featured` | Homepage "Explore by type" grid: featured categories that have published attractions, ordered by `sort_order` |
+| `themes`, `theme_links` | Eat, Wear, See, Feel (`experience_theme`) and Nature, Culture, Lifestyle, Heritage (`tour_category`). Only the eight names are seeded; descriptions are written by an administrator. A link can attach a theme to an attraction, listing, experience, event or article (entity type constrained; a trigger checks the target exists). Public reads active themes; only administrators manage themes, staff attach them |
+| `theme_item_counts()` | Counts **published** items per theme (runs under the caller's rights). Themes with no published items are hidden from the homepage and their page returns 404 |
+
+## Jobs & Careers (migration `20261122000001`)
+| Table | Purpose | Who can do what (RLS) |
+|---|---|---|
+| `employer_profiles` | One per owner. `verification_status`: unverified, pending, verified, suspended. | Public reads non-suspended rows. Owner creates (email must be confirmed), edits, and may only move unverified to pending. Only administrators verify, suspend or change ownership (trigger `guard_employer_privileged_fields`). |
+| `job_categories` | The 18 fields from the brief. | Public read; administrators write. |
+| `job_vacancies` | Status uses `content_status`. Published vacancies get `published_at` and a 30-day `expires_at`. | Public sees only published, unexpired, unfilled vacancies of non-suspended employers. Owner creates drafts or in-review vacancies and edits their own. Only approvers publish (existing workflow trigger); a district is required (existing publish guard); a suspended employer cannot publish. |
+| `job_applications` | Private. One per applicant per vacancy. | Applicant, the receiving employer and administrators read. Applicants can only withdraw or delete; employers can only change status and interview time; editors have no access. No audit trigger, so cover notes are not copied into the audit log. |
+| `saved_jobs` | Private to the user. | Own rows only. |
+| `job_reports` | Suspicious-vacancy reports (signed-in users). | Insert own; staff read; administrators resolve. |
+
+Storage bucket `cvs`: private, PDF and Word (.docx) only, 5 MB. Files live under `<applicant id>/`; readable by that applicant, the employer who received the application that references the file, and administrators. The app also checks the file's leading bytes. Helper functions: `my_email_confirmed()`, `is_employer_owner()`, `cv_visible_to_employer()`.
+
+Tests: `supabase/tests/jobs_rls.sql` (50 checks) and `tests/e2e/jobs.spec.ts`.

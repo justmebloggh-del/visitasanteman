@@ -6,7 +6,7 @@ import { buildMetadata } from "@/components/layout/seo";
 import { Badge, Container } from "@/components/ui";
 import { eventStatusLabels } from "@/config/site";
 import { listAreas, listEvents, toPage } from "@/lib/content/public";
-import { cn, formatDate } from "@/lib/utils";
+import { cn, eventDateText } from "@/lib/utils";
 
 export const revalidate = 60;
 export const metadata: Metadata = buildMetadata({
@@ -64,12 +64,14 @@ export default async function EventsPage({ searchParams }: { searchParams: Promi
               <li key={ev.id}>
                 <Link href={`/events/${ev.slug}`} className="flex gap-5 rounded-2xl border border-line bg-white p-5 transition hover:shadow-md">
                   <div className="grid size-16 shrink-0 place-items-center rounded-xl bg-forest text-center text-white">
-                    <div><div className="text-2xl font-semibold leading-none">{new Date(ev.starts_at).getUTCDate()}</div>
-                      <div className="text-xs uppercase">{new Intl.DateTimeFormat("en-GB", { month: "short", timeZone: "UTC" }).format(new Date(ev.starts_at))}</div></div>
+                    {ev.date_verified ? (
+                      <div><div className="text-2xl font-semibold leading-none">{new Date(ev.starts_at).getUTCDate()}</div>
+                        <div className="text-xs uppercase">{new Intl.DateTimeFormat("en-GB", { month: "short", timeZone: "UTC" }).format(new Date(ev.starts_at))}</div></div>
+                    ) : <div className="text-sm font-semibold">TBC</div>}
                   </div>
                   <div className="min-w-0">
                     <h2 className="font-serif text-xl font-semibold text-forest">{ev.title}</h2>
-                    <p className="mt-1 text-sm text-muted">{[formatDate(ev.starts_at, true), ev.venue].filter(Boolean).join(" · ")}</p>
+                    <p className="mt-1 text-sm text-muted">{[eventDateText(ev, true), ev.venue, ev.area?.name].filter(Boolean).join(" · ")}</p>
                     {ev.summary && <p className="mt-2 line-clamp-2 text-sm text-ink/80">{ev.summary}</p>}
                     {ev.event_status !== "scheduled" && <Badge tone="red" className="mt-2">{eventStatusLabels[ev.event_status]}</Badge>}
                   </div>
@@ -92,7 +94,7 @@ function Calendar({ month, events }: { month: string; events: Awaited<ReturnType
   const prev = new Date(Date.UTC(y, m - 2, 1)), next = new Date(Date.UTC(y, m, 1));
   const key = (d: Date) => `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
   const byDay = new Map<number, typeof events>();
-  events.forEach((e) => { const d = new Date(e.starts_at).getUTCDate(); byDay.set(d, [...(byDay.get(d) ?? []), e]); });
+  events.filter((e) => e.date_verified).forEach((e) => { const d = new Date(e.starts_at).getUTCDate(); byDay.set(d, [...(byDay.get(d) ?? []), e]); });
   const cells = [...Array(offset).fill(null), ...Array.from({ length: days }, (_, i) => i + 1)];
 
   return (

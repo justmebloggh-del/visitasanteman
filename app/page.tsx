@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Quote, Star } from "lucide-react";
+import { ArrowRight, Bed, Calendar, Camera, Car, Compass, FileText, Info, Map as MapIcon, Phone, Quote, Star, Ticket, Users, Utensils } from "lucide-react";
 import { CardGrid, ContentCard, Photo } from "@/components/layout/blocks";
 import { EnquiryForm } from "@/components/forms/EnquiryForm";
 import { NewsletterForm } from "@/components/forms/NewsletterForm";
@@ -13,17 +13,18 @@ import { educationCfg, sportsCfg, transportCfg } from "@/config/domains";
 import { listDomain } from "@/lib/content/domains";
 import { ceremonyKindLabels, stageLabels, eventStatusLabels, experienceCategoryLabels, listingTypeLabels, accommodationTypes, businessTypes, restaurantTypes, planVisit, type ListingType } from "@/config/site";
 import {
-  getAreaContentCounts, getHomepageSections, listCeremonies, getTestimonials, listAreas, listArticles, listAttractions, listCommunities, listDestinations, listEvents,
+  getAreaContentCounts, getCategoryCards, getHomepageSections, getQuickLinks, getThemeCounts, listThemes, listCeremonies, getTestimonials, listAreas, listArticles, listAttractions, listCommunities, listDestinations, listEvents,
   listExperiences, listListings, getMapPoints, getSettings, listInvestments,
 } from "@/lib/content/public";
 import { SITE_URL } from "@/lib/env";
-import { formatDate, formatPrice, mediaUrl } from "@/lib/utils";
+import { eventDateText, formatDate, formatPrice, mediaUrl } from "@/lib/utils";
 
 export const revalidate = 60;
+const QUICK_ICONS: Record<string, typeof Compass> = { car: Car, info: Info, "file-text": FileText, calendar: Calendar, map: MapIcon, compass: Compass, bed: Bed, utensils: Utensils, camera: Camera, users: Users, ticket: Ticket, phone: Phone };
 export const metadata: Metadata = { alternates: { canonical: SITE_URL } };
 
 export default async function HomePage() {
-  const [sections, attractions, experiences, stays, food, communities, events, articles, testimonials, points, settings, investments, areas, areaCounts, destinations, businesses, cultureStories, ceremonies, education, sports, transport] = await Promise.all([
+  const [sections, attractions, experiences, stays, food, communities, events, articles, testimonials, points, settings, investments, areas, areaCounts, destinations, businesses, cultureStories, ceremonies, education, sports, transport, quickLinks, categoryCards, themeList, themeCounts] = await Promise.all([
     getHomepageSections(),
     listAttractions({ limit: 6 }),
     listExperiences({ limit: 3 }),
@@ -43,6 +44,7 @@ export default async function HomePage() {
     listArticles({ category: "culture-heritage", limit: 3 }),
     listCeremonies({ when: "upcoming", limit: 3 }),
     listDomain(educationCfg, { limit: 3 }), listDomain(sportsCfg, { limit: 3 }), listDomain(transportCfg, { limit: 3 }),
+    getQuickLinks(), getCategoryCards(), listThemes(), getThemeCounts(),
   ]);
   const activeAreas = areas.filter((a) => (areaCounts[a.id] ?? 0) > 0);
   const mapCfg = settings.map ?? {};
@@ -78,14 +80,22 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* Main calls to action */}
-      <Container className="relative z-10 -mt-8">
-        <ul className="grid gap-3 rounded-2xl border border-line bg-white p-3 shadow-lg sm:grid-cols-2 lg:grid-cols-5">
-          {[["/districts", "Browse by district"], ["/attractions", "Discover attractions"], ["/accommodation", "Find accommodation"], ["/experiences", "Things to do"], ["/partner", "Become a tourism partner"]].map(([href, label]) => (
-            <li key={href}><Link href={href} className="flex h-12 items-center justify-center rounded-xl bg-mist px-3 text-center text-sm font-medium text-forest hover:bg-forest hover:text-white">{label}</Link></li>
-          ))}
-        </ul>
-      </Container>
+      {/* Quick links: managed in Admin, hidden while their page is unpublished */}
+      {quickLinks.length > 0 && (
+        <Container className="relative z-10 -mt-8">
+          <nav aria-label="Quick links">
+            <ul className="grid gap-3 rounded-2xl border border-line bg-white p-3 shadow-lg sm:grid-cols-3 lg:grid-cols-6">
+              {quickLinks.map((q) => {
+                const Icon = QUICK_ICONS[q.icon] ?? Compass;
+                return (
+                  <li key={q.id}><Link href={q.url} className="flex h-14 items-center justify-center gap-2 rounded-xl bg-mist px-3 text-center text-sm font-medium text-forest hover:bg-forest hover:text-white">
+                    <Icon className="size-4 shrink-0" aria-hidden />{q.label}</Link></li>
+                );
+              })}
+            </ul>
+          </nav>
+        </Container>
+      )}
 
       <AdSlot placement="homepage_banner" />
 
@@ -98,20 +108,58 @@ export default async function HomePage() {
       )}
 
       {/* B. Explore the region: featured destinations and browse by district */}
-      {on("destinations") && (destinations.length > 0 || activeAreas.length > 0) && (
+      {on("destinations") && destinations.length > 0 && (
         <Block title={sections.destinations?.title ?? "Explore the region"} subtitle={sections.destinations?.subtitle ?? "Featured destinations and the districts of the Ashanti Region."} more={{ href: "/districts", label: "All districts" }}>
           {destinations.length > 0 && (
             <CardGrid>
               {destinations.map((d) => <ContentCard key={d.id} href={`/destinations/${d.slug}`} title={d.name} summary={d.summary} media={d.cover} meta={d.area?.name} />)}
             </CardGrid>
           )}
-          {activeAreas.length > 0 && (
-            <ul className={`flex flex-wrap gap-2 ${destinations.length > 0 ? "mt-8" : ""}`} aria-label="Browse by district">
-              {activeAreas.map((a) => (
-                <li key={a.id}><Link href={`/districts/${a.slug}`} className="inline-block rounded-full border border-line bg-white px-4 py-2 text-sm font-medium text-forest hover:bg-forest hover:text-white">{a.name}</Link></li>
+        </Block>
+      )}
+
+      {/* Experience themes: Eat, Wear, See, Feel (only those with published content) */}
+      {(() => {
+        const live = themeList.filter((t) => t.kind === "experience_theme" && (themeCounts[t.slug] ?? 0) > 0);
+        return live.length > 0 && (
+          <Block title="Experience Ashanti" subtitle="Browse by what you want to do.">
+            <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {live.map((t) => (
+                <li key={t.id}><Link href={`/themes/${t.slug}`} className="group relative block aspect-[4/3] overflow-hidden rounded-2xl bg-forest">
+                  <Photo media={t.cover} sizes="(min-width:1024px) 25vw, 50vw" className="opacity-80 transition duration-500 group-hover:scale-105 motion-reduce:transition-none" />
+                  <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent p-4 text-white"><span className="block font-serif text-xl font-semibold">{t.name}</span><span className="text-sm text-white/85">{themeCounts[t.slug]} {themeCounts[t.slug] === 1 ? "place or experience" : "places and experiences"}</span></span>
+                </Link></li>
               ))}
             </ul>
-          )}
+          </Block>
+        );
+      })()}
+
+      {/* Explore by type: attraction categories with published attractions */}
+      {categoryCards.length > 0 && (
+        <Block tone="mist" title="Explore by type" subtitle="Find attractions by what they are." more={{ href: "/attractions", label: "All attractions" }}>
+          <ul className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+            {categoryCards.map((c) => (
+              <li key={c.id}><Link href={`/attractions?category=${c.slug}`} className="group relative block aspect-[4/3] overflow-hidden rounded-2xl bg-forest-dark">
+                <Photo media={c.cover} sizes="(min-width:1024px) 25vw, 50vw" className="opacity-70 transition duration-500 group-hover:scale-105 motion-reduce:transition-none" />
+                <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent p-4 text-white"><span className="block font-serif text-lg font-semibold">{c.name}</span><span className="text-sm text-white/85">{c.count} {c.count === 1 ? "attraction" : "attractions"}</span></span>
+              </Link></li>
+            ))}
+          </ul>
+        </Block>
+      )}
+
+      {/* Browse by district: only districts with published content; a plain list works without the map */}
+      {activeAreas.length > 0 && (
+        <Block title="Browse by district" subtitle="Start with the district you plan to visit." more={{ href: "/map", label: "Open the map" }}>
+          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4" aria-label="Districts with published places">
+            {activeAreas.map((a) => (
+              <li key={a.id}><Link href={`/districts/${a.slug}`} className="flex items-center justify-between gap-3 rounded-xl border border-line bg-white px-4 py-3 hover:bg-forest-soft">
+                <span className="font-medium text-forest">{a.name}</span><span className="text-sm text-muted">{areaCounts[a.id]} {areaCounts[a.id] === 1 ? "place" : "places"}</span>
+              </Link></li>
+            ))}
+          </ul>
+          <p className="mt-4 text-sm"><Link href="/districts" className="text-lake-dark underline underline-offset-2 hover:no-underline">All districts</Link></p>
         </Block>
       )}
 
@@ -199,11 +247,13 @@ export default async function HomePage() {
               <li key={ev.id}>
                 <Link href={`/events/${ev.slug}`} className="flex h-full gap-4 rounded-2xl border border-line bg-white p-5 transition hover:shadow-md">
                   <div className="grid size-16 shrink-0 place-items-center rounded-xl bg-forest text-center text-white">
-                    <div><div className="text-xl font-semibold leading-none">{new Date(ev.starts_at).getUTCDate()}</div>
-                      <div className="text-xs uppercase">{new Intl.DateTimeFormat("en-GB", { month: "short", timeZone: "UTC" }).format(new Date(ev.starts_at))}</div></div>
+                    {ev.date_verified ? (
+                      <div><div className="text-xl font-semibold leading-none">{new Date(ev.starts_at).getUTCDate()}</div>
+                        <div className="text-xs uppercase">{new Intl.DateTimeFormat("en-GB", { month: "short", timeZone: "UTC" }).format(new Date(ev.starts_at))}</div></div>
+                    ) : <div className="text-sm font-semibold">TBC</div>}
                   </div>
                   <div><h3 className="font-serif text-lg font-semibold text-forest">{ev.title}</h3>
-                    <p className="mt-1 text-sm text-muted">{[ev.venue, ev.event_status !== "scheduled" ? eventStatusLabels[ev.event_status] : formatDate(ev.starts_at)].filter(Boolean).join(" · ")}</p></div>
+                    <p className="mt-1 text-sm text-muted">{[ev.area?.name, ev.venue, ev.event_status !== "scheduled" ? eventStatusLabels[ev.event_status] : eventDateText(ev)].filter(Boolean).join(" · ")}</p></div>
                 </Link>
               </li>
             ))}
@@ -218,6 +268,7 @@ export default async function HomePage() {
               <ContentCard key={a.id} href={`/articles/${a.slug}`} title={a.title} summary={a.excerpt} media={a.cover} meta={a.category?.name} />
             ))}
           </CardGrid>
+          <p className="mt-6 text-sm">Looking for pictures? See the <Link href="/gallery" className="text-lake-dark underline underline-offset-2 hover:no-underline">photo gallery</Link>.</p>
         </Block>
       )}
 

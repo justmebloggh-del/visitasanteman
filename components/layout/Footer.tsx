@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
+import { CookieSettingsButton } from "@/components/consent/ConsentManager";
+import { HashtagTicker } from "@/components/layout/HashtagTicker";
 import { Wordmark } from "@/components/brand/Wordmark";
 import { Container } from "@/components/ui";
 import { NewsletterForm } from "@/components/forms/NewsletterForm";
 import { siteConfig } from "@/config/site";
 import { getSettings } from "@/lib/content/public";
-import { safeUrl } from "@/lib/utils";
+import { safeUrl, whatsappLink } from "@/lib/utils";
 
 const explore = [
   { href: "/attractions", label: "Attractions" },
@@ -65,6 +67,7 @@ export async function Footer() {
             {contact.email && <li className="flex gap-2"><Mail className="mt-0.5 size-4 shrink-0" aria-hidden /><a href={`mailto:${contact.email}`} className="hover:underline">{contact.email}</a></li>}
             {contact.phone && <li className="flex gap-2"><Phone className="mt-0.5 size-4 shrink-0" aria-hidden />{contact.phone}</li>}
             {contact.address && <li className="flex gap-2"><MapPin className="mt-0.5 size-4 shrink-0" aria-hidden />{contact.address}</li>}
+            {whatsappLink(String(contact.whatsapp ?? ""), "Hello VisitAsanteman, I would like help planning a visit.") && <li><a href={whatsappLink(String(contact.whatsapp), "Hello VisitAsanteman, I would like help planning a visit.")!} target="_blank" rel="noopener noreferrer" className="hover:underline">Chat on WhatsApp</a></li>}
             <li><Link href="/contact" className="hover:underline">Contact form</Link></li>
             <li><Link href="/partner" className="hover:underline">List your business</Link></li>
             <li><Link href="/advertise" className="hover:underline">Advertise with us</Link></li>
@@ -74,10 +77,13 @@ export async function Footer() {
           <div className="mt-5"><NewsletterForm compact /></div>
         </div>
       </Container>
+      {(settings.general?.hashtag ?? "#VisitAsanteman") && (
+        <Container><HashtagTicker text={String(settings.general?.hashtag ?? "#VisitAsanteman")} /></Container>
+      )}
       <div className="border-t border-white/10">
         <Container className="flex flex-col gap-2 py-5 text-xs text-white/60 sm:flex-row sm:justify-between">
           <p>© {new Date().getFullYear()} {siteConfig.name}. {siteConfig.tagline}</p>
-          <p className="flex gap-4"><Link href="/about/our-mission" className="hover:text-white">Our mission</Link><Link href="/privacy" className="hover:text-white">Privacy policy</Link><Link href="/terms" className="hover:text-white">Terms and conditions</Link></p>
+          <p className="flex flex-wrap gap-4"><CookieSettingsButton className="hover:text-white" /><Link href="/cookie-policy" className="hover:text-white">Cookie policy</Link><Link href="/about/our-mission" className="hover:text-white">Our mission</Link><Link href="/privacy" className="hover:text-white">Privacy policy</Link><Link href="/terms" className="hover:text-white">Terms and conditions</Link></p>
         </Container>
       </div>
     </footer>

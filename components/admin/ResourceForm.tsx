@@ -12,7 +12,7 @@ import type { FormState } from "@/lib/validations/forms";
 
 export interface ClientDef {
   key: string; singular: string; fields: FieldDef[]; hasSlug: boolean; hasCover: boolean;
-  galleryEntity?: string; seo: boolean; slugReadOnly: boolean;
+  galleryEntity?: string; seo: boolean; slugReadOnly: boolean; themeEntity?: string;
 }
 
 const GROUPS: { id: NonNullable<FieldDef["group"]>; title: string }[] = [
@@ -51,10 +51,11 @@ function control(f: FieldDef, value: unknown, error: string | undefined, options
   }
 }
 
-export function ResourceForm({ def, id, initial, relations, isAdmin, canApprove, cover, gallery, customAction, uploadFolder, cancelHref, partner, maxGallery }: {
+export function ResourceForm({ def, id, initial, relations, isAdmin, canApprove, cover, gallery, themes, customAction, uploadFolder, cancelHref, partner, maxGallery }: {
   def: ClientDef; id: string | null; initial: Record<string, unknown>;
   relations: Record<string, { value: string; label: string }[]>; isAdmin: boolean; canApprove?: boolean;
   cover: MediaItem[]; gallery: MediaItem[];
+  themes?: { options: { id: string; name: string; kind: string }[]; selected: string[] };
   customAction?: (prev: FormState, fd: FormData) => Promise<FormState>;
   uploadFolder?: string; cancelHref?: string; partner?: boolean; maxGallery?: number;
 }) {
@@ -94,6 +95,18 @@ export function ResourceForm({ def, id, initial, relations, isAdmin, canApprove,
           </section>
         );
       })}
+
+      {def.themeEntity && themes && themes.options.length > 0 && (
+        <fieldset className="rounded-2xl border border-line bg-white p-5 sm:p-6">
+          <legend className="px-1 font-serif text-lg font-semibold text-forest">Themes</legend>
+          <p className="mb-3 text-sm text-muted">Tick the experience themes and tour categories this belongs to. Visitors can browse by theme.</p>
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+            {themes.options.map((t) => (
+              <label key={t.id} className="flex items-center gap-2 text-sm"><input type="checkbox" name="theme_ids" value={t.id} defaultChecked={themes.selected.includes(t.id)} className="size-4 accent-[var(--color-forest)]" />{t.name}<span className="text-xs text-muted">({t.kind === "experience_theme" ? "theme" : "tour"})</span></label>
+            ))}
+          </div>
+        </fieldset>
+      )}
 
       {def.seo && (
         <details className="rounded-2xl border border-line bg-white p-5 sm:p-6" open={!!(initial.seo_title || initial.seo_description)}>

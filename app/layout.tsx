@@ -1,11 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import { Fraunces, Inter } from "next/font/google";
-import Script from "next/script";
+import { ConsentManager } from "@/components/consent/ConsentManager";
 import { Footer } from "@/components/layout/Footer";
 import { PwaRegister } from "@/components/layout/PwaRegister";
 import { Header } from "@/components/layout/Header";
 import { JsonLd } from "@/components/layout/seo";
 import { siteConfig } from "@/config/site";
+import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
+import { getSettings } from "@/lib/content/public";
 import { SITE_URL } from "@/lib/env";
 import "./globals.css";
 
@@ -23,7 +25,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = { themeColor: "#174b35", width: "device-width", initialScale: 1 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const whatsapp = String((await getSettings()).contact?.whatsapp ?? "");
   const gaId = process.env.NEXT_PUBLIC_GA_ID;
   return (
     <html lang="en" className={`${inter.variable} ${fraunces.variable}`}>
@@ -36,14 +39,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main id="main" className="flex-1">{children}</main>
         <Footer />
         <PwaRegister />
-        {gaId && /^G-[A-Z0-9]+$/.test(gaId) && (
-          <>
-            <Script src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`} strategy="afterInteractive" />
-            <Script id="ga" strategy="afterInteractive">
-              {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${gaId}');`}
-            </Script>
-          </>
-        )}
+        <WhatsAppButton number={whatsapp} />
+        <ConsentManager gaId={gaId && /^G-[A-Z0-9]+$/.test(gaId) ? gaId : undefined} />
       </body>
     </html>
   );

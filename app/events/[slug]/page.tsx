@@ -7,7 +7,7 @@ import { Badge, ButtonLink, Container } from "@/components/ui";
 import { eventStatusLabels } from "@/config/site";
 import { SITE_URL } from "@/lib/env";
 import { getEvent, getGallery } from "@/lib/content/public";
-import { formatDate, mediaUrl, safeUrl } from "@/lib/utils";
+import { eventDateText, formatDate, mediaUrl, safeUrl } from "@/lib/utils";
 
 export const revalidate = 60;
 
@@ -32,7 +32,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
     <>
       <JsonLd data={{
         "@context": "https://schema.org", "@type": "Event", name: e.title, description: e.summary ?? undefined,
-        startDate: e.starts_at, endDate: e.ends_at ?? undefined, eventStatus: ldStatus[e.event_status],
+        startDate: e.date_verified ? e.starts_at : undefined, endDate: e.date_verified ? e.ends_at ?? undefined : undefined, eventStatus: ldStatus[e.event_status],
         location: e.venue ? { "@type": "Place", name: e.venue } : undefined, image: mediaUrl(e.cover?.path) ?? undefined,
         organizer: e.organiser ? { "@type": "Organization", name: e.organiser } : undefined, url: `${SITE_URL}/events/${e.slug}`,
       }} />
@@ -56,7 +56,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
         </div>
         <aside className="space-y-6">
           <Facts items={[
-            { label: "Starts", value: formatDate(e.starts_at, true) }, { label: "Ends", value: e.ends_at ? formatDate(e.ends_at, true) : null },
+            { label: "Starts", value: eventDateText(e, true) }, { label: "Ends", value: e.date_verified && e.ends_at ? formatDate(e.ends_at, true) : null },
             { label: "Venue", value: e.venue }, { label: "Organiser", value: e.organiser }, { label: "Tickets", value: e.ticket_info },
             { label: "Contact", value: [e.contact_phone, e.contact_email].filter(Boolean).join("\n") || null },
           ]} />

@@ -5,6 +5,7 @@ import { Markdown } from "@/components/layout/Markdown";
 import { buildMetadata } from "@/components/layout/seo";
 import { Container } from "@/components/ui";
 import { getPage } from "@/lib/content/public";
+import { formatDate, safeUrl } from "@/lib/utils";
 
 export async function cmsMetadata(slug: string, fallbackTitle: string, path = `/${slug}`): Promise<Metadata> {
   const p = await getPage(slug);
@@ -22,6 +23,12 @@ export async function CmsPage({ slug, fallbackTitle, crumbs, children }: { slug:
       {slug.startsWith("culture") && <AdSlot placement="culture_top" />}
       <Container className="py-10">
         {page?.cover && <div className="relative mb-8 aspect-[21/9] overflow-hidden rounded-2xl"><Photo media={page.cover} sizes="100vw" priority /></div>}
+        {page?.body && (page.last_verified_at || page.source_label || page.source_url) && (
+          <p className="mb-6 rounded-xl bg-mist p-4 text-sm text-muted">
+            {page.last_verified_at && <><strong className="text-ink">Last verified:</strong> {formatDate(page.last_verified_at)}. </>}
+            {(page.source_label || page.source_url) && <><strong className="text-ink">Source:</strong> {page.source_label ?? "official source"}{page.source_url && safeUrl(page.source_url) && <> (<a href={safeUrl(page.source_url)!} className="underline" rel="noopener noreferrer" target="_blank">link</a>)</>}.</>}
+          </p>
+        )}
         {page?.body ? <Markdown>{page.body}</Markdown> : (
           <p className="rounded-2xl bg-mist p-6 text-muted">This page is being prepared. Please check back soon.</p>
         )}

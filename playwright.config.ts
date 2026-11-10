@@ -6,7 +6,11 @@ export default defineConfig({
   fullyParallel: false,
   workers: 1,
   reporter: "list",
-  use: { baseURL: process.env.E2E_BASE_URL ?? "http://localhost:3000", trace: "retain-on-failure" },
+  // Every test starts with cookie consent already given (rejected), so the consent banner does not sit over the page; consent.spec.ts starts clean.
+  use: {
+    baseURL: process.env.E2E_BASE_URL ?? "http://localhost:3000", trace: "retain-on-failure",
+    storageState: { origins: [], cookies: [{ name: "vasa_consent", value: encodeURIComponent(JSON.stringify({ v: 1, ts: Date.now(), functional: false, analytics: false, advertising: false })), domain: "localhost", path: "/", expires: Math.floor(Date.now() / 1000) + 86400 * 300, httpOnly: false, secure: false, sameSite: "Lax" }] },
+  },
   projects: [
     { name: "desktop", use: { ...devices["Desktop Chrome"] } },
     { name: "mobile", use: { ...devices["Pixel 7"] } },
