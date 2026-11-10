@@ -212,3 +212,9 @@ Research drafts (unpublished, unchecked): 13 education institutions (from the ow
 Storage bucket `cvs`: private, PDF and Word (.docx) only, 5 MB. Files live under `<applicant id>/`; readable by that applicant, the employer who received the application that references the file, and administrators. The app also checks the file's leading bytes. Helper functions: `my_email_confirmed()`, `is_employer_owner()`, `cv_visible_to_employer()`.
 
 Tests: `supabase/tests/jobs_rls.sql` (50 checks) and `tests/e2e/jobs.spec.ts`.
+
+## Database review fixes (migration `20261122000002`)
+- Trigger-only functions had EXECUTE granted to everyone (the Postgres default), so they were reachable as `/rest/v1/rpc/<name>`. Their EXECUTE is now revoked from public, anon and authenticated. Triggers still fire normally. **When you add a trigger function, revoke it in the same migration.**
+- Foreign keys used by joins, filters and the media "in use" check now have indexes. Audit-only columns (`created_by`, `reviewed_by`, `uploaded_by`, `handled_by`, `assigned_by`, `updated_by`, `verified_by`, `reporter_id`) are deliberately left unindexed.
+- Review checks that came back clean: every public table has RLS and at least one policy; every security-definer function pins `search_path`; anonymous visitors can write only to `enquiries` and `newsletter_subscribers`.
+- `geography_rls.sql` and `jobs_rls.sql` assume a freshly reset local database. Rows left by the end-to-end tests (published markets, clubs, advertisers, applications) make a few count checks fail; run `supabase db reset` first.
