@@ -6,8 +6,8 @@ import { listDestinations } from "@/lib/content/public";
 
 export const revalidate = 60;
 export const metadata: Metadata = buildMetadata({
-  title: "Destinations in the Ashanti Region",
-  description: "Featured destinations across the Ashanti Region, each with its attractions, places to stay and practical information.",
+  title: "Destinations in Asanteman",
+  description: "Featured destinations across Asanteman, each with its attractions, places to stay and practical information.",
   path: "/destinations",
 });
 

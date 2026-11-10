@@ -42,16 +42,16 @@ insert into communities (slug, name, status, sort_order) values
 on conflict (slug) do nothing;
 
 insert into homepage_sections (key, title, subtitle, sort_order, config) values
-  ('hero', 'Discover Ashanti. Experience Our Heritage.',
-   'Plan your visit to the Ashanti Region of Ghana: its places, its people and its heritage, district by district.', 1, '{}'),
-  ('destinations', 'Explore the region', 'Featured destinations and the districts of the Ashanti Region.', 2, '{}'),
+  ('hero', 'Discover Asanteman. Experience Our Heritage.',
+   'Plan your visit to Asanteman, Ghana: its places, its people and its heritage, district by district.', 1, '{}'),
+  ('destinations', 'Explore the region', 'Featured destinations and the districts of Asanteman.', 2, '{}'),
   ('intro', 'Welcome to VisitAsanteman', null, 3, '{}'),
-  ('attractions', 'Explore attractions', 'Places to see and things to do across the Ashanti Region.', 4, '{}'),
-  ('culture', 'Experience Ashanti culture', 'Stories of heritage, festivals, crafts and food, published after they have been checked.', 5, '{}'),
+  ('attractions', 'Explore attractions', 'Places to see and things to do across Asanteman.', 4, '{}'),
+  ('culture', 'Experience Asanteman culture', 'Stories of heritage, festivals, crafts and food, published after they have been checked.', 5, '{}'),
   ('experiences', 'Popular experiences', 'Tours and activities offered by local providers.', 6, '{}'),
-  ('accommodation', 'Where to stay', 'Hotels, lodges and guesthouses across the Ashanti Region.', 7, '{}'),
+  ('accommodation', 'Where to stay', 'Hotels, lodges and guesthouses across Asanteman.', 7, '{}'),
   ('restaurants', 'Food and dining', 'Local kitchens, restaurants and traditional dishes.', 8, '{}'),
-  ('communities', 'Discover our communities', 'Towns and villages of the Ashanti Region.', 9, '{}'),
+  ('communities', 'Discover our communities', 'Towns and villages of Asanteman.', 9, '{}'),
   ('events', 'Upcoming events', 'Festivals, celebrations and tourism events.', 10, '{}'),
   ('plan', 'Plan your visit', 'Build an itinerary, read the travel guide or find places on the map.', 11, '{}'),
   ('businesses', 'Local tourism businesses', 'Tour operators, guides, makers and other businesses. Every listing is reviewed before it is published.', 12, '{}'),
@@ -61,7 +61,7 @@ insert into homepage_sections (key, title, subtitle, sort_order, config) values
 on conflict (key) do nothing;
 
 insert into site_settings (key, value) values
-  ('general', '{"site_name": "VisitAsanteman", "tagline": "Discover Ashanti. Experience Our Heritage."}'),
+  ('general', '{"site_name": "VisitAsanteman", "tagline": "Discover Asanteman. Experience Our Heritage."}'),
   ('contact', '{"email": "", "phone": "", "whatsapp": "", "address": ""}'),
   ('social', '{"facebook": "", "instagram": "", "x": "", "youtube": ""}'),
   ('map', '{"center_lat": 6.7, "center_lng": -1.6, "zoom": 8, "note": "Approximate regional map view only; not an attraction coordinate."}')
@@ -71,7 +71,7 @@ on conflict (key) do nothing;
 -- notice until an administrator writes and publishes them.
 insert into pages (slug, title, status) values
   ('about', 'About VisitAsanteman', 'draft'),
-  ('explore', 'Explore the Ashanti Region', 'draft'),
+  ('explore', 'Explore Asanteman', 'draft'),
   ('travel-guide', 'Travel Guide', 'draft'),
   ('privacy', 'Privacy Policy', 'draft'),
   ('terms', 'Terms and Conditions', 'draft')

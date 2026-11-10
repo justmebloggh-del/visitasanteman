@@ -7,7 +7,7 @@ const password = "E2e-password-123";
 const tag = unique("geo").toLowerCase();
 
 const SIMPLE = ["Experiences", "Where to Stay", "Food & Dining", "Events", "Business Directory", "About Us", "Contact"];
-const GROUPS = ["Explore Ashanti", "Culture & Heritage", "Plan Your Visit", "Media"];
+const GROUPS = ["Explore Asanteman", "Culture & Heritage", "Plan Your Visit", "Media"];
 
 async function login(page: Page) {
   await page.goto("/login");
@@ -21,7 +21,7 @@ const setRole = (role: string) => sql(`update user_roles set role='${role}' wher
 test.describe("VisitAsanteman brand and navigation", () => {
   test("home carries the new brand and no Lake Bosomtwe wording", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText(/Discover Ashanti\. Experience Our Heritage\./);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(/Discover Asanteman\. Experience Our Heritage\./);
     await expect(page.getByRole("link", { name: /VisitAsanteman, home/ })).toBeVisible();
     expect(await page.locator("body").innerText()).not.toMatch(/bosomtw/i);
     expect(await page.title()).toContain("VisitAsanteman");

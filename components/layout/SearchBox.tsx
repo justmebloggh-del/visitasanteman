@@ -37,9 +37,9 @@ export function SearchBox({ className, defaultValue }: { className?: string; def
   const show = open && value.trim().length >= 2 && items.length > 0;
   return (
     <form ref={box} action="/search" role="search" className={cn("relative flex gap-2 rounded-full bg-white p-1.5 shadow-lg", className)}>
-      <label htmlFor="site-search" className="sr-only">What would you like to discover in Ashanti?</label>
+      <label htmlFor="site-search" className="sr-only">What would you like to discover in Asanteman?</label>
       <input
-        id="site-search" name="q" type="search" value={value} autoComplete="off" placeholder="What would you like to discover in Ashanti?"
+        id="site-search" name="q" type="search" value={value} autoComplete="off" placeholder="What would you like to discover in Asanteman?"
         onChange={(e) => setValue(e.target.value)} onKeyDown={(e) => { if (e.key === "Escape") setOpen(false); }}
         className="min-w-0 flex-1 rounded-full bg-transparent px-4 text-sm text-ink placeholder:text-muted/70 focus:outline-none"
       />

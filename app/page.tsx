@@ -66,13 +66,13 @@ export default async function HomePage() {
           )}
           <div className="absolute inset-0 -z-10 bg-gradient-to-t from-forest-dark/70 to-transparent" aria-hidden />
           <Container className="flex min-h-[78vh] flex-col justify-center py-20">
-            <p className="mb-4 text-sm font-medium uppercase tracking-[0.2em] text-gold">Ashanti Region, Ghana</p>
+            <p className="mb-4 text-sm font-medium uppercase tracking-[0.2em] text-gold">Asanteman, Ghana</p>
             <h1 className="max-w-3xl text-4xl font-semibold leading-tight sm:text-6xl">
-              {hero?.title ?? "Discover Ashanti. Experience Our Heritage."}
+              {hero?.title ?? "Discover Asanteman. Experience Our Heritage."}
             </h1>
-            <p className="mt-5 max-w-xl text-lg text-white/85">{hero?.subtitle || "Plan your visit to the Ashanti Region of Ghana: its places, its people and its heritage, district by district."}</p>
+            <p className="mt-5 max-w-xl text-lg text-white/85">{hero?.subtitle || "Plan your visit to Asanteman, Ghana: its places, its people and its heritage, district by district."}</p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <ButtonLink href="/explore" variant="accent" size="lg">Explore Ashanti</ButtonLink>
+              <ButtonLink href="/explore" variant="accent" size="lg">Explore Asanteman</ButtonLink>
               <ButtonLink href={planVisit.href} variant="light" size="lg">{planVisit.label}</ButtonLink>
             </div>
             <SearchBox className="mt-10 max-w-xl" />
@@ -109,7 +109,7 @@ export default async function HomePage() {
 
       {/* B. Explore the region: featured destinations and browse by district */}
       {on("destinations") && destinations.length > 0 && (
-        <Block title={sections.destinations?.title ?? "Explore the region"} subtitle={sections.destinations?.subtitle ?? "Featured destinations and the districts of the Ashanti Region."} more={{ href: "/districts", label: "All districts" }}>
+        <Block title={sections.destinations?.title ?? "Explore the region"} subtitle={sections.destinations?.subtitle ?? "Featured destinations and the districts of Asanteman."} more={{ href: "/districts", label: "All districts" }}>
           {destinations.length > 0 && (
             <CardGrid>
               {destinations.map((d) => <ContentCard key={d.id} href={`/destinations/${d.slug}`} title={d.name} summary={d.summary} media={d.cover} meta={d.area?.name} />)}
@@ -122,7 +122,7 @@ export default async function HomePage() {
       {(() => {
         const live = themeList.filter((t) => t.kind === "experience_theme" && (themeCounts[t.slug] ?? 0) > 0);
         return live.length > 0 && (
-          <Block title="Experience Ashanti" subtitle="Browse by what you want to do.">
+          <Block title="Experience Asanteman" subtitle="Browse by what you want to do.">
             <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {live.map((t) => (
                 <li key={t.id}><Link href={`/themes/${t.slug}`} className="group relative block aspect-[4/3] overflow-hidden rounded-2xl bg-forest">
@@ -182,9 +182,9 @@ export default async function HomePage() {
         </Block>
       )}
 
-      {/* D. Experience Ashanti culture: only verified, published stories */}
+      {/* D. Experience Asanteman culture: only verified, published stories */}
       {on("culture") && cultureStories.items.length > 0 && (
-        <Block title={sections.culture?.title ?? "Experience Ashanti culture"} subtitle={sections.culture?.subtitle} more={{ href: "/culture", label: "Culture & heritage" }}>
+        <Block title={sections.culture?.title ?? "Experience Asanteman culture"} subtitle={sections.culture?.subtitle} more={{ href: "/culture", label: "Culture & heritage" }}>
           <CardGrid>
             {cultureStories.items.map((a) => <ContentCard key={a.id} href={`/articles/${a.slug}`} title={a.title} summary={a.excerpt} media={a.cover} meta={a.category?.name} />)}
           </CardGrid>

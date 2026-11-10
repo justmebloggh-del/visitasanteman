@@ -9,7 +9,7 @@ import { createPublicClient } from "@/lib/supabase/server";
 export const revalidate = 60;
 export const metadata: Metadata = buildMetadata({
   title: "Curated itineraries",
-  description: "Ready-made trip ideas for the Ashanti Region, built only from places that have been checked. Copy one into your own plan and adjust it.",
+  description: "Ready-made trip ideas for Asanteman, built only from places that have been checked. Copy one into your own plan and adjust it.",
   path: "/travel-planner/itineraries",
 });
 

@@ -10,7 +10,7 @@ import { toPage } from "@/lib/content/public";
 
 export const revalidate = 60;
 export const metadata: Metadata = buildMetadata({
-  title: "Jobs and Careers in Ashanti", description: "Vacancies from employers across the Ashanti Region. Applying is always free.", path: "/jobs",
+  title: "Jobs and Careers in Asanteman", description: "Vacancies from employers across Asanteman. Applying is always free.", path: "/jobs",
 });
 
 export default async function JobsPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
@@ -20,7 +20,7 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
   const filtered = Boolean(sp.q || sp.category || sp.type || sp.area);
   return (
     <>
-      <PageHeader title="Jobs and Careers" intro="Discover opportunities. Build your career. Grow Ashanti." crumbs={[{ label: "Jobs" }]} />
+      <PageHeader title="Jobs and Careers" intro="Discover opportunities. Build your career. Grow Asanteman." crumbs={[{ label: "Jobs" }]} />
       <Container className="space-y-6 py-10">
         <FilterBar action="/jobs" q={sp.q} qLabel="Job title or keyword" values={{ category: sp.category, type: sp.type, area: sp.area }} filters={[
           { name: "category", label: "Field", options: categories.map((c) => ({ value: c.slug, label: c.name })) },

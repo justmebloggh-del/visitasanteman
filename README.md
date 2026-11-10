@@ -1,8 +1,8 @@
 # VisitAsanteman
 
-**Discover Ashanti. Experience Our Heritage.**
+**Discover Asanteman. Experience Our Heritage.**
 
-VisitAsanteman is a digital tourism, heritage, business and employment platform for the whole Ashanti Region of Ghana. It combines a public website, a built-in content management system, a business partner portal, bookings, a travel planner, a jobs board, and investment and advertising tools. Content is organised by district (metropolitan, municipal and district assemblies). Lake Bosomtwe is one destination within the region.
+VisitAsanteman is a digital tourism, heritage, business and employment platform for the whole of Asanteman in Ghana. It combines a public website, a built-in content management system, a business partner portal, bookings, a travel planner, a jobs board, and investment and advertising tools. Content is organised by district (metropolitan, municipal and district assemblies). Lake Bosomtwe is one destination within the region.
 
 > **Nothing here is live yet.** The site is not deployed, the district list is unverified, and there is no real content. Read [Status](#status) before relying on any of it.
 
@@ -10,7 +10,7 @@ VisitAsanteman is a digital tourism, heritage, business and employment platform 
 | For | Features |
 |---|---|
 | Visitors | Destinations, districts, attractions, culture and ceremonies, accommodation, food, experiences, events, markets, education, sports and transport directories; site-wide search; interactive map; travel planner with curated itineraries; AI itinerary assistant (optional); installable PWA with an offline page |
-| Plan your visit | Why Ashanti, Getting Around, Travel Information and Visa and Entry pages, each with a public "last verified" date and source |
+| Plan your visit | Why Asanteman, Getting Around, Travel Information and Visa and Entry pages, each with a public "last verified" date and source |
 | Themes | Eat, Wear, See and Feel, plus tour categories, shown only when they hold published content |
 | Businesses | Partner portal: listings, photos, enquiries, bookings, reviews, subscription plans. Payment never verifies a business |
 | Jobs and careers | Employer profiles with admin-only verification, vacancies that are reviewed before publishing, free applications with private CV upload, saved jobs, reports of suspicious vacancies, JobPosting structured data |

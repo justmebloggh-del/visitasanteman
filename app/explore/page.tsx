@@ -5,13 +5,13 @@ import { Map } from "@/components/maps/Map";
 import { getAreaContentCounts, getMapPoints, getSettings, listAreas, listAttractions, listCommunities, listDestinations } from "@/lib/content/public";
 
 export const revalidate = 60;
-export const generateMetadata = () => cmsMetadata("explore", "Explore the Ashanti Region");
+export const generateMetadata = () => cmsMetadata("explore", "Explore Asanteman");
 
 export default async function ExplorePage() {
   const [communities, attractions, points, settings, areas, counts, destinations] = await Promise.all([listCommunities(), listAttractions({ limit: 3 }), getMapPoints(), getSettings(), listAreas(), getAreaContentCounts(), listDestinations({ limit: 6 })]);
   const m = settings.map ?? {};
   return (
-    <CmsPage slug="explore" fallbackTitle="Explore the Ashanti Region">
+    <CmsPage slug="explore" fallbackTitle="Explore Asanteman">
       {destinations.length > 0 && <section className="mt-12"><h2 className="mb-4 text-2xl font-semibold text-forest">Destinations</h2><CardGrid>{destinations.map((d) => <ContentCard key={d.id} href={`/destinations/${d.slug}`} title={d.name} summary={d.summary} media={d.cover} meta={d.area?.name} />)}</CardGrid></section>}
       {areas.length > 0 && (
         <section className="mt-12"><h2 className="mb-4 text-2xl font-semibold text-forest">Browse by district</h2>
@@ -20,7 +20,7 @@ export default async function ExplorePage() {
       <section className="mt-12">
         <h2 className="mb-4 text-2xl font-semibold text-forest">Location map</h2>
         <Map points={points} center={[Number(m.center_lng ?? -1.6), Number(m.center_lat ?? 6.7)]} zoom={Number(m.zoom ?? 8)} />
-        <p className="mt-2 text-xs text-muted">Map of the Ashanti Region. Markers appear only for places with verified coordinates. <Link href="/map" className="text-lake-dark underline">Open the full tourism map</Link>.</p>
+        <p className="mt-2 text-xs text-muted">Map of Asanteman. Markers appear only for places with verified coordinates. <Link href="/map" className="text-lake-dark underline">Open the full tourism map</Link>.</p>
       </section>
       {attractions.items.length > 0 && <section className="mt-12"><h2 className="mb-4 text-2xl font-semibold text-forest">Featured attractions</h2><CardGrid>{attractions.items.map((a) => <ContentCard key={a.id} href={`/attractions/${a.slug}`} title={a.name} summary={a.summary} media={a.cover} />)}</CardGrid></section>}
       {communities.length > 0 && (

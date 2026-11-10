@@ -10,7 +10,7 @@ export const revalidate = 60;
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const t = await getTheme((await params).slug);
   if (!t) return { title: "Not found" };
-  return buildMetadata({ title: `${t.name} in Ashanti`, description: t.summary, path: `/themes/${t.slug}`, image: t.cover });
+  return buildMetadata({ title: `${t.name} in Asanteman`, description: t.summary, path: `/themes/${t.slug}`, image: t.cover });
 }
 
 export default async function ThemePage({ params }: { params: Promise<{ slug: string }> }) {

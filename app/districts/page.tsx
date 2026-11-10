@@ -6,8 +6,8 @@ import { areaKindLabels, getAreaContentCounts, listAreas } from "@/lib/content/p
 
 export const revalidate = 60;
 export const metadata: Metadata = buildMetadata({
-  title: "Districts of the Ashanti Region",
-  description: "Explore the Ashanti Region district by district: the metropolitan, municipal and district assemblies and the places to visit in each.",
+  title: "Districts of Asanteman",
+  description: "Explore Asanteman district by district: the metropolitan, municipal and district assemblies and the places to visit in each.",
   path: "/districts",
 });
 

@@ -6,7 +6,7 @@ import { Container } from "@/components/ui";
 import { getMapPoints, getSettings } from "@/lib/content/public";
 
 export const revalidate = 60;
-export const metadata: Metadata = buildMetadata({ title: "Tourism map", description: "Interactive map of attractions, accommodation, restaurants, markets, schools, sports venues, transport and events across the Ashanti Region.", path: "/map" });
+export const metadata: Metadata = buildMetadata({ title: "Tourism map", description: "Interactive map of attractions, accommodation, restaurants, markets, schools, sports venues, transport and events across Asanteman.", path: "/map" });
 
 export default async function MapPage() {
   const [points, settings] = await Promise.all([getMapPoints(), getSettings()]);

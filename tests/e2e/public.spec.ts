@@ -37,7 +37,7 @@ test.describe("public site", () => {
     await page.goto("/");
     await page.getByRole("button", { name: "Open menu" }).click();
     const menu = page.getByRole("navigation", { name: "Mobile" });
-    await menu.getByRole("button", { name: "Explore Ashanti", exact: true }).click();
+    await menu.getByRole("button", { name: "Explore Asanteman", exact: true }).click();
     await menu.getByRole("link", { name: "Attractions", exact: true }).click();
     await expect(page).toHaveURL(/\/attractions/);
   });

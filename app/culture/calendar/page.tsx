@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 export const revalidate = 60;
 export const metadata: Metadata = buildMetadata({
   title: "Cultural calendar",
-  description: "Ceremonies and festivals in the Ashanti Region with dates confirmed by the organisers. Dates are announced each year.",
+  description: "Ceremonies and festivals in Asanteman with dates confirmed by the organisers. Dates are announced each year.",
   path: "/culture/calendar",
 });
 

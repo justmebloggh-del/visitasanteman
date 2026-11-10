@@ -18,7 +18,7 @@ export const dynamic = "force-dynamic";    // shows the visitor's own applicatio
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const v = await getVacancy((await params).slug);
   if (!v) return { title: "Vacancy not found", robots: { index: false } };
-  return buildMetadata({ title: `${v.title} at ${v.employer?.name ?? "an Ashanti employer"}`, description: v.description, path: `/jobs/${v.slug}` });
+  return buildMetadata({ title: `${v.title} at ${v.employer?.name ?? "an Asanteman employer"}`, description: v.description, path: `/jobs/${v.slug}` });
 }
 
 const JOB_TYPE: Record<string, string> = { full_time: "FULL_TIME", part_time: "PART_TIME", contract: "CONTRACTOR", temporary: "TEMPORARY", internship: "INTERN", apprenticeship: "OTHER", national_service: "OTHER", graduate_trainee: "OTHER", remote: "OTHER", hybrid: "OTHER" };

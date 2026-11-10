@@ -14,7 +14,7 @@ export function PlanForm({ plan }: { plan?: PlanView }) {
   return (
     <form action={action} onReset={(e) => e.preventDefault()} noValidate className="space-y-4">
       {state.message && <Notice tone={state.ok ? "success" : "error"}>{state.message}</Notice>}
-      <Field label="Plan name" htmlFor="title" error={e.title}><Input id="title" name="title" defaultValue={plan?.title ?? ""} placeholder="Weekend in Ashanti" required /></Field>
+      <Field label="Plan name" htmlFor="title" error={e.title}><Input id="title" name="title" defaultValue={plan?.title ?? ""} placeholder="Weekend in Asanteman" required /></Field>
       <div className="grid gap-4 sm:grid-cols-3">
         <Field label="Start date (optional)" htmlFor="start_date" error={e.start_date}><Input id="start_date" name="start_date" type="date" defaultValue={plan?.start_date ?? ""} /></Field>
         <Field label="Number of days" htmlFor="days" error={e.days}><Input id="days" name="days" type="number" min={1} max={30} defaultValue={plan?.days ?? 2} required /></Field>

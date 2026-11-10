@@ -9,7 +9,7 @@ import { createClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = buildMetadata({ title: "Travel planner", description: "Plan your visit to the Ashanti Region: pick attractions, places to stay, food and experiences, arrange them by day, and share or print your itinerary.", path: "/travel-planner" });
+export const metadata: Metadata = buildMetadata({ title: "Travel planner", description: "Plan your visit to Asanteman: pick attractions, places to stay, food and experiences, arrange them by day, and share or print your itinerary.", path: "/travel-planner" });
 
 export default async function TravelPlanner() {
   const user = await getSessionUser();

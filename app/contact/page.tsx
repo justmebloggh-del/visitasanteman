@@ -8,7 +8,7 @@ import { getSettings } from "@/lib/content/public";
 import { whatsappLink } from "@/lib/utils";
 
 export const revalidate = 60;
-export const metadata: Metadata = buildMetadata({ title: "Contact us", description: "Questions about visiting the Ashanti Region, listing your business or partnering with us.", path: "/contact" });
+export const metadata: Metadata = buildMetadata({ title: "Contact us", description: "Questions about visiting Asanteman, listing your business or partnering with us.", path: "/contact" });
 
 const KINDS = ["general", "accommodation", "experience", "table_reservation", "investment", "partnership", "business_listing"];
 

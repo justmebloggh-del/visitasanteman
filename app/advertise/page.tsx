@@ -6,14 +6,14 @@ import { Container } from "@/components/ui";
 
 export const metadata: Metadata = buildMetadata({
   title: "Advertise with VisitAsanteman",
-  description: "Reach people planning a visit to the Ashanti Region with clearly labelled sponsored placements.",
+  description: "Reach people planning a visit to Asanteman with clearly labelled sponsored placements.",
   path: "/advertise",
 });
 
 export default function AdvertisePage() {
   return (
     <>
-      <PageHeader title="Advertise with VisitAsanteman" intro="Reach people planning a visit to the Ashanti Region." crumbs={[{ label: "Advertise" }]} />
+      <PageHeader title="Advertise with VisitAsanteman" intro="Reach people planning a visit to Asanteman." crumbs={[{ label: "Advertise" }]} />
       <Container className="grid gap-10 py-10 lg:grid-cols-3">
         <div className="space-y-4 text-ink/90 lg:col-span-1">
           <p>Sponsored placements can appear on the homepage and at the top of directory pages. Every advertisement is reviewed by our team and is always labelled <strong>Sponsored</strong>, so visitors can tell it apart from our own listings.</p>

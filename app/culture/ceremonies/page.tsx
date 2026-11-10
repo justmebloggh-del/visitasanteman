@@ -10,7 +10,7 @@ import { listAreas, listCeremonies, toPage } from "@/lib/content/public";
 
 export const revalidate = 60;
 export const metadata: Metadata = buildMetadata({
-  title: "Ceremonies and festivals in the Ashanti Region",
+  title: "Ceremonies and festivals in Asanteman",
   description: "A directory of traditional ceremonies, festivals and cultural occasions, with public attendance, etiquette and confirmed dates where the organisers have provided them.",
   path: "/culture/ceremonies",
 });

@@ -31,7 +31,7 @@ export const facilityStatusLabels: Record<string, string> = {
 
 export const educationCfg: DomainCfg = {
   key: "education", table: "institutions", base: "/education", title: "Education and learning", noun: "institution",
-  intro: "Universities, colleges, schools, libraries and learning centres across the Ashanti Region. A campus is not a tourist attraction unless the institution says visitors are welcome.",
+  intro: "Universities, colleges, schools, libraries and learning centres across Asanteman. A campus is not a tourist attraction unless the institution says visitors are welcome.",
   emptyText: "Institutions appear here once their names, recognition and details have been checked.",
   kindColumn: "kind", kinds: institutionKinds, statusColumn: "visitor_access",
   facts: [{ label: "Type", column: "kind", format: "kind" }, { label: "Facilities", column: "facilities", format: "tags" }, { label: "Admissions", column: "admissions_url", format: "url" }],
@@ -48,7 +48,7 @@ export const sportsCfg: DomainCfg = {
 };
 export const clubsCfg: DomainCfg = {
   key: "clubs", table: "sports_clubs", base: "/sports/clubs", title: "Sports clubs", noun: "club",
-  intro: "Clubs based in the Ashanti Region. Leagues and divisions change each season, so check the official competition source.",
+  intro: "Clubs based in Asanteman. Leagues and divisions change each season, so check the official competition source.",
   emptyText: "Clubs appear here once their details have been checked.",
   facts: [{ label: "Sport", column: "sport" }, { label: "Level (as stated by the source)", column: "level" }, { label: "Official site", column: "official_url", format: "url" }],
   sections: [],
@@ -56,7 +56,7 @@ export const clubsCfg: DomainCfg = {
 };
 export const transportCfg: DomainCfg = {
   key: "transport", table: "transport_providers", base: "/transport", title: "Transport and getting around", noun: "service",
-  intro: "Airports, buses, taxis, car rental, rail and other ways to travel around Ashanti. Each entry says whether it is operating. Fares and times appear only when confirmed.",
+  intro: "Airports, buses, taxis, car rental, rail and other ways to travel around Asanteman. Each entry says whether it is operating. Fares and times appear only when confirmed.",
   emptyText: "Transport services appear here once their details have been checked.",
   kindColumn: "kind", kinds: transportKinds, statusColumn: "facility_status",
   facts: [{ label: "Type", column: "kind", format: "kind" }, { label: "Departure points", column: "departure_points" }, { label: "Operating days and times", column: "operating_info" }, { label: "Fares", column: "fare_info" }, { label: "Fare information last updated", column: "fare_updated_at", format: "date" }, { label: "Booking", column: "booking_method" }, { label: "Booking link", column: "booking_url", format: "url" }],

@@ -10,8 +10,8 @@ import { formatDuration, formatPrice } from "@/lib/utils";
 
 export const revalidate = 60;
 export const metadata: Metadata = buildMetadata({
-  title: "Tours and experiences in the Ashanti Region",
-  description: "Guided tours, outdoor activities and cultural experiences offered by local providers across the Ashanti Region.",
+  title: "Tours and experiences in Asanteman",
+  description: "Guided tours, outdoor activities and cultural experiences offered by local providers across Asanteman.",
   path: "/experiences",
 });
 

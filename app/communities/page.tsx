@@ -7,8 +7,8 @@ import { listAreas, listCommunities } from "@/lib/content/public";
 
 export const revalidate = 60;
 export const metadata: Metadata = buildMetadata({
-  title: "Communities of the Ashanti Region",
-  description: "The towns and villages of the Ashanti Region: their heritage, festivals, food and visitor attractions.",
+  title: "Communities of Asanteman",
+  description: "The towns and villages of Asanteman: their heritage, festivals, food and visitor attractions.",
   path: "/communities",
 });
 
@@ -17,7 +17,7 @@ export default async function CommunitiesPage({ searchParams }: { searchParams: 
   const [communities, areas] = await Promise.all([listCommunities({ area: sp.area }), listAreas()]);
   return (
     <>
-      <PageHeader title="Our communities" intro="Towns and villages of the Ashanti Region." crumbs={[{ label: "Communities" }]} />
+      <PageHeader title="Our communities" intro="Towns and villages of Asanteman." crumbs={[{ label: "Communities" }]} />
       <Container className="py-10">
         {areas.length > 0 && (
           <div className="mb-8"><FilterBar action="/communities" values={{ area: sp.area }} qLabel="" hideSearch

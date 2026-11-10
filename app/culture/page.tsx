@@ -7,7 +7,7 @@ export const generateMetadata = () => cmsMetadata("culture", "Culture & Heritage
 const topics = [
   { href: "/culture/ceremonies", title: "Ceremonies & festivals", text: "Which ceremonies visitors may attend, with etiquette and confirmed dates." },
   { href: "/culture/calendar", title: "Cultural calendar", text: "Dates confirmed by the organisers, by month." },
-  { href: "/culture/history", title: "History", text: "How the Ashanti Region came to be, told from verified sources." },
+  { href: "/culture/history", title: "History", text: "How Asanteman came to be, told from verified sources." },
   { href: "/culture/traditions", title: "Traditions", text: "Customs and institutions, reviewed by their custodians before publication." },
   { href: "/culture/festivals", title: "Festivals", text: "Celebrations across the region. See also the events calendar." },
   { href: "/culture/crafts", title: "Crafts", text: "The makers and workshops behind the region's crafts." },

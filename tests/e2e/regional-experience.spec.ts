@@ -25,7 +25,7 @@ test("desktop menu groups behave like an accessible disclosure menu", async ({ p
   desktopOnly(isMobile);
   await page.goto("/");
   const nav = page.getByRole("navigation", { name: "Main" });
-  const explore = nav.getByRole("button", { name: "Explore Ashanti", exact: true });
+  const explore = nav.getByRole("button", { name: "Explore Asanteman", exact: true });
   await expect(explore).toHaveAttribute("aria-expanded", "false");
   await expect(nav.getByRole("link", { name: "Districts", exact: true })).toBeHidden();
   await explore.click();
@@ -43,7 +43,7 @@ test("desktop menu groups behave like an accessible disclosure menu", async ({ p
 
   const plan = nav.getByRole("button", { name: "Plan Your Visit", exact: true });
   await plan.click();
-  for (const l of ["Why Ashanti", "Getting Around", "Travel Information", "Visa and Entry", "Travel Planner", "Travel Guide"]) await expect(nav.getByRole("link", { name: l, exact: true })).toBeVisible();
+  for (const l of ["Why Asanteman", "Getting Around", "Travel Information", "Visa and Entry", "Travel Planner", "Travel Guide"]) await expect(nav.getByRole("link", { name: l, exact: true })).toBeVisible();
   await expect(explore).toHaveAttribute("aria-expanded", "false");        // opening one group closes the other
   await nav.getByRole("link", { name: "Travel Planner", exact: true }).click();
   await expect(page).toHaveURL(/travel-planner/);
@@ -67,7 +67,7 @@ test("mobile menu: accordion groups, search reachable, every destination exists"
   await expect(media).toHaveAttribute("aria-expanded", "true");
   await expect(menu.getByRole("link", { name: "Gallery", exact: true })).toBeVisible();
   await menu.getByRole("button", { name: "Plan Your Visit", exact: true }).click();
-  await menu.getByRole("link", { name: "Why Ashanti", exact: true }).click();
+  await menu.getByRole("link", { name: "Why Asanteman", exact: true }).click();
   await expect(page).toHaveURL(/why-ashanti/);
 });
 
@@ -122,7 +122,7 @@ test("themes: attach in the admin, count only published items, hide empty themes
   sql(`insert into theme_links (theme_id,entity_type,entity_id) values ('${themeId("eat")}','experience','${expId}'),('${themeId("eat")}','experience','${draftId}')`);
 
   await expect.poll(async () => { await home(page); return await page.getByRole("link", { name: /^Eat 1 place or experience$/ }).count(); }, wait).toBe(1);   // the draft is not counted
-  await expect(page.getByRole("heading", { name: "Experience Ashanti" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Experience Asanteman" })).toBeVisible();
   await expect(page.getByRole("link", { name: /^Wear/ })).toHaveCount(0);                 // no published content: hidden
   await page.getByRole("link", { name: /^Eat 1 place/ }).click();
   await expect(page).toHaveURL(/\/themes\/eat$/);

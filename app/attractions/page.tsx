@@ -8,8 +8,8 @@ import { getAttractionCategories, listAreas, listAttractions, listCommunities, t
 
 export const revalidate = 60;
 export const metadata: Metadata = buildMetadata({
-  title: "Attractions in the Ashanti Region",
-  description: "Natural, cultural and heritage attractions across the Ashanti Region of Ghana.",
+  title: "Attractions in Asanteman",
+  description: "Natural, cultural and heritage attractions across Asanteman, Ghana.",
   path: "/attractions",
 });
 
@@ -22,7 +22,7 @@ export default async function AttractionsPage({ searchParams }: { searchParams: 
   const filtered = !!(sp.q || sp.category || sp.community || sp.area);
   return (
     <>
-      <PageHeader title="Attractions" intro="Places to see and things to do across the Ashanti Region." crumbs={[{ label: "Attractions" }]} />
+      <PageHeader title="Attractions" intro="Places to see and things to do across Asanteman." crumbs={[{ label: "Attractions" }]} />
       <AdSlot placement="directory_top" />
       <Container className="py-10">
         <FilterBar action="/attractions" q={sp.q} values={{ area: sp.area, category: sp.category, community: sp.community }}

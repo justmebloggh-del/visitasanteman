@@ -98,7 +98,7 @@ export default async function DistrictPage({ params }: { params: Promise<{ slug:
           </section>
         )}
 
-        <p className="text-sm text-muted">More from Ashanti: <Link href="/articles" className="text-lake-dark underline underline-offset-2 hover:no-underline">stories and news</Link> · <Link href="/gallery" className="text-lake-dark underline underline-offset-2 hover:no-underline">photo gallery</Link></p>
+        <p className="text-sm text-muted">More from Asanteman: <Link href="/articles" className="text-lake-dark underline underline-offset-2 hover:no-underline">stories and news</Link> · <Link href="/gallery" className="text-lake-dark underline underline-offset-2 hover:no-underline">photo gallery</Link></p>
 
         {(area.source || area.source_url) && (
           <p className="max-w-3xl rounded-xl bg-mist p-4 text-xs text-muted">

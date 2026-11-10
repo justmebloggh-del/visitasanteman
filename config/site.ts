@@ -4,9 +4,9 @@ export const siteConfig = {
   /** Spoken / spaced form, for sentences. */
   displayName: "Visit Asanteman",
   shortName: "Asanteman",
-  tagline: "Discover Ashanti. Experience Our Heritage.",
+  tagline: "Discover Asanteman. Experience Our Heritage.",
   description:
-    "Plan your visit to the Ashanti Region of Ghana: attractions, culture and heritage, places to stay, food, experiences and events across every district.",
+    "Plan your visit to Asanteman, Ghana: attractions, culture and heritage, places to stay, food, experiences and events across every district.",
   region: "Ashanti Region",
 };
 
@@ -16,7 +16,7 @@ export interface NavItem { label: string; href?: string; children?: { label: str
 // Main menu, grouped by what a visitor wants to do. Every link points to a page that exists; pages that are still being
 // written are CMS pages that show "being prepared" until an administrator publishes them.
 export const mainNav: NavItem[] = [
-  { label: "Explore Ashanti", children: [
+  { label: "Explore Asanteman", children: [
     { label: "Destinations", href: "/destinations" }, { label: "Districts", href: "/districts" },
     { label: "Attractions", href: "/attractions" }, { label: "Map", href: "/map" },
   ] },
@@ -28,7 +28,7 @@ export const mainNav: NavItem[] = [
   { label: "Food & Dining", href: "/restaurants" },
   { label: "Events", href: "/events" },
   { label: "Plan Your Visit", children: [
-    { label: "Why Ashanti", href: "/why-ashanti" }, { label: "Getting Around", href: "/getting-around" }, { label: "Travel Information", href: "/travel-information" },
+    { label: "Why Asanteman", href: "/why-ashanti" }, { label: "Getting Around", href: "/getting-around" }, { label: "Travel Information", href: "/travel-information" },
     { label: "Visa and Entry", href: "/visa-and-entry" }, { label: "Travel Planner", href: "/travel-planner" }, { label: "Travel Guide", href: "/travel-guide" },
   ] },
   { label: "Media", children: [{ label: "News and Articles", href: "/articles" }, { label: "Gallery", href: "/gallery" }] },

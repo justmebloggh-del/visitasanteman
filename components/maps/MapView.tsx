@@ -140,7 +140,7 @@ export function MapView({ points, center, zoom = 11, filters = false, className 
         </ul>
       )}
       {points.length === 0 && (
-        <p className="text-sm text-muted">No places with verified coordinates have been added yet. The map shows the Ashanti Region until they are.</p>
+        <p className="text-sm text-muted">No places with verified coordinates have been added yet. The map shows Asanteman until they are.</p>
       )}
     </div>
   );

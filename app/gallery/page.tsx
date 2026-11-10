@@ -5,13 +5,13 @@ import { Container } from "@/components/ui";
 import { getAllGalleryImages } from "@/lib/content/public";
 
 export const revalidate = 60;
-export const metadata: Metadata = buildMetadata({ title: "Gallery", description: "Photographs of the Ashanti Region, its places and its people.", path: "/gallery" });
+export const metadata: Metadata = buildMetadata({ title: "Gallery", description: "Photographs of Asanteman, its places and its people.", path: "/gallery" });
 
 export default async function GalleryPage() {
   const images = await getAllGalleryImages();
   return (
     <>
-      <PageHeader title="Gallery" intro="The Ashanti Region in pictures." crumbs={[{ label: "Gallery" }]} />
+      <PageHeader title="Gallery" intro="Asanteman in pictures." crumbs={[{ label: "Gallery" }]} />
       <Container className="py-10">
         {images.length === 0 ? <EmptyState title="Photographs are coming soon" text="Photos uploaded to the “gallery” folder of the media library appear here." /> : (
           <ul className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">

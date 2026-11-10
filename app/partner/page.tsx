@@ -17,7 +17,7 @@ export default async function PartnerLanding() {
   const plans = supabaseConfigured ? (await createPublicClient().from("subscription_plans").select("*").eq("is_active", true).order("sort_order")).data ?? [] : [];
   return (
     <>
-      <PageHeader title="List your business" intro="Reach visitors planning a trip to the Ashanti Region." crumbs={[{ label: "Partners" }]} />
+      <PageHeader title="List your business" intro="Reach visitors planning a trip to Asanteman." crumbs={[{ label: "Partners" }]} />
       <Container className="py-12">
         <ol className="grid gap-4 md:grid-cols-4">
           {["Create a business account and verify your email", "Add your business details, photos and prices", "Submit for review. Our team checks every listing", "Once approved, visitors can find you and send enquiries"].map((t, i) => (

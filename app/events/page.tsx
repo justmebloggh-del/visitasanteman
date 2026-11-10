@@ -10,8 +10,8 @@ import { cn, eventDateText } from "@/lib/utils";
 
 export const revalidate = 60;
 export const metadata: Metadata = buildMetadata({
-  title: "Events and festivals in the Ashanti Region",
-  description: "Festivals, cultural celebrations and tourism events across the Ashanti Region.",
+  title: "Events and festivals in Asanteman",
+  description: "Festivals, cultural celebrations and tourism events across Asanteman.",
   path: "/events",
 });
 
@@ -28,7 +28,7 @@ export default async function EventsPage({ searchParams }: { searchParams: Promi
 
   return (
     <>
-      <PageHeader title="Events and festivals" intro="What is happening across the Ashanti Region." crumbs={[{ label: "Events" }]} />
+      <PageHeader title="Events and festivals" intro="What is happening across Asanteman." crumbs={[{ label: "Events" }]} />
       <Container className="py-10">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div className="flex gap-2" role="group" aria-label="View">

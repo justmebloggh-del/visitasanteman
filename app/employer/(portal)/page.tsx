@@ -16,7 +16,7 @@ export default async function EmployerHome() {
     return (
       <div className="max-w-2xl space-y-5">
         <h1 className="text-2xl font-semibold text-forest">Post jobs on VisitAsanteman</h1>
-        <p className="text-muted">Create an employer profile to advertise vacancies across the Ashanti Region. Basic postings are free; every vacancy is checked before it is published. You must verify your email address first.</p>
+        <p className="text-muted">Create an employer profile to advertise vacancies across Asanteman. Basic postings are free; every vacancy is checked before it is published. You must verify your email address first.</p>
         <div className="rounded-2xl border border-line bg-white p-6"><EmployerForm areas={areas} /></div>
       </div>
     );

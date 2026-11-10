@@ -32,7 +32,7 @@ const plan = [
   { href: "/travel-guide", label: "Travel guide" },
   { href: "/travel-planner", label: "Travel planner" },
   { href: "/travel-planner/itineraries", label: "Curated itineraries" },
-  { href: "/investment", label: "Invest in Ashanti tourism" },
+  { href: "/investment", label: "Invest in Asanteman tourism" },
   { href: "/articles", label: "Stories and news" },
   { href: "/booking", label: "Check your booking" },
 ];
