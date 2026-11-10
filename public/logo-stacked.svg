@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 330" width="720" height="660" role="img" aria-label="Visit Asanteman. Discover Asanteman. Experience Our Heritage.">
+  <rect width="360" height="330" fill="#F5F7F3"/>
+  <defs><clipPath id="c"><circle cx="60" cy="60" r="56"/></clipPath></defs>
+  <g transform="translate(90 10) scale(1.5)">
+    <g clip-path="url(#c)">
+      <rect width="120" height="120" fill="#0A0A0A"/>
+      <polygon points="0,86 0,50 28,34 54,86" fill="#1F6A47"/>
+      <polygon points="120,86 120,50 92,34 66,86" fill="#1F6A47"/>
+      <circle cx="60" cy="56" r="15" fill="#D5A642"/>
+      <path d="M0 86 L10 80 L20 86 L30 80 L40 86 L50 80 L60 86 L70 80 L80 86 L90 80 L100 86 L110 80 L120 86 L120 120 L0 120 Z" fill="#174B35"/>
+      <polyline points="0,86 10,80 20,86 30,80 40,86 50,80 60,86 70,80 80,86 90,80 100,86 110,80 120,86" fill="none" stroke="#D5A642" stroke-width="2.5" stroke-linejoin="round"/>
+      <path d="M14 102 Q24 96 34 102 T54 102 T74 102 T94 102 T106 102" fill="none" stroke="#F5F7F3" stroke-width="3" stroke-linecap="round"/>
+      <path d="M30 113 Q40 108 50 113 T70 113 T90 113" fill="none" stroke="#D5A642" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
+    <circle cx="60" cy="60" r="56" fill="none" stroke="#D5A642" stroke-width="4"/>
+  </g>
+  <g text-anchor="middle" font-family="Helvetica, Arial, sans-serif">
+    <text x="180" y="218" font-size="16" font-weight="700" letter-spacing="8" fill="#174B35">VISIT</text>
+    <text x="180" y="262" font-size="44" font-weight="800" letter-spacing="0.7" fill="#0A0A0A">ASANTEMAN</text>
+    <text x="180" y="295" font-size="13" font-weight="700" fill="#174B35">Discover Asanteman. Experience Our Heritage.</text>
+  </g>
+</svg>

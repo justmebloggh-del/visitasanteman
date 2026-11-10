@@ -59,12 +59,24 @@ export default async function HomePage() {
       {/* Hero */}
       {on("hero") && (
         <section className="relative isolate overflow-hidden bg-forest-dark text-white">
+          {/* Fallback layer: shown while the video loads and for visitors who prefer reduced motion */}
           {heroImg ? (
-            <Image src={heroImg} alt={String(hero?.config?.image_alt ?? "")} fill priority sizes="100vw" className="-z-10 object-cover opacity-60" />
+            <Image src={heroImg} alt={String(hero?.config?.image_alt ?? "")} fill priority sizes="100vw" className="-z-20 object-cover opacity-60" />
           ) : (
-            <div className="absolute inset-0 -z-10 bg-gradient-to-br from-forest-dark via-forest to-lake-dark" aria-hidden />
+            <div className="absolute inset-0 -z-20 bg-gradient-to-br from-forest-dark via-forest to-lake-dark" aria-hidden />
           )}
-          <div className="absolute inset-0 -z-10 bg-gradient-to-t from-forest-dark/70 to-transparent" aria-hidden />
+          <video
+            className="absolute inset-0 -z-10 size-full object-cover opacity-70 motion-reduce:hidden"
+            src="/hero-video.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            aria-hidden
+            tabIndex={-1}
+          />
+          <div className="absolute inset-0 -z-10 bg-gradient-to-t from-forest-dark/80 via-forest-dark/30 to-forest-dark/40" aria-hidden />
           <Container className="flex min-h-[78vh] flex-col justify-center py-20">
             <p className="mb-4 text-sm font-medium uppercase tracking-[0.2em] text-gold">Asanteman, Ghana</p>
             <h1 className="max-w-3xl text-4xl font-semibold leading-tight sm:text-6xl">
