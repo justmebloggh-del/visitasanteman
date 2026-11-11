@@ -7,6 +7,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { cn, directionsLink } from "@/lib/utils";
 import type { MapPoint } from "@/types/content";
 
+// The default worker URL is mangled by the bundler; load it from our own origin (see scripts/copy-maplibre-worker.mjs).
+maplibregl.setWorkerUrl("/maplibre/maplibre-gl-worker.mjs");
+
 const KIND_LABEL: Record<MapPoint["kind"], string> = {
   attraction: "Attractions", community: "Communities", accommodation: "Accommodation",
   restaurant: "Restaurants", business: "Businesses", experience: "Experiences", event: "Events",
