@@ -12,6 +12,23 @@
 9. **Check and activate the districts.** Migration `20261113000004` loads 43 Ashanti entries as **inactive and unverified**, taken from a secondary source (citypopulation.de, crediting Ghana Statistical Service, retrieved 2026-11-09). Before launch, a regional editor compares each with the official Local Government Service list in Admin → Districts, corrects the name or type, replaces the source text, sets *Source checked on* and ticks *Active*. Add or remove any assemblies that differ (assemblies have been created and renamed over time). Nothing can be published into an inactive district.
 10. Supabase local project id is `visitasanteman` (`supabase/config.toml`). After pulling this change, run `npx supabase stop --project-id visitbosomtwe` once to stop the old local stack, then `npx supabase start`.
 
+## 1b. Automatic migrations (GitHub to Supabase)
+New files in `supabase/migrations/` are applied to the hosted database automatically when they reach `main`
+(workflow `.github/workflows/supabase-migrations.yml`: it links the project, prints a dry run, then runs `supabase db push`).
+Vercel redeploys the site from the same push, so code and data go live together.
+
+One-time setup:
+1. GitHub: Settings > Secrets and variables > Actions. Add secrets `SUPABASE_ACCESS_TOKEN` (Supabase dashboard > Account > Access Tokens)
+   and `SUPABASE_DB_PASSWORD` (the database password), and a variable `SUPABASE_PROJECT_REF` (Project Settings > General).
+2. On your computer, once: `supabase login`, then `SUPABASE_PROJECT_REF=<ref> ./scripts/baseline-hosted-migrations.sh`.
+   The hosted database was built by pasting SQL, so it has no migration history. This step records the migrations it already has
+   (up to `20261122000003`). Migrations after that are written to be safe to run again, so the workflow applies them itself.
+3. Push or merge to `main`. Open the Actions tab to watch the run; a failed migration stops with the error shown and nothing half-applied.
+
+Rules for writing migrations so this stays safe: only add new files (never edit an applied one), keep each file safe to re-run
+(`if not exists`, `on conflict do nothing`, update only where the field is empty), and test locally first.
+Never put the database password or access token in the repository.
+
 ## 2. Vercel
 1. Import the GitHub repo. Framework: Next.js.
 2. Add environment variables from `docs/ENVIRONMENT_VARIABLES.md` for Production and Preview.

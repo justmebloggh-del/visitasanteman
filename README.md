@@ -57,6 +57,9 @@ psql postgresql://postgres:postgres@127.0.0.1:54322/postgres -v ON_ERROR_STOP=1 
 psql postgresql://postgres:postgres@127.0.0.1:54322/postgres -v ON_ERROR_STOP=1 -f supabase/tests/jobs_rls.sql
 ```
 
+## Deployment
+Pushing to `main` redeploys the site on Vercel. New files in `supabase/migrations/` are also applied to the hosted Supabase project by a GitHub Action (one-time setup in [DEPLOYMENT_GUIDE](docs/DEPLOYMENT_GUIDE.md), section 1b).
+
 ## Branches
 `main` · `rebrand/visitasanteman` (regional foundation and phases 1 to 8) · `feature/regional-experience` (Part A and Jobs & Careers, the most current work).
 
