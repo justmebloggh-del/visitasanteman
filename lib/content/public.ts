@@ -374,6 +374,13 @@ export async function getDestination(slug: string) {
 // ── Ceremonies and festivals ──
 const CEREMONY = `*, ${COVER}, traditional_area:traditional_areas(name,slug), community:communities(name,slug), area:administrative_areas(name,slug)`;
 
+export interface CeremonyPreview { id: string; slug: string; name: string; kind: Ceremony["kind"]; summary: string | null; date_note: string | null }
+/** Unpublished ceremonies an editor chose to show as "awaiting approval" (name, type, summary, usual timing only). */
+export async function listCeremonyPreviews(): Promise<CeremonyPreview[]> {
+  if (!supabaseConfigured) return [];
+  return run<CeremonyPreview[]>("ceremony-previews", () => sb().from("ceremony_previews").select("id,slug,name,kind,summary,date_note").order("name") as never, []);
+}
+
 export async function listCeremonies(o: { when?: "upcoming" | "all"; month?: string; area?: string; kind?: string; q?: string; page?: number; limit?: number } = {}) {
   const page = o.page ?? 1;
   const [from, to] = o.limit ? [0, o.limit - 1] : range(page);

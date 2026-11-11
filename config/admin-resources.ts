@@ -608,6 +608,7 @@ resources.push({
     statusField,
     { name: "attendance", label: "Public attendance", type: "select", required: true, group: "main", options: Object.entries(attendanceLabels).map(([value, label]) => ({ value, label })), hint: "Ceremonies are not automatically public events. Some are private or sacred. Be strict." },
     { name: "authority_approved", label: "Traditional authority or organiser has approved the public information", type: "checkbox", approverOnly: true, group: "main", hint: "Required before publishing. Tick only after the responsible authority has agreed what may be shown." },
+    { name: "show_preview", label: "List publicly as awaiting approval", type: "checkbox", group: "main", hint: "While a ceremony is not published, visitors can still see its name, type, short summary and usual timing marked 'Awaiting approval'. Tick only if that is acceptable. Never shows a confirmed date." },
     { name: "traditional_area_id", label: "Traditional area", type: "relation", relation: { table: "traditional_areas", label: "name" }, group: "main" },
     community, area,
     { name: "organiser", label: "Traditional authority or organiser", type: "text", group: "main" },

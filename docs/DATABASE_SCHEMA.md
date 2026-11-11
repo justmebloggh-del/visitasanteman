@@ -218,3 +218,9 @@ Tests: `supabase/tests/jobs_rls.sql` (50 checks) and `tests/e2e/jobs.spec.ts`.
 - Foreign keys used by joins, filters and the media "in use" check now have indexes. Audit-only columns (`created_by`, `reviewed_by`, `uploaded_by`, `handled_by`, `assigned_by`, `updated_by`, `verified_by`, `reporter_id`) are deliberately left unindexed.
 - Review checks that came back clean: every public table has RLS and at least one policy; every security-definer function pins `search_path`; anonymous visitors can write only to `enquiries` and `newsletter_subscribers`.
 - `geography_rls.sql` and `jobs_rls.sql` assume a freshly reset local database. Rows left by the end-to-end tests (published markets, clubs, advertisers, applications) make a few count checks fail; run `supabase db reset` first.
+
+## Ceremony previews (awaiting approval)
+`ceremonies.show_preview` (default false) lets an editor list an unpublished ceremony publicly as "Awaiting approval". The public view
+`ceremony_previews` exposes only `id, slug, name, kind, summary, date_note` for those rows (never research notes, sources, contacts,
+the full description or a confirmed date), and detail pages stay unpublished (404). Publishing still needs `authority_approved`
+(guard_ceremony), which only regional editors and administrators can record.
