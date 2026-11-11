@@ -27,10 +27,12 @@ test("desktop menu groups behave like an accessible disclosure menu", async ({ p
   const nav = page.getByRole("navigation", { name: "Main" });
   const explore = nav.getByRole("button", { name: "Explore Asanteman", exact: true });
   await expect(explore).toHaveAttribute("aria-expanded", "false");
-  await expect(nav.getByRole("link", { name: "Districts", exact: true })).toBeHidden();
+  await expect(nav.getByRole("button", { name: "Browse by district", exact: true })).toBeHidden();
   await explore.click();
   await expect(explore).toHaveAttribute("aria-expanded", "true");
-  for (const l of ["Destinations", "Districts", "Attractions", "Map"]) await expect(nav.getByRole("link", { name: l, exact: true })).toBeVisible();
+  for (const l of ["Destinations", "Attractions"]) await expect(nav.getByRole("link", { name: l, exact: true })).toBeVisible();
+  await expect(nav.getByRole("button", { name: "Browse by district", exact: true })).toBeVisible();   // nested submenu of districts
+  await expect(nav.getByRole("link", { name: "Map", exact: true })).toHaveCount(0);                   // Map moved to the homepage
 
   await page.keyboard.press("Escape");                                    // Escape closes and returns focus to the button
   await expect(explore).toHaveAttribute("aria-expanded", "false");

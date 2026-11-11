@@ -11,14 +11,15 @@ export const siteConfig = {
 };
 
 /** A top-level menu item: a plain link, or a group of links opened from a button. */
-export interface NavItem { label: string; href?: string; children?: { label: string; href: string }[] }
+export interface NavChild { label: string; href: string; /** Shows the list of districts as a nested submenu. */ districts?: boolean }
+export interface NavItem { label: string; href?: string; children?: NavChild[] }
 
 // Main menu, grouped by what a visitor wants to do. Every link points to a page that exists; pages that are still being
 // written are CMS pages that show "being prepared" until an administrator publishes them.
 export const mainNav: NavItem[] = [
   { label: "Explore Asanteman", children: [
-    { label: "Destinations", href: "/destinations" }, { label: "Districts", href: "/districts" },
-    { label: "Attractions", href: "/attractions" }, { label: "Map", href: "/map" },
+    { label: "Destinations", href: "/destinations" }, { label: "Browse by district", href: "/districts", districts: true },
+    { label: "Attractions", href: "/attractions" },
   ] },
   { label: "Culture & Heritage", children: [
     { label: "Culture & Heritage", href: "/culture" }, { label: "Ceremonies & festivals", href: "/culture/ceremonies" }, { label: "Cultural calendar", href: "/culture/calendar" },

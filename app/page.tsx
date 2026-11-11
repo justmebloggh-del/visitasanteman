@@ -3,29 +3,48 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Bed, Calendar, Camera, Car, Compass, FileText, Info, Map as MapIcon, Phone, Quote, Star, Ticket, Users, Utensils } from "lucide-react";
 import { CardGrid, ContentCard, Photo } from "@/components/layout/blocks";
-import { EnquiryForm } from "@/components/forms/EnquiryForm";
 import { NewsletterForm } from "@/components/forms/NewsletterForm";
 import { ButtonLink, Container } from "@/components/ui";
 import { AdSlot } from "@/components/ads/AdSlot";
 import { Map } from "@/components/maps/Map";
 import { SearchBox } from "@/components/layout/SearchBox";
+import { WelcomeSlideshow, type Slide } from "@/components/home/WelcomeSlideshow";
 import { educationCfg, sportsCfg, transportCfg } from "@/config/domains";
 import { listDomain } from "@/lib/content/domains";
 import { ceremonyKindLabels, stageLabels, eventStatusLabels, experienceCategoryLabels, listingTypeLabels, accommodationTypes, businessTypes, restaurantTypes, planVisit, type ListingType } from "@/config/site";
 import {
-  getAreaContentCounts, getCategoryCards, getHomepageSections, getQuickLinks, getThemeCounts, listThemes, listCeremonies, getTestimonials, listAreas, listArticles, listAttractions, listCommunities, listDestinations, listEvents,
+  getCategoryCards, getHomepageSections, getQuickLinks, getThemeCounts, listThemes, listCeremonies, getTestimonials, listArticles, listAttractions, listCommunities, listDestinations, listEvents,
   listExperiences, listListings, getMapPoints, getSettings, listInvestments,
 } from "@/lib/content/public";
 import { SITE_URL } from "@/lib/env";
 import { eventDateText, formatDate, formatPrice, mediaUrl } from "@/lib/utils";
 
+
+// Photographs in public/manhyia, in display order. Descriptions are plain (no names) so they stay accurate.
+const WELCOME_SLIDES: Slide[] = [
+  { src: "/manhyia/museum.jpeg", alt: "The front of the Manhyia Palace Museum in Kumasi" },
+  { src: "/manhyia/66244868.jpg", alt: "A ruler carried in a palanquin beneath a red canopy, wearing kente cloth and gold ornaments" },
+  { src: "/manhyia/Explore-Kumasi-Akwasidae-Festival-2.webp", alt: "A chief in a feathered headdress and gold ornaments at a festival" },
+  { src: "/manhyia/Explore-Kumasi-Akwasidae-Festival-Dancers.jpg", alt: "Women dancing in orange kente and gold jewellery on a red carpet" },
+  { src: "/manhyia/images.jpeg", alt: "A ruler in kente and gold borne in a palanquin among attendants" },
+  { src: "/manhyia/Fig-2-1.jpg", alt: "Gold regalia displayed in glass cases in a museum" },
+  { src: "/manhyia/kumasi-ghana-ashanti-akwasidae-ceremony-traditional-ashanti-warriors-entering-the-ceremonial-area-3AWBA8C.jpg", alt: "A warrior in white cloth carrying a musket at an Akwasidae ceremony" },
+  { src: "/manhyia/akwasidae2.jpg", alt: "Women in kente and gold jewellery at an Akwasidae gathering" },
+  { src: "/manhyia/images (1).jpeg", alt: "A ruler in bold kente cloth at a lectern, with attendants and a gold staff" },
+  { src: "/manhyia/Asantehene & Asantehemaa.jpg", alt: "Two portraits from Manhyia Palace: a man in green and yellow kente and a woman in white cloth seated on a throne" },
+  { src: "/manhyia/WhatsApp Image 2026-09-02 at 07.43.18.jpg", alt: "A ruler in kente speaking at a lectern beneath a tasselled umbrella" },
+  { src: "/manhyia/images (2).jpeg", alt: "People in dark cloth carrying muskets in a ceremonial procession" },
+  { src: "/manhyia/sword.jpeg", alt: "Visitors in a museum gallery around a large gold-rimmed bowl" },
+  { src: "/manhyia/anokye.jpg", alt: "A statue of a figure raising a blade and a vessel towards a cloudy sky" },
+  { src: "/manhyia/images (3).jpeg", alt: "The welcome sign at the entrance to Manhyia Palace" },
+];
+
 export const revalidate = 60;
-const areaKindPlural = { metropolitan: "Metropolitan Assemblies", municipal: "Municipal Assemblies", district: "District Assemblies" } as const;
 const QUICK_ICONS: Record<string, typeof Compass> = { car: Car, info: Info, "file-text": FileText, calendar: Calendar, map: MapIcon, compass: Compass, bed: Bed, utensils: Utensils, camera: Camera, users: Users, ticket: Ticket, phone: Phone };
 export const metadata: Metadata = { alternates: { canonical: SITE_URL } };
 
 export default async function HomePage() {
-  const [sections, attractions, experiences, stays, food, communities, events, articles, testimonials, points, settings, investments, areas, areaCounts, destinations, businesses, cultureStories, ceremonies, education, sports, transport, quickLinks, categoryCards, themeList, themeCounts] = await Promise.all([
+  const [sections, attractions, experiences, stays, food, communities, events, articles, testimonials, points, settings, investments, destinations, businesses, cultureStories, ceremonies, education, sports, transport, quickLinks, categoryCards, themeList, themeCounts] = await Promise.all([
     getHomepageSections(),
     listAttractions({ limit: 6 }),
     listExperiences({ limit: 3 }),
@@ -38,8 +57,6 @@ export default async function HomePage() {
     getMapPoints(),
     getSettings(),
     listInvestments({ limit: 3 }),
-    listAreas(),
-    getAreaContentCounts(),
     listDestinations({ limit: 6 }),
     listListings(businessTypes, { limit: 3 }),
     listArticles({ category: "culture-heritage", limit: 3 }),
@@ -48,7 +65,6 @@ export default async function HomePage() {
     getQuickLinks(), getCategoryCards(), listThemes(), getThemeCounts(),
   ]);
   const mapCfg = settings.map ?? {};
-  const contact = settings.contact ?? {};
 
   const on = (k: string) => sections[k]?.is_enabled !== false;
   const hero = sections.hero;
@@ -117,8 +133,13 @@ export default async function HomePage() {
       {/* Intro */}
       {on("intro") && sections.intro?.body && (
         <Block title={sections.intro.title} subtitle={sections.intro.subtitle}>
-          <p className="max-w-3xl whitespace-pre-line text-lg leading-relaxed text-ink/90">{sections.intro.body}</p>
-          <ButtonLink href="/about" variant="outline" className="mt-6">Read more about VisitAsanteman</ButtonLink>
+          <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_26.52rem] lg:gap-14">
+            <div className="space-y-4 text-lg leading-relaxed text-ink/90 sm:text-justify" lang="en">
+              {sections.intro.body.split(/\n\s*\n/).map((para, i) => <p key={i}>{para.trim()}</p>)}
+              <ButtonLink href="/about" variant="outline" className="mt-2">Read more about Asanteman</ButtonLink>
+            </div>
+            <WelcomeSlideshow slides={WELCOME_SLIDES} className="mx-auto w-full max-w-[28.56rem] lg:sticky lg:top-24 lg:max-w-none" />
+          </div>
         </Block>
       )}
 
@@ -189,30 +210,11 @@ export default async function HomePage() {
         </Block>
       )}
 
-      {/* Browse by district: every active district, grouped by type; the count shows once places are published */}
-      {areas.length > 0 && (
-        <Block title="Browse by district" subtitle="Asanteman is governed through metropolitan, municipal and district assemblies. Start with the area you plan to visit." more={{ href: "/map", label: "Open the map" }}>
-          <div className="space-y-8">
-            {(["metropolitan", "municipal", "district"] as const).map((kind) => {
-              const group = areas.filter((a) => a.kind === kind);
-              return group.length > 0 && (
-                <div key={kind}>
-                  <h3 className="mb-3 font-serif text-lg font-semibold text-forest">{areaKindPlural[kind]} <span className="text-sm font-normal text-muted">({group.length})</span></h3>
-                  <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4" aria-label={areaKindPlural[kind]}>
-                    {group.map((a) => (
-                      <li key={a.id}><Link href={`/districts/${a.slug}`} className="flex items-center justify-between gap-3 rounded-xl border border-line bg-white px-4 py-3 hover:bg-forest-soft">
-                        <span><span className="block font-medium text-forest">{a.name}</span>{a.capital_name && <span className="text-xs text-muted">Capital: {a.capital_name}</span>}</span>
-                        <span className="shrink-0 text-sm text-muted">{(areaCounts[a.id] ?? 0) > 0 ? `${areaCounts[a.id]} ${areaCounts[a.id] === 1 ? "place" : "places"}` : "Coming soon"}</span>
-                      </Link></li>
-                    ))}
-                  </ul>
-                </div>
-              );
-            })}
-          </div>
-          <p className="mt-6 text-sm"><Link href="/districts" className="text-lake-dark underline underline-offset-2 hover:no-underline">All districts</Link></p>
-        </Block>
-      )}
+      {/* Map: always on the homepage (the Map menu link moved here); districts live in the Explore Asanteman menu */}
+      <Block title="Explore the map" subtitle="Attractions, places to stay, food and events with verified locations across Asanteman." more={{ href: "/map", label: "Open full map" }}>
+        <Map points={points} center={[Number(mapCfg.center_lng ?? -1.6), Number(mapCfg.center_lat ?? 6.7)]} zoom={Number(mapCfg.zoom ?? 8)} />
+        {points.length === 0 && <p className="mt-3 text-sm text-muted">Places appear on the map once their locations have been checked.</p>}
+      </Block>
 
       {on("attractions") && attractions.items.length > 0 && (
         <Block title={sections.attractions?.title} subtitle={sections.attractions?.subtitle} more={{ href: "/attractions", label: "All attractions" }}>
@@ -383,23 +385,6 @@ export default async function HomePage() {
           </CardGrid>
         </Block>
       )}
-
-      {points.length > 0 && (
-        <Block title="Explore the map" subtitle="Attractions, places to stay, food and events with verified locations across the region." more={{ href: "/map", label: "Open full map" }}>
-          <Map points={points} center={[Number(mapCfg.center_lng ?? -1.6), Number(mapCfg.center_lat ?? 6.7)]} zoom={Number(mapCfg.zoom ?? 8)} />
-        </Block>
-      )}
-
-      <Block title="Questions about your visit?" subtitle="Send us a message and we will reply by email.">
-        <div className="grid gap-8 lg:grid-cols-3">
-          <div className="lg:col-span-2"><EnquiryForm /></div>
-          <div className="space-y-2 text-sm text-muted">
-            {contact.email && <p>Email: <a className="text-lake-dark underline underline-offset-2 hover:no-underline" href={`mailto:${contact.email}`}>{contact.email}</a></p>}
-            {contact.phone && <p>Phone: {contact.phone}</p>}
-            <p>Follow us using the social links in the footer.</p>
-          </div>
-        </div>
-      </Block>
 
       {/* Partner CTA + newsletter */}
       <Container className="mt-20 grid gap-6 lg:grid-cols-2">

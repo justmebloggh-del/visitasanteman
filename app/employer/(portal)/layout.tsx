@@ -8,5 +8,5 @@ export const metadata: Metadata = { title: { default: "Employer portal", templat
 export default async function EmployerLayout({ children }: { children: React.ReactNode }) {
   const user = await getSessionUser();
   if (!user) redirect("/login?next=/employer");
-  return <div className="bg-mist"><div className="mx-auto max-w-5xl p-4 sm:p-8">{children}</div></div>;
+  return <div data-portal className="bg-mist"><div className="mx-auto max-w-5xl p-4 sm:p-8">{children}</div></div>;
 }

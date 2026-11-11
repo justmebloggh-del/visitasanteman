@@ -5,11 +5,11 @@ import { useEffect, useState } from "react";
 import { Menu, Search, X } from "lucide-react";
 import { Wordmark } from "@/components/brand/Wordmark";
 import { ButtonLink } from "@/components/ui";
-import { DesktopNav, MobileNav } from "@/components/layout/MainNav";
+import { DesktopNav, MobileNav, type NavDistrict } from "@/components/layout/MainNav";
 import { planVisit, siteConfig } from "@/config/site";
 import { AccountMenu } from "@/components/layout/AccountMenu";
 
-export function Header() {
+export function Header({ districts = [] }: { districts?: NavDistrict[] }) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -44,12 +44,12 @@ export function Header() {
       </div>
 
       {/* Full menu bar: wide screens only. Smaller screens use the menu button. */}
-      <nav aria-label="Main" className="hidden border-t border-line bg-white xl:block"><DesktopNav /></nav>
+      <nav aria-label="Main" className="hidden border-t border-line bg-white xl:block"><DesktopNav districts={districts} /></nav>
 
       {open && (
         <div id="mobile-menu" className="fixed inset-x-0 top-16 h-[calc(100dvh-4rem)] overflow-y-auto bg-white px-4 pb-10 pt-4 xl:hidden">
           <ButtonLink href={planVisit.href} onClick={() => setOpen(false)} className="w-full">{planVisit.label}</ButtonLink>
-          <nav aria-label="Mobile"><MobileNav onNavigate={() => setOpen(false)} /></nav>
+          <nav aria-label="Mobile"><MobileNav onNavigate={() => setOpen(false)} districts={districts} /></nav>
           <div className="mt-6"><AccountMenu stacked /></div>
         </div>
       )}

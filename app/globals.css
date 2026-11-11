@@ -79,3 +79,14 @@ h1, h2, h3 {
   .ticker-track > span:not(:first-child) { display: none; }
   .ticker-control { display: none; }
 }
+
+/* Justified body text across the public site (from the small breakpoint up; phone columns are too narrow).
+   Not applied inside cards and links (they are short previews), the staff/partner/employer portals, or centred text.
+   Hyphenation (html lang="en") keeps word gaps even. */
+@media (min-width: 640px) {
+  main p:not(a p, [data-portal] p, [class*="text-center"], [class*="text-left"], [class*="text-right"], [class*="text-justify"]) {
+    text-align: justify;
+    hyphens: auto;
+    text-wrap: pretty;
+  }
+}

@@ -7,7 +7,7 @@ import { Header } from "@/components/layout/Header";
 import { JsonLd } from "@/components/layout/seo";
 import { siteConfig } from "@/config/site";
 import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
-import { getSettings } from "@/lib/content/public";
+import { getSettings, listAreas } from "@/lib/content/public";
 import { SITE_URL } from "@/lib/env";
 import "./globals.css";
 
@@ -26,7 +26,9 @@ export const metadata: Metadata = {
 export const viewport: Viewport = { themeColor: "#174b35", width: "device-width", initialScale: 1 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const whatsapp = String((await getSettings()).contact?.whatsapp ?? "");
+  const [settings, areas] = await Promise.all([getSettings(), listAreas()]);
+  const whatsapp = String(settings.contact?.whatsapp ?? "");
+  const navDistricts = areas.map((a) => ({ slug: a.slug, name: a.name, kind: a.kind }));
   const gaId = process.env.NEXT_PUBLIC_GA_ID;
   return (
     <html lang="en" className={`${inter.variable} ${fraunces.variable}`}>
@@ -35,7 +37,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           Skip to content
         </a>
         <JsonLd data={{ "@context": "https://schema.org", "@type": "Organization", name: siteConfig.name, url: SITE_URL }} />
-        <Header />
+        <Header districts={navDistricts} />
         <main id="main" className="flex-1">{children}</main>
         <Footer />
         <PwaRegister />

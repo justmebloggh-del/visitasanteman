@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: { default: "Partner portal", template
 export default async function PortalLayout({ children }: { children: React.ReactNode }) {
   await requirePartner();     // authoritative: role read from the database
   return (
-    <div className="bg-mist">
+    <div data-portal className="bg-mist">
       <PartnerNav />
       <div className="mx-auto max-w-6xl p-4 sm:p-8">{children}</div>
     </div>
