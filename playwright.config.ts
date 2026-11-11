@@ -6,6 +6,8 @@ export default defineConfig({
   fullyParallel: false,
   workers: 1,
   reporter: "list",
+  globalSetup: "./tests/e2e/global-cleanup.ts",
+  globalTeardown: "./tests/e2e/global-cleanup.ts",
   // Every test starts with cookie consent already given (rejected), so the consent banner does not sit over the page; consent.spec.ts starts clean.
   use: {
     baseURL: process.env.E2E_BASE_URL ?? "http://localhost:3000", trace: "retain-on-failure",

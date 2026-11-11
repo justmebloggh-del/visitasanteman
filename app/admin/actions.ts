@@ -248,6 +248,24 @@ export async function saveHomepageSection(key: string, _prev: FormState, fd: For
     if (m) { config.media_id = m.id; config.image_path = m.path; config.image_alt = m.alt_text; }
     else { delete config.media_id; delete config.image_path; delete config.image_alt; }
   }
+  if (key === "glance" || key === "highlights") {
+    // One item per line: "Label | Value" or "Title | Text | /link". Links must be site paths or http(s) URLs.
+    const lines = String(fd.get("items_text") ?? "").split("\n").map((l) => l.trim()).filter(Boolean).slice(0, 12);
+    const items: Record<string, string>[] = [];
+    for (const [i, line] of lines.entries()) {
+      const parts = line.split("|").map((x) => x.trim());
+      if (key === "glance") {
+        if (parts.length !== 2 || !parts[0] || !parts[1]) return { message: `Line ${i + 1}: use "Label | Value".` };
+        items.push({ label: parts[0].slice(0, 60), value: parts[1].slice(0, 80) });
+      } else {
+        if (parts.length !== 3 || !parts[0] || !parts[1]) return { message: `Line ${i + 1}: use "Title | Text | /link".` };
+        const href = parts[2];
+        if (!(href.startsWith("/") && !href.startsWith("//")) && !safeUrl(href)) return { message: `Line ${i + 1}: the link must start with / or https://.` };
+        items.push({ title: parts[0].slice(0, 80), text: parts[1].slice(0, 200), href });
+      }
+    }
+    config.items = items;
+  }
   const { error } = await supabase.from("homepage_sections").update({
     title: text("title", 200), subtitle: text("subtitle", 400), body: text("body", 5000),
     is_enabled: fd.get("is_enabled") === "on", config,

@@ -20,6 +20,7 @@ import { SITE_URL } from "@/lib/env";
 import { eventDateText, formatDate, formatPrice, mediaUrl } from "@/lib/utils";
 
 export const revalidate = 60;
+const areaKindPlural = { metropolitan: "Metropolitan Assemblies", municipal: "Municipal Assemblies", district: "District Assemblies" } as const;
 const QUICK_ICONS: Record<string, typeof Compass> = { car: Car, info: Info, "file-text": FileText, calendar: Calendar, map: MapIcon, compass: Compass, bed: Bed, utensils: Utensils, camera: Camera, users: Users, ticket: Ticket, phone: Phone };
 export const metadata: Metadata = { alternates: { canonical: SITE_URL } };
 
@@ -46,12 +47,14 @@ export default async function HomePage() {
     listDomain(educationCfg, { limit: 3 }), listDomain(sportsCfg, { limit: 3 }), listDomain(transportCfg, { limit: 3 }),
     getQuickLinks(), getCategoryCards(), listThemes(), getThemeCounts(),
   ]);
-  const activeAreas = areas.filter((a) => (areaCounts[a.id] ?? 0) > 0);
   const mapCfg = settings.map ?? {};
   const contact = settings.contact ?? {};
 
   const on = (k: string) => sections[k]?.is_enabled !== false;
   const hero = sections.hero;
+  const glanceItems = ((sections.glance?.config as { items?: { label: string; value: string }[] } | undefined)?.items ?? []).filter((i) => i.label && i.value);
+  const highlightItems = ((sections.highlights?.config as { items?: { title: string; text: string; href: string }[] } | undefined)?.items ?? [])
+    .filter((c) => c.title && c.href && (c.href.startsWith("/") || /^https?:\/\//.test(c.href)));
   const heroImg = mediaUrl(String(hero?.config?.image_path ?? ""));
 
   return (
@@ -119,6 +122,31 @@ export default async function HomePage() {
         </Block>
       )}
 
+      {/* At a glance and highlights: edited in Admin > Homepage */}
+      {on("glance") && glanceItems.length > 0 && (
+        <Block tone="mist" title={sections.glance?.title} subtitle={sections.glance?.subtitle}>
+          <dl className="grid grid-cols-2 gap-4 lg:grid-cols-5">
+            {glanceItems.map((i, n) => (
+              <div key={n} className="rounded-2xl border border-line bg-white p-5">
+                <dt className="text-sm text-muted">{i.label}</dt><dd className="mt-1 font-serif text-xl font-semibold text-forest">{i.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </Block>
+      )}
+
+      {on("highlights") && highlightItems.length > 0 && (
+        <Block title={sections.highlights?.title} subtitle={sections.highlights?.subtitle}>
+          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            {highlightItems.map((c, n) => (
+              <li key={n}><Link href={c.href} className="block h-full rounded-2xl border border-line bg-white p-5 transition hover:shadow-md">
+                <h3 className="font-serif text-lg font-semibold text-forest">{c.title}</h3><p className="mt-2 text-sm text-muted">{c.text}</p>
+              </Link></li>
+            ))}
+          </ul>
+        </Block>
+      )}
+
       {/* B. Explore the region: featured destinations and browse by district */}
       {on("destinations") && destinations.length > 0 && (
         <Block title={sections.destinations?.title ?? "Explore the region"} subtitle={sections.destinations?.subtitle ?? "Featured destinations and the districts of Asanteman."} more={{ href: "/districts", label: "All districts" }}>
@@ -161,17 +189,28 @@ export default async function HomePage() {
         </Block>
       )}
 
-      {/* Browse by district: only districts with published content; a plain list works without the map */}
-      {activeAreas.length > 0 && (
-        <Block title="Browse by district" subtitle="Start with the district you plan to visit." more={{ href: "/map", label: "Open the map" }}>
-          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4" aria-label="Districts with published places">
-            {activeAreas.map((a) => (
-              <li key={a.id}><Link href={`/districts/${a.slug}`} className="flex items-center justify-between gap-3 rounded-xl border border-line bg-white px-4 py-3 hover:bg-forest-soft">
-                <span className="font-medium text-forest">{a.name}</span><span className="text-sm text-muted">{areaCounts[a.id]} {areaCounts[a.id] === 1 ? "place" : "places"}</span>
-              </Link></li>
-            ))}
-          </ul>
-          <p className="mt-4 text-sm"><Link href="/districts" className="text-lake-dark underline underline-offset-2 hover:no-underline">All districts</Link></p>
+      {/* Browse by district: every active district, grouped by type; the count shows once places are published */}
+      {areas.length > 0 && (
+        <Block title="Browse by district" subtitle="Asanteman is governed through metropolitan, municipal and district assemblies. Start with the area you plan to visit." more={{ href: "/map", label: "Open the map" }}>
+          <div className="space-y-8">
+            {(["metropolitan", "municipal", "district"] as const).map((kind) => {
+              const group = areas.filter((a) => a.kind === kind);
+              return group.length > 0 && (
+                <div key={kind}>
+                  <h3 className="mb-3 font-serif text-lg font-semibold text-forest">{areaKindPlural[kind]} <span className="text-sm font-normal text-muted">({group.length})</span></h3>
+                  <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4" aria-label={areaKindPlural[kind]}>
+                    {group.map((a) => (
+                      <li key={a.id}><Link href={`/districts/${a.slug}`} className="flex items-center justify-between gap-3 rounded-xl border border-line bg-white px-4 py-3 hover:bg-forest-soft">
+                        <span><span className="block font-medium text-forest">{a.name}</span>{a.capital_name && <span className="text-xs text-muted">Capital: {a.capital_name}</span>}</span>
+                        <span className="shrink-0 text-sm text-muted">{(areaCounts[a.id] ?? 0) > 0 ? `${areaCounts[a.id]} ${areaCounts[a.id] === 1 ? "place" : "places"}` : "Coming soon"}</span>
+                      </Link></li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })}
+          </div>
+          <p className="mt-6 text-sm"><Link href="/districts" className="text-lake-dark underline underline-offset-2 hover:no-underline">All districts</Link></p>
         </Block>
       )}
 

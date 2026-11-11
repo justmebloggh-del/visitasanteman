@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 export const metadata: Metadata = { title: "Homepage" };
 
 const LABELS: Record<string, string> = {
-  hero: "Hero (top banner)", intro: "Introduction", attractions: "Attractions", experiences: "Experiences", accommodation: "Accommodation",
+  hero: "Hero (top banner)", intro: "Introduction", glance: "At a glance (facts)", highlights: "Where to begin (cards)", attractions: "Attractions", experiences: "Experiences", accommodation: "Accommodation",
   restaurants: "Restaurants", communities: "Communities", events: "Events", articles: "Articles", testimonials: "Testimonials", newsletter: "Newsletter",
 };
 

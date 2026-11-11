@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { CardGrid, ContentCard, EmptyState, PageHeader } from "@/components/layout/blocks";
 import { buildMetadata } from "@/components/layout/seo";
 import { Container } from "@/components/ui";
-import { areaKindLabels, getAreaContentCounts, listAreas } from "@/lib/content/public";
+import { getAreaContentCounts, listAreas } from "@/lib/content/public";
 
 export const revalidate = 60;
+const areaKindPlural = { metropolitan: "Metropolitan Assemblies", municipal: "Municipal Assemblies", district: "District Assemblies" } as const;
 export const metadata: Metadata = buildMetadata({
   title: "Districts of Asanteman",
   description: "Explore Asanteman district by district: the metropolitan, municipal and district assemblies and the places to visit in each.",
@@ -23,7 +24,7 @@ export default async function DistrictsPage() {
           <EmptyState title="Districts are being added" text="We list each district from the official list of assemblies, and publish places in it only after they have been checked." />
         ) : groups.map((g) => (
           <section key={g.kind}>
-            <h2 className="mb-5 text-2xl font-semibold text-forest">{areaKindLabels[g.kind]}s</h2>
+            <h2 className="mb-5 text-2xl font-semibold text-forest">{areaKindPlural[g.kind]}</h2>
             <CardGrid>
               {g.items.map((a) => {
                 const n = counts[a.id] ?? 0;
