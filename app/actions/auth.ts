@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { SITE_URL, supabaseConfigured } from "@/lib/env";
+import { canManageMedia, getSessionUser, isStaff } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { rateLimit } from "@/lib/utils/rate-limit";
 import {
@@ -29,7 +30,11 @@ export async function login(_prev: FormState, formData: FormData): Promise<FormS
     const unconfirmed = /confirm/i.test(error.message);
     return { ok: false, message: unconfirmed ? "Please verify your email address first. Check your inbox." : "Incorrect email or password." };
   }
-  redirect(safeNext(formData.get("next")));
+  // No specific page requested: staff go straight to the admin dashboard.
+  const target = safeNext(formData.get("next"), "");
+  if (target) redirect(target);
+  const user = await getSessionUser();
+  redirect(user && (isStaff(user.role) || canManageMedia(user.role)) ? "/admin" : "/");
 }
 
 export async function register(_prev: FormState, formData: FormData): Promise<FormState> {
