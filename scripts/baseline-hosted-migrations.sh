@@ -13,7 +13,7 @@
 set -euo pipefail
 
 : "${SUPABASE_PROJECT_REF:?Set SUPABASE_PROJECT_REF to your project reference (Project Settings > General)}"
-LAST_BASELINE="20261122000003"
+LAST_BASELINE="${LAST_BASELINE:-20261122000017}"
 
 supabase link --project-ref "$SUPABASE_PROJECT_REF"   # asks for the database password
 
