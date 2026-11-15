@@ -25,21 +25,30 @@ export function Breadcrumbs({ items }: { items: { label: string; href?: string }
 
 /* ── Page header used by index pages ── */
 export function PageHeader({ title, intro, crumbs, image }: { title: string; intro?: string; crumbs?: { label: string; href?: string }[]; image?: ImageKey }) {
-  const pic = image ? images[image] : null;
   return (
-    <header className="relative isolate overflow-hidden bg-forest-dark text-white">
-      {pic && (
-        <>
-          <Image src={pic.src} alt="" fill sizes="100vw" quality={75} className="-z-20 object-cover opacity-65" style={{ objectPosition: pic.position }} />
-          <div className="absolute inset-0 -z-10 bg-gradient-to-r from-forest-dark/90 via-forest-dark/60 to-forest-dark/30" aria-hidden />
-        </>
-      )}
-      <Container className="py-12 sm:py-16">
-        {crumbs && <div className="mb-4 [&_*]:!text-white/70 [&_[aria-current]]:!text-white"><Breadcrumbs items={crumbs} /></div>}
-        <h1 className="text-3xl font-semibold sm:text-5xl">{title}</h1>
-        {intro && <p className="mt-3 max-w-2xl text-base text-white/80 sm:text-lg">{intro}</p>}
+    <header className="bg-forest-dark text-white">
+      <Container className={`py-12 sm:py-16 ${image ? "grid items-center gap-8 lg:grid-cols-[1fr_auto]" : ""}`}>
+        <div>
+          {crumbs && <div className="mb-4 [&_*]:!text-white/70 [&_[aria-current]]:!text-white"><Breadcrumbs items={crumbs} /></div>}
+          <h1 className="text-3xl font-semibold sm:text-5xl">{title}</h1>
+          {intro && <p className="mt-3 max-w-2xl text-base text-white/80 sm:text-lg">{intro}</p>}
+        </div>
+        {image && <StaticPhoto image={image} priority className="max-h-64 rounded-xl lg:max-h-80 lg:justify-self-end" />}
       </Container>
     </header>
+  );
+}
+
+/**
+ * A built-in photograph shown at its own proportions and never larger than its real size, so it is never stretched
+ * or upscaled (which is what makes small pictures look blurry). Served as the original file, not re-compressed.
+ * It scales down to fit narrow screens and to the height limit given in className.
+ */
+export function StaticPhoto({ image, className = "", priority, sizes }: { image: ImageKey; className?: string; priority?: boolean; sizes?: string }) {
+  const i = images[image];
+  return (
+    <Image src={i.src} alt={i.alt} width={i.width} height={i.height} unoptimized priority={priority} sizes={sizes}
+      className={`h-auto w-auto max-w-full ${className}`} />
   );
 }
 
@@ -55,7 +64,7 @@ export function Photo({ media, sizes, className, priority, position }: {
       </div>
     );
   }
-  return <Image src={src} alt={media?.alt_text ?? ""} fill sizes={sizes} priority={priority} className={`object-cover ${className ?? ""}`} style={position ? { objectPosition: position } : undefined} />;
+  return <Image src={src} alt={media?.alt_text ?? ""} fill sizes={sizes} priority={priority} unoptimized={src.startsWith("/")} className={`object-cover ${className ?? ""}`} style={position ? { objectPosition: position } : undefined} />;
 }
 
 /* ── Generic content card ── */

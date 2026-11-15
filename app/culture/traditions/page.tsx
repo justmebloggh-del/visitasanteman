@@ -13,7 +13,7 @@ export default function Page() {
         <h2 id="adinkra" className="mb-2 text-2xl font-semibold text-forest">Adinkra symbols</h2>
         <p className="mb-4 max-w-2xl text-muted">Adinkra cloth printing is one of the crafts above. Each symbol has a name and a meaning that belongs to the tradition, so we show the names only and leave the meanings to the people who keep them.</p>
         <figure className="max-w-3xl">
-          <Image src={images.adinkraChart.src} alt={images.adinkraChart.alt} width={images.adinkraChart.width} height={images.adinkraChart.height} sizes="(min-width:768px) 768px, 100vw" className="h-auto w-full rounded-2xl border border-line bg-white" />
+          <Image src={images.adinkraChart.src} alt={images.adinkraChart.alt} width={images.adinkraChart.width} height={images.adinkraChart.height} sizes="(min-width:768px) 768px, 100vw" quality={90} className="h-auto w-full rounded-2xl border border-line bg-white" />
           <figcaption className="mt-2 text-sm text-muted">{images.adinkraChart.caption}</figcaption>
         </figure>
       </section>

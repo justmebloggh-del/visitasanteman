@@ -1,7 +1,6 @@
-import Image from "next/image";
 import { images } from "@/config/images";
 import type { Metadata } from "next";
-import { CardGrid, ContentCard, EmptyState, PageHeader } from "@/components/layout/blocks";
+import { CardGrid, ContentCard, EmptyState, PageHeader, StaticPhoto } from "@/components/layout/blocks";
 import { buildMetadata } from "@/components/layout/seo";
 import { Container } from "@/components/ui";
 import { getAreaContentCounts, listAreas } from "@/lib/content/public";
@@ -22,8 +21,8 @@ export default async function DistrictsPage() {
     <>
       <PageHeader title="Districts" intro="The Ashanti Region is governed through metropolitan, municipal and district assemblies. Start with the area you plan to visit." crumbs={[{ label: "Districts" }]} />
       <Container className="space-y-12 py-10">
-        <figure className="mx-auto max-w-xl">
-          <Image src={images.districtMap.src} alt={images.districtMap.alt} width={images.districtMap.width} height={images.districtMap.height} sizes="(min-width:640px) 576px, 100vw" className="h-auto w-full rounded-2xl border border-line bg-white" />
+        <figure className="mx-auto" style={{ maxWidth: images.districtMap.width }}>
+          <StaticPhoto image="districtMap" className="w-full rounded-2xl border border-line bg-white" />
           <figcaption className="mt-2 text-sm text-muted">{images.districtMap.caption}</figcaption>
         </figure>
         {areas.length === 0 ? (
