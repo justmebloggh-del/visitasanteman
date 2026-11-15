@@ -309,3 +309,37 @@ export async function saveSettings(_prev: FormState, fd: FormData): Promise<Form
   flush();
   return { ok: true, message: "Settings saved." };
 }
+
+// ── Award nominations and event registrations ──
+const NOMINATION_STATUSES = ["new", "under_review", "eligible", "shortlisted", "not_eligible", "withdrawn"];
+
+export async function setNominationStatus(id: string, status: string) {
+  const me = await requireStaff();
+  if (!NOMINATION_STATUSES.includes(status)) return;
+  // Only regional editors and administrators may shortlist; the database enforces this too.
+  if (status === "shortlisted" && !canApprove(me.role)) redirect("/admin/nominations?error=1");
+  const supabase = await createClient();
+  const { error } = await supabase.from("award_nominations").update({ status }).eq("id", id);
+  revalidatePath("/admin/nominations");
+  revalidatePath("/awards", "layout");
+  redirect(`/admin/nominations?${error ? "error=1" : "saved=1"}`);
+}
+
+export async function setNominationWinner(id: string, winner: boolean) {
+  const me = await requireStaff();
+  if (!canApprove(me.role)) redirect("/admin/nominations?error=1");
+  const supabase = await createClient();
+  const { error } = await supabase.from("award_nominations").update({ is_winner: winner }).eq("id", id);
+  revalidatePath("/admin/nominations");
+  revalidatePath("/awards", "layout");
+  redirect(`/admin/nominations?${error ? "error=1" : "saved=1"}`);
+}
+
+export async function setRegistrationStatus(id: string, status: string) {
+  await requireStaff();
+  if (!["registered", "attended", "cancelled"].includes(status)) return;
+  const supabase = await createClient();
+  const { error } = await supabase.from("event_registrations").update({ status }).eq("id", id);
+  revalidatePath("/admin/registrations");
+  redirect(`/admin/registrations?${error ? "error=1" : "saved=1"}`);
+}

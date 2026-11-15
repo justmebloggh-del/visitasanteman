@@ -2,7 +2,7 @@ import { listingSection, listingTypeLabels, PAGE_SIZE, type ListingType } from "
 import { supabaseConfigured } from "@/lib/env";
 import { createPublicClient } from "@/lib/supabase/server";
 import type {
-  Article, Attraction, Ceremony, Community, EventItem, Experience, HomepageSection, Listing, MapPoint,
+  Article, AwardProgramme, AwardShortlistItem, Attraction, Ceremony, Community, EventItem, Experience, HomepageSection, Listing, MapPoint,
   MediaRef, MenuItem, Page, PageContent, RoomType, Testimonial,
 } from "@/types/content";
 
@@ -235,6 +235,19 @@ export async function listEvents(o: { when?: "upcoming" | "past"; area?: string;
 export async function getEvent(slug: string) {
   const rows = await run<EventItem[]>("event", () => sb().from("events").select(`*, ${COVER}`).eq("slug", slug).limit(1) as never, []);
   return rows[0] ?? null;
+}
+
+// ── Awards ──
+export async function listAwardProgrammes(): Promise<AwardProgramme[]> {
+  return run<AwardProgramme[]>("awards", () => sb().from("award_programmes").select(`*, ${COVER}`).order("year", { ascending: false, nullsFirst: false }) as never, []);
+}
+export async function getAwardProgramme(slug: string): Promise<AwardProgramme | null> {
+  const rows = await run<AwardProgramme[]>("award", () => sb().from("award_programmes").select(`*, ${COVER}`).eq("slug", slug).limit(1) as never, []);
+  return rows[0] ?? null;
+}
+/** Shortlisted nominees and winners only; nominator details are never exposed. */
+export async function listAwardShortlist(programmeId: string): Promise<AwardShortlistItem[]> {
+  return run<AwardShortlistItem[]>("award-shortlist", () => sb().from("award_shortlist").select("id,programme_id,category,nominee_name,nominee_organisation,nominee_location,is_winner").eq("programme_id", programmeId).order("category").order("nominee_name") as never, []);
 }
 
 // ── Articles ──

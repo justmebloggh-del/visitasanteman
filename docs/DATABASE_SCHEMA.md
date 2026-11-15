@@ -224,3 +224,10 @@ Tests: `supabase/tests/jobs_rls.sql` (50 checks) and `tests/e2e/jobs.spec.ts`.
 `ceremony_previews` exposes only `id, slug, name, kind, summary, date_note` for those rows (never research notes, sources, contacts,
 the full description or a confirmed date), and detail pages stay unpublished (404). Publishing still needs `authority_approved`
 (guard_ceremony), which only regional editors and administrators can record.
+
+
+## Awards and event registration (migration 20261122000022)
+- `award_programmes`: content table with the normal workflow (only regional editors and administrators can approve or publish). `categories` is a text array; nominations are only accepted while the programme is published, `nominations_open` is true, the closing time has not passed, and the category is one of the programme's own.
+- `award_nominations`: anonymous insert only (status `new`, never a winner); staff read and update; administrators delete. A trigger stops ordinary editors from shortlisting or naming winners and records the reviewer.
+- `award_shortlist` (security-barrier view): shortlisted nominees of published programmes, without nominator details.
+- `events.registration_enabled`, `events.capacity`, `event_registrations`: no direct public access; the public registers through `register_for_event()` (security definer), which checks the event is published, scheduled, open and not full, and refuses duplicate emails.

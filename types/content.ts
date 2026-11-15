@@ -81,6 +81,17 @@ export interface EventItem extends Seo, Cover {
   ticket_info: string | null; registration_url: string | null; contact_email: string | null;
   contact_phone: string | null; event_status: string; latitude: number | null; longitude: number | null;
   date_verified: boolean; area?: { name: string; slug: string } | null;
+  registration_enabled?: boolean; capacity?: number | null;
+}
+
+export interface AwardProgramme extends Seo, Cover {
+  id: string; slug: string; title: string; year: number | null; summary: string | null; description: string | null;
+  categories: string[]; eligibility: string | null; judging_criteria: string | null; judging_process: string | null;
+  nominations_open: boolean; nominations_close_at: string | null;
+}
+
+export interface AwardShortlistItem {
+  id: string; programme_id: string; category: string; nominee_name: string; nominee_organisation: string | null; nominee_location: string | null; is_winner: boolean;
 }
 
 export interface Article extends Seo, Cover {

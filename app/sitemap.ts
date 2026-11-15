@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { listingSection } from "@/config/site";
 import { SITE_URL } from "@/lib/env";
-import { getSitemapEntries } from "@/lib/content/public";
+import { getSitemapEntries, listAwardProgrammes } from "@/lib/content/public";
 import { listVacancies } from "@/lib/jobs";
 
 export const revalidate = 3600;
@@ -24,6 +24,7 @@ const PAGE_PATHS: Record<string, string> = {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const s = await getSitemapEntries();
   const jobs = (await listVacancies({ limit: 500 })).items;
+  const awards = await listAwardProgrammes();
   const base = (p: string) => `${SITE_URL}${p}`;
   const count = (t: string) => s.listings.filter((l) => listingSection(l.type) === t).length;
   const always = ["", "/map", "/contact", "/partner", "/partner-with-us", "/advertise", "/travel-planner"];
@@ -32,7 +33,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ["/accommodation", count("accommodation")], ["/restaurants", count("restaurants")], ["/venues", count("venues")], ["/markets", count("markets")],
     ["/business-directory", count("business")], ["/experiences", s.experiences.length], ["/events", s.events.length], ["/articles", s.articles.length],
     ["/education", s.institutions.length], ["/sports", s.sportsVenues.length], ["/sports/clubs", s.sportsClubs.length], ["/transport", s.transport.length],
-    ["/culture/ceremonies", s.ceremonies.length], ["/jobs", jobs.length], ["/gallery", s.gallery.length], ["/investment", s.investments.length],
+    ["/culture/ceremonies", s.ceremonies.length], ["/jobs", jobs.length], ["/awards", awards.length], ["/gallery", s.gallery.length], ["/investment", s.investments.length],
   ];
   const fixed = [...always, ...sections.filter(([, n]) => n > 0).map(([p]) => p), ...s.pages.map((r) => PAGE_PATHS[r.slug]).filter(Boolean)];
   const list = (rows: { slug: string; updated_at: string }[], prefix: string) =>
@@ -42,6 +43,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...list(s.attractions, "/attractions"), ...list(s.districts, "/districts"), ...list(s.destinations, "/destinations"), ...list(s.communities, "/communities"),
     ...list(s.ceremonies, "/culture/ceremonies"), ...list(s.institutions, "/education"), ...list(s.sportsVenues, "/sports"), ...list(s.sportsClubs, "/sports/clubs"), ...list(s.transport, "/transport"),
     ...list(s.experiences, "/experiences"), ...list(s.events, "/events"), ...list(s.articles, "/articles"), ...list(s.investments, "/investment"),
+    ...awards.map((a) => ({ url: base(`/awards/${a.slug}`) })),
     ...jobs.map((j) => ({ url: base(`/jobs/${j.slug}`), lastModified: j.published_at ?? undefined })),
     ...s.listings.map((l) => ({ url: base(`/${listingSection(l.type)}/${l.slug}`), lastModified: l.updated_at })),
   ];

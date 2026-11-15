@@ -27,7 +27,7 @@ export const mainNav: NavItem[] = [
   { label: "Experiences", href: "/experiences" },
   { label: "Where to Stay", href: "/accommodation" },
   { label: "Food & Dining", href: "/restaurants" },
-  { label: "Events", href: "/events" },
+  { label: "Events & Awards", children: [{ label: "Events", href: "/events" }, { label: "Awards", href: "/awards" }] },
   { label: "Plan Your Visit", children: [
     { label: "Why Asanteman", href: "/why-ashanti" }, { label: "Getting Around", href: "/getting-around" }, { label: "Travel Information", href: "/travel-information" },
     { label: "Visa and Entry", href: "/visa-and-entry" }, { label: "Travel Planner", href: "/travel-planner" }, { label: "Travel Guide", href: "/travel-guide" },

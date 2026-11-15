@@ -29,6 +29,13 @@ _Last updated: 2026-11-09._ A fresh session can resume from this file.
 | Jobs not yet built: full candidate profiles (education, experience, skills), job alerts, interview scheduling beyond a date field, recruitment packages and payments, employer verification document upload, per-district job landing pages (use the `/jobs?area=` filter) | open |
 | Not built: mobile app, Excel import, Hubtel, audio and QR guides, diaspora portal, event ticketing and awards tooling, logo concepts, Part B (B1 to B6), strategy documents | open |
 
+## Phase 4 (first part, local, not pushed)
+| Item | Status |
+|---|---|
+| Award programmes (`award_programmes`), public `/awards` and `/awards/[slug]`, public nominations with Row Level Security (open programme, own category only), staff review at `/admin/nominations`, shortlist view `award_shortlist` (nominee name only; nominator details never public); only regional editors and administrators can shortlist or name winners | done, tested (`supabase/tests/awards_rls.sql`, 31 checks) |
+| Free event registration with optional capacity (`events.registration_enabled`, `capacity`, `event_registrations`, `register_for_event()`), form on the event page, staff list at `/admin/registrations` | done, tested |
+| Not built: ticketing and payments, QR check-in, exhibitor and booth applications, sponsor management and dashboards, judging scores, public voting, digital certificates, event revenue tracking, speaker registration, international currencies | open |
+
 ## Decisions
 - Cookie consent is stored in a first-party cookie (`vasa_consent`), not localStorage. Optional categories: Functional, Analytics, Advertising. The site currently uses no functional or advertising cookies; sponsored placements are first-party and cookie-free. GA loads only after Analytics consent (needs `NEXT_PUBLIC_GA_ID` at build time).
 - The cookie policy page is an empty CMS draft: wording must be written and reviewed by someone qualified (Ghana Data Protection Act, 2012, Act 843).

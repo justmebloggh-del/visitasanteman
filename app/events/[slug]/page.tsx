@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Breadcrumbs, Facts, Gallery, Photo, TextBlock } from "@/components/layout/blocks";
 import { breadcrumbLd, buildMetadata, JsonLd } from "@/components/layout/seo";
+import { RegistrationForm } from "@/components/events/RegistrationForm";
 import { Map } from "@/components/maps/Map";
 import { Badge, ButtonLink, Container } from "@/components/ui";
 import { eventStatusLabels } from "@/config/site";
@@ -60,6 +61,13 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
             { label: "Venue", value: e.venue }, { label: "Organiser", value: e.organiser }, { label: "Tickets", value: e.ticket_info },
             { label: "Contact", value: [e.contact_phone, e.contact_email].filter(Boolean).join("\n") || null },
           ]} />
+          {e.registration_enabled && e.event_status === "scheduled" && (
+            <section aria-labelledby="register" className="rounded-2xl border border-line bg-white p-5">
+              <h2 id="register" className="mb-3 text-xl font-semibold text-forest">Register to attend</h2>
+              {e.capacity ? <p className="mb-3 text-sm text-muted">Places are limited to {e.capacity}.</p> : null}
+              <RegistrationForm eventId={e.id} />
+            </section>
+          )}
           {reg && <ButtonLink href={reg} target="_blank" rel="noopener noreferrer" className="w-full">Register or get tickets</ButtonLink>}
         </aside>
       </Container>

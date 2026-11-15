@@ -55,3 +55,27 @@ export function zodErrors(error: z.ZodError): Record<string, string> {
   }
   return out;
 }
+
+export const nominationSchema = z.object({
+  programme_id: z.string().uuid(),
+  category: text(150).min(1, "Choose a category"),
+  nominee_name: text(150).min(1, "Enter the nominee's name"),
+  nominee_organisation: text(150).optional().or(z.literal("")),
+  nominee_location: text(150).optional().or(z.literal("")),
+  reason: text(3000).min(30, "Please explain the nomination in at least 30 characters"),
+  supporting_url: text(500).url("Enter a full web address, starting with https://").optional().or(z.literal("")),
+  nominator_name: text(120).min(1, "Please enter your name"),
+  nominator_email: z.string().trim().toLowerCase().email("Enter a valid email address").max(254),
+  nominator_phone: text(40).optional().or(z.literal("")),
+  website: text(200).optional(), // honeypot
+});
+
+export const eventRegistrationSchema = z.object({
+  event_id: z.string().uuid(),
+  name: text(120).min(1, "Please enter your name"),
+  email: z.string().trim().toLowerCase().email("Enter a valid email address").max(254),
+  phone: text(40).optional().or(z.literal("")),
+  guests: z.coerce.number().int().min(1, "At least 1").max(10, "Up to 10 places per registration"),
+  notes: text(500).optional().or(z.literal("")),
+  website: text(200).optional(), // honeypot
+});

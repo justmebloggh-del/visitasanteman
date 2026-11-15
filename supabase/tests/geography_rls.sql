@@ -370,21 +370,21 @@ select pg_temp.t('H05 nobody can edit revisions', :super, 'authenticated', 'upda
 insert into results select 'Z01 every public table has row level security enabled',
   not exists (select 1 from pg_tables where schemaname = 'public' and not rowsecurity),
   coalesce((select string_agg(tablename, ', ') from pg_tables where schemaname = 'public' and not rowsecurity), 'all enabled');
-insert into results select 'Z02 anonymous visitors can write only to the two form tables',
+insert into results select 'Z02 anonymous visitors can write only to the public form tables (enquiries, newsletter, award nominations)',
   not exists (select 1 from information_schema.role_table_grants where grantee = 'anon' and table_schema = 'public'
-              and privilege_type in ('INSERT', 'UPDATE', 'DELETE', 'TRUNCATE') and table_name not in ('enquiries', 'newsletter_subscribers')),
+              and privilege_type in ('INSERT', 'UPDATE', 'DELETE', 'TRUNCATE') and table_name not in ('enquiries', 'newsletter_subscribers', 'award_nominations')),
   coalesce((select string_agg(distinct table_name || ':' || privilege_type, ', ') from information_schema.role_table_grants where grantee = 'anon' and table_schema = 'public'
-            and privilege_type in ('INSERT', 'UPDATE', 'DELETE', 'TRUNCATE') and table_name not in ('enquiries', 'newsletter_subscribers')), 'none');
+            and privilege_type in ('INSERT', 'UPDATE', 'DELETE', 'TRUNCATE') and table_name not in ('enquiries', 'newsletter_subscribers', 'award_nominations')), 'none');
 insert into results select 'Z03 only the known public functions can be called by anonymous visitors',
   not exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace
               where n.nspname = 'public' and p.prosecdef and p.prorettype <> 'trigger'::regtype and has_function_privilege('anon', p.oid, 'execute')
                 and p.proname not in ('can_approve', 'can_manage_booking', 'can_manage_geography', 'can_manage_media', 'create_booking', 'curated_itinerary_view', 'current_app_role',
                                       'guest_cancel_booking', 'is_admin', 'is_partner', 'is_staff', 'is_super_admin', 'itinerary_view', 'lookup_booking', 'nearby_places',
-                                      'owns_listing', 'record_ad_event', 'record_listing_view', 'submit_review', 'my_email_confirmed', 'is_employer_owner', 'cv_visible_to_employer')),
+                                      'owns_listing', 'record_ad_event', 'record_listing_view', 'submit_review', 'my_email_confirmed', 'is_employer_owner', 'cv_visible_to_employer', 'register_for_event')),
   coalesce((select string_agg(p.proname, ', ') from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.prosecdef and p.prorettype <> 'trigger'::regtype and has_function_privilege('anon', p.oid, 'execute')
               and p.proname not in ('can_approve', 'can_manage_booking', 'can_manage_geography', 'can_manage_media', 'create_booking', 'curated_itinerary_view', 'current_app_role',
                                     'guest_cancel_booking', 'is_admin', 'is_partner', 'is_staff', 'is_super_admin', 'itinerary_view', 'lookup_booking', 'nearby_places',
-                                    'owns_listing', 'record_ad_event', 'record_listing_view', 'submit_review', 'my_email_confirmed', 'is_employer_owner', 'cv_visible_to_employer')), 'known list only');
+                                    'owns_listing', 'record_ad_event', 'record_listing_view', 'submit_review', 'my_email_confirmed', 'is_employer_owner', 'cv_visible_to_employer', 'register_for_event')), 'known list only');
 insert into results select 'Z04 every security-definer function pins its search_path',
   not exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.prosecdef
               and not (p.proconfig is not null and exists (select 1 from unnest(p.proconfig) c where c like 'search_path=%'))),
