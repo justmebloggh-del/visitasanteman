@@ -16,7 +16,7 @@ export function HeroMedia({ fallbackKey, imageSrc, imageAlt }: { fallbackKey: Im
   const fallback = images[fallbackKey];
   const src = imageSrc || fallback.src;
   return (
-    <div className="banner-float relative aspect-[4/3] w-[26rem] max-w-full overflow-hidden rounded-xl border-4 border-gold bg-black/30 shadow-2xl">
+    <div className="banner-float relative aspect-[4/3] w-full max-w-[26rem] overflow-hidden rounded-xl border-4 border-gold bg-black/30 shadow-2xl">
       <Image src={src} alt={imageSrc ? (imageAlt ?? "") : ""} fill priority sizes="(min-width:1024px) 28rem, 90vw" unoptimized={src.startsWith("/")} className="object-cover" />
       {film && <video src="/hero-video.mp4" autoPlay muted loop playsInline preload="none" aria-hidden tabIndex={-1} className="absolute inset-0 size-full object-cover" />}
     </div>

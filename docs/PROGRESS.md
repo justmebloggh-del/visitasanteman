@@ -44,7 +44,7 @@ _Last updated: 2026-11-09._ A fresh session can resume from this file.
 ## Banner collection (local, not pushed)
 - 14 banners (config/banners.ts) share one design (components/banners/Banner.tsx): animated green-and-gold kente background, words left, photograph centre, gold emblem at the far right (own grid column, so nothing overlaps it; phones keep it at the far right, smaller). Named components in components/banners/index.tsx; homepage rotator with controls; slow animations off under reduced motion.
 - Words, links and on/off are editable in Admin, Banners (stored in site_settings "banners"). Banner 14 (expo) is off by default: no expo exists yet.
-- The emblem is interim stylised artwork (components/banners/SikaDwaEmblem.tsx), NOT an official depiction of the Golden Stool. Replace it with custodian-approved artwork before launch.
+- The emblem is the owner's painted artwork `public/Asante/sika dwa.jpg` (components/banners/SikaDwaEmblem.tsx), shown in a gold-ringed circle. It is not an official depiction of the Golden Stool: confirm accuracy and rights with the custodians before launch.
 - The main menu was shortened (Stay & Dine, About groups) because 13 items overflowed at 1440 px.
 
 ## Decisions

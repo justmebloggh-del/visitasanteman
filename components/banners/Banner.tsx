@@ -45,7 +45,7 @@ export function Banner({ def, as: Heading = "h2", priority, children, media, cla
           </div>
           {children}
         </div>
-        {photo && <div className="col-span-2 col-start-1 row-start-2 justify-self-start lg:col-span-1 lg:col-start-2 lg:row-start-1 lg:justify-self-center">{photo}</div>}
+        {photo && <div className={cn("col-span-2 col-start-1 row-start-2 min-w-0 lg:col-span-1 lg:col-start-2 lg:row-start-1", media ? "flex justify-start lg:justify-center" : "justify-self-start lg:justify-self-center")}>{photo}</div>}
         {/* Signature emblem: always in the last column, at the far right. Same artwork and proportions everywhere, scaled by screen width. */}
         <div className={cn("col-start-2 row-start-1 justify-self-end", photo ? "lg:col-start-3" : "lg:col-start-2")}>
           <SikaDwaEmblem className={cn("h-auto drop-shadow-[0_6px_14px_rgba(0,0,0,0.35)]", hero ? "w-[4.25rem] sm:w-28 lg:w-40" : "w-[3.75rem] sm:w-24 lg:w-32")} />
