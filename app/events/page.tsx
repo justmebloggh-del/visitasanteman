@@ -28,7 +28,7 @@ export default async function EventsPage({ searchParams }: { searchParams: Promi
 
   return (
     <>
-      <PageHeader title="Events and festivals" intro="What is happening across Asanteman." crumbs={[{ label: "Events" }]} image="festival" />
+      <PageHeader title="Events and festivals" intro="What is happening across Asanteman." crumbs={[{ label: "Events" }]} />
       <Container className="py-10">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div className="flex gap-2" role="group" aria-label="View">

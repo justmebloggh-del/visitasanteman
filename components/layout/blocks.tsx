@@ -23,18 +23,31 @@ export function Breadcrumbs({ items }: { items: { label: string; href?: string }
   );
 }
 
-/* ── Page header used by index pages ── */
-export function PageHeader({ title, intro, crumbs, image }: { title: string; intro?: string; crumbs?: { label: string; href?: string }[]; image?: ImageKey }) {
+/* ── Page banner used on every page ── */
+// Banner photographs: kente and the seated chief with gold regalia (public/Asante). The same few pictures repeat on purpose,
+// so they are decorative (empty alt text) and chosen from the page title so each page always shows the same one.
+const BANNER_PHOTOS: ImageKey[] = ["chief", "kenteDisplay", "chief", "kenteLoom"];
+const bannerPhoto = (title: string): ImageKey => BANNER_PHOTOS[[...title].reduce((n, c) => n + c.charCodeAt(0), 0) % BANNER_PHOTOS.length];
+
+export function PageHeader({ title, intro, crumbs, photo = true }: { title: string; intro?: string; crumbs?: { label: string; href?: string }[]; photo?: boolean }) {
+  const key = bannerPhoto(title);
   return (
-    <header className="bg-forest-dark text-white">
-      <Container className={`py-12 sm:py-16 ${image ? "grid items-center gap-8 lg:grid-cols-[1fr_auto]" : ""}`}>
+    <header className="relative isolate overflow-hidden bg-gradient-to-br from-forest-dark via-forest-dark to-forest text-white">
+      <div className="kente-strip" aria-hidden />
+      <Container className={`py-10 sm:py-14 ${photo ? "grid items-center gap-8 lg:grid-cols-[1fr_auto]" : ""}`}>
         <div>
           {crumbs && <div className="mb-4 [&_*]:!text-white/70 [&_[aria-current]]:!text-white"><Breadcrumbs items={crumbs} /></div>}
-          <h1 className="text-3xl font-semibold sm:text-5xl">{title}</h1>
-          {intro && <p className="mt-3 max-w-2xl text-base text-white/80 sm:text-lg">{intro}</p>}
+          <h1 className="font-serif text-3xl font-semibold sm:text-5xl">{title}</h1>
+          <span className="mt-4 block h-1 w-20 rounded-full bg-gold" aria-hidden />
+          {intro && <p className="mt-4 max-w-2xl text-base text-white/85 sm:text-lg">{intro}</p>}
         </div>
-        {image && <StaticPhoto image={image} priority className="max-h-64 rounded-xl lg:max-h-80 lg:justify-self-end" />}
+        {photo && (
+          <div className="justify-self-start rounded-xl border-4 border-gold bg-black/30 shadow-2xl lg:justify-self-end">
+            <StaticPhoto image={key} priority decorative className="max-h-52 rounded-lg sm:max-h-60 lg:max-h-64" />
+          </div>
+        )}
       </Container>
+      <div className="kente-strip" aria-hidden />
     </header>
   );
 }
@@ -44,10 +57,10 @@ export function PageHeader({ title, intro, crumbs, image }: { title: string; int
  * or upscaled (which is what makes small pictures look blurry). Served as the original file, not re-compressed.
  * It scales down to fit narrow screens and to the height limit given in className.
  */
-export function StaticPhoto({ image, className = "", priority, sizes }: { image: ImageKey; className?: string; priority?: boolean; sizes?: string }) {
+export function StaticPhoto({ image, className = "", priority, sizes, decorative }: { image: ImageKey; className?: string; priority?: boolean; sizes?: string; decorative?: boolean }) {
   const i = images[image];
   return (
-    <Image src={i.src} alt={i.alt} width={i.width} height={i.height} unoptimized priority={priority} sizes={sizes}
+    <Image src={i.src} alt={decorative ? "" : i.alt} width={i.width} height={i.height} unoptimized priority={priority} sizes={sizes}
       className={`h-auto w-auto max-w-full ${className}`} />
   );
 }

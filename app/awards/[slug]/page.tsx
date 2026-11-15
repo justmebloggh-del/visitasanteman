@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { NominationForm } from "@/components/awards/NominationForm";
-import { Breadcrumbs, Photo, TextBlock } from "@/components/layout/blocks";
+import { PageHeader, TextBlock } from "@/components/layout/blocks";
 import { breadcrumbLd, buildMetadata, JsonLd } from "@/components/layout/seo";
 import { Badge, Container } from "@/components/ui";
 import { getAwardProgramme, listAwardShortlist } from "@/lib/content/public";
@@ -24,15 +24,7 @@ export default async function AwardPage({ params }: { params: Promise<{ slug: st
   return (
     <>
       <JsonLd data={breadcrumbLd([{ name: "Home", path: "/" }, { name: "Awards", path: "/awards" }, { name: p.title, path: `/awards/${p.slug}` }])} />
-      <header className="relative bg-forest-dark text-white">
-        {p.cover && <div className="absolute inset-0 opacity-30"><Photo media={p.cover} sizes="100vw" priority /></div>}
-        <Container className="relative py-12 sm:py-16">
-          <div className="mb-4 [&_*]:!text-white/70 [&_[aria-current]]:!text-white"><Breadcrumbs items={[{ label: "Awards", href: "/awards" }, { label: p.title }]} /></div>
-          <h1 className="text-3xl font-semibold sm:text-5xl">{p.title}</h1>
-          {p.year && <p className="mt-2 text-white/80">{p.year}</p>}
-          {open && <Badge tone="green" className="mt-3">Nominations open{p.nominations_close_at ? ` until ${formatDate(p.nominations_close_at, true)}` : ""}</Badge>}
-        </Container>
-      </header>
+      <PageHeader title={p.title} intro={[p.year, open ? `Nominations open${p.nominations_close_at ? ` until ${formatDate(p.nominations_close_at, true)}` : ""}` : null].filter(Boolean).join(" · ") || undefined} crumbs={[{ label: "Awards", href: "/awards" }, { label: p.title }]} />
       <Container className="grid gap-10 py-10 lg:grid-cols-3">
         <div className="space-y-10 lg:col-span-2">
           {p.summary && <p className="text-lg text-ink/90">{p.summary}</p>}

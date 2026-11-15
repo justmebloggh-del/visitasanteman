@@ -12,7 +12,6 @@ import { breadcrumbLd, JsonLd } from "@/components/layout/seo";
 import { Map } from "@/components/maps/Map";
 import { Badge, ButtonLink, Container } from "@/components/ui";
 import { listingTypeLabels, priceRangeLabels, restaurantTypes, type ListingType } from "@/config/site";
-import { headerImages } from "@/config/images";
 import { SITE_URL } from "@/lib/env";
 import { getGallery, getListing, getMenuItems, getReviews, getFacilityOptions, getRoomTypes, listAreas, listCommunities, listListings, toPage } from "@/lib/content/public";
 import { directionsLink, formatPrice, mediaUrl, safeUrl, whatsappLink } from "@/lib/utils";
@@ -50,7 +49,7 @@ export async function ListingIndex({ group, searchParams }: {
 
   return (
     <>
-      <PageHeader title={group.title} intro={group.intro} crumbs={[{ label: group.title }]} image={headerImages[group.base]} />
+      <PageHeader title={group.title} intro={group.intro} crumbs={[{ label: group.title }]} />
       <AdSlot placement="directory_top" />
       <Container className="py-10">
         <FilterBar

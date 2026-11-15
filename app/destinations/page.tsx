@@ -15,7 +15,7 @@ export default async function DestinationsPage() {
   const destinations = await listDestinations();
   return (
     <>
-      <PageHeader title="Destinations" intro="Places worth planning a trip around." crumbs={[{ label: "Destinations" }]} image="lake" />
+      <PageHeader title="Destinations" intro="Places worth planning a trip around." crumbs={[{ label: "Destinations" }]} />
       <Container className="py-10">
         {destinations.length === 0 ? (
           <EmptyState title="Destinations are being added" text="We publish a destination only after its details have been checked." action={{ href: "/districts", label: "Browse by district" }} />

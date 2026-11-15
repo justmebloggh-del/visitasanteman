@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Breadcrumbs, Photo, StaticPhoto } from "@/components/layout/blocks";
+import { PageHeader, Photo, StaticPhoto } from "@/components/layout/blocks";
 import { AdSlot } from "@/components/ads/AdSlot";
 import { Markdown } from "@/components/layout/Markdown";
 import { buildMetadata } from "@/components/layout/seo";
@@ -19,10 +19,7 @@ export async function CmsPage({ slug, fallbackTitle, crumbs, children }: { slug:
   const fallback = page?.body && fallbackKey ? images[fallbackKey] : null;
   return (
     <>
-      <header className="bg-forest-dark text-white">
-        <Container className="py-12 sm:py-16"><div className="mb-4 [&_*]:!text-white/70 [&_[aria-current]]:!text-white"><Breadcrumbs items={[...(crumbs ?? []), { label: page?.title ?? fallbackTitle }]} /></div>
-          <h1 className="text-3xl font-semibold sm:text-5xl">{page?.title ?? fallbackTitle}</h1></Container>
-      </header>
+      <PageHeader title={page?.title ?? fallbackTitle} crumbs={[...(crumbs ?? []), { label: page?.title ?? fallbackTitle }]} />
       {slug.startsWith("culture") && <AdSlot placement="culture_top" />}
       <Container className="py-10">
         {page?.cover ? <div className="relative mb-8 aspect-[21/9] overflow-hidden rounded-2xl"><Photo media={page.cover} sizes="100vw" priority /></div> : fallback && (

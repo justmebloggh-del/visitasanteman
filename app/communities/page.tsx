@@ -17,7 +17,7 @@ export default async function CommunitiesPage({ searchParams }: { searchParams: 
   const [communities, areas] = await Promise.all([listCommunities({ area: sp.area }), listAreas()]);
   return (
     <>
-      <PageHeader title="Our communities" intro="Towns and villages of Asanteman." crumbs={[{ label: "Communities" }]} image="artisans" />
+      <PageHeader title="Our communities" intro="Towns and villages of Asanteman." crumbs={[{ label: "Communities" }]} />
       <Container className="py-10">
         {areas.length > 0 && (
           <div className="mb-8"><FilterBar action="/communities" values={{ area: sp.area }} qLabel="" hideSearch

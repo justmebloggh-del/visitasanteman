@@ -1,4 +1,3 @@
-import { themeImages } from "@/config/images";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CardGrid, ContentCard, PageHeader } from "@/components/layout/blocks";
@@ -21,7 +20,7 @@ export default async function ThemePage({ params }: { params: Promise<{ slug: st
   if (items.length === 0) notFound();          // a theme with nothing published is not a public page
   return (
     <>
-      <PageHeader image={themeImages[t.slug]} title={t.name} intro={t.summary ?? undefined} crumbs={[{ label: t.kind === "experience_theme" ? "Experience themes" : "Tour categories" }, { label: t.name }]} />
+      <PageHeader title={t.name} intro={t.summary ?? undefined} crumbs={[{ label: t.kind === "experience_theme" ? "Experience themes" : "Tour categories" }, { label: t.name }]} />
       <Container className="py-10">
         <CardGrid>{items.map((i) => <ContentCard key={i.key} href={i.href} title={i.title} summary={i.summary} media={i.cover} meta={i.kind} />)}</CardGrid>
       </Container>

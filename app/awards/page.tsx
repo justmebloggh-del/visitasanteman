@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Breadcrumbs, Photo } from "@/components/layout/blocks";
+import { PageHeader, Photo } from "@/components/layout/blocks";
 import { buildMetadata } from "@/components/layout/seo";
 import { Badge, Container } from "@/components/ui";
 import { listAwardProgrammes } from "@/lib/content/public";
@@ -12,13 +12,7 @@ export default async function AwardsPage() {
   const programmes = await listAwardProgrammes();
   return (
     <>
-      <header className="bg-forest-dark text-white">
-        <Container className="py-12 sm:py-16">
-          <div className="mb-4 [&_*]:!text-white/70 [&_[aria-current]]:!text-white"><Breadcrumbs items={[{ label: "Awards" }]} /></div>
-          <h1 className="text-3xl font-semibold sm:text-5xl">Awards</h1>
-          <p className="mt-3 max-w-2xl text-white/85">Recognising excellence in Asanteman. Every programme publishes its categories, eligibility rules and evaluation criteria. Sponsorship or payment never guarantees a nomination or an award.</p>
-        </Container>
-      </header>
+      <PageHeader title="Awards" intro="Recognising excellence in Asanteman. Every programme publishes its categories, eligibility rules and evaluation criteria. Sponsorship or payment never guarantees a nomination or an award." crumbs={[{ label: "Awards" }]} />
       <Container className="py-10">
         {programmes.length === 0 ? (
           <p className="rounded-2xl bg-mist p-6 text-muted">No award programmes have been announced yet. Please check back soon.</p>

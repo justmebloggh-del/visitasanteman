@@ -82,14 +82,7 @@ export const categoryImages: Record<string, ImageKey> = {
 
 export const destinationImages: Record<string, ImageKey> = { "lake-bosomtwe": "lake" };
 
-/** Banner picture for index pages, by route. */
-export const headerImages: Record<string, ImageKey> = {
-  destinations: "lake", attractions: "waterfall", events: "festival", "culture/ceremonies": "kenteDisplay",
-  "culture/calendar": "festival", experiences: "kenteLoom", communities: "artisans",
-  accommodation: "jetty", restaurants: "fufu", markets: "artisans",
-};
-
-/** Banner picture for CMS pages, by page slug. Pages not listed here show no banner until an editor uploads one. */
+/** Picture shown under the banner of a CMS page, by page slug (only when the page has text and no uploaded cover). */
 export const pageImages: Record<string, ImageKey> = {
   culture: "kenteDisplay", "culture-festivals": "festival", "culture-history": "regalia", "culture-traditions": "chief",
   "culture-crafts": "kenteLoom", "culture-food": "fufu", "why-ashanti": "lake", about: "kenteDisplay",
