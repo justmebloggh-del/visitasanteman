@@ -21,7 +21,7 @@ const setRole = (role: string) => sql(`update user_roles set role='${role}' wher
 test.describe("VisitAsanteman brand and navigation", () => {
   test("home carries the new brand and no Lake Bosomtwe wording", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText(/Akwaaba to Asanteman/i);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(/Discover Asanteman\. Experience Our Heritage\./);
     await expect(page.getByRole("link", { name: /VisitAsanteman, home/ })).toBeVisible();
     expect(await page.locator("body").innerText()).not.toMatch(/bosomtw/i);
     expect(await page.title()).toContain("VisitAsanteman");

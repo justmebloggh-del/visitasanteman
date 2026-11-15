@@ -9,7 +9,7 @@
  * lead to existing pages, and the expo banner is switched off until the event is real.
  */
 export type BannerKey =
-  | "hero" | "explore" | "heritage" | "international" | "comeHome" | "events" | "youth" | "education"
+  | "explore" | "heritage" | "international" | "comeHome" | "events" | "youth" | "education"
   | "arts" | "tourism" | "business" | "media" | "awards" | "expo";
 
 export interface BannerStyle {
@@ -35,10 +35,6 @@ export interface BannerDef {
 }
 
 export const bannerDefs: Record<BannerKey, BannerDef> = {
-  hero: { key: "hero", style: { pattern: "a", layout: "stacked", motion: "rise" }, name: "Homepage hero", kicker: "Asanteman, Ghana", headline: "Akwaaba to Asanteman",
-    message: "A Kingdom of Heritage. A People of Pride. A Destination of Discovery.",
-    description: "Discover the royal heritage, extraordinary destinations, rich culture, delicious cuisine and warm hospitality of the Ashanti Region.",
-    buttons: [{ label: "Explore Ashanti", href: "/destinations" }, { label: "Plan Your Visit", href: "/travel-planner" }], enabled: true },
   explore: { key: "explore", style: { pattern: "a", layout: "standard", motion: "rise" }, name: "Explore Ashanti", headline: "Discover the beauty of Ashanti",
     message: "From historic royal landmarks to breathtaking natural attractions, discover the extraordinary destinations of Asanteman.",
     buttons: [{ label: "Explore Destinations", href: "/destinations" }], enabled: true },
@@ -102,7 +98,7 @@ export function resolveBanner(key: BannerKey, saved?: unknown): BannerDef {
 
 /** The one page each banner appears on. Kept here so a banner can never be shown twice by accident. */
 export const bannerPlacement: Record<BannerKey, string> = {
-  hero: "/", explore: "/districts", heritage: "/culture/history", international: "/international", comeHome: "/international/come-home-to-ashanti",
+  explore: "/districts", heritage: "/culture/history", international: "/international", comeHome: "/international/come-home-to-ashanti",
   events: "/culture/calendar", awards: "/events", arts: "/culture/traditions", tourism: "/accommodation", business: "/business-directory",
   media: "/gallery", youth: "/jobs", education: "/education", expo: "/international/events-and-partnerships",
 };

@@ -9,7 +9,6 @@ export async function SectionBanner({ k, as, className, children }: { k: BannerK
 }
 
 // One named component per banner. They share the design in Banner.tsx; each is used on exactly one page (config/banners.ts, bannerPlacement).
-export const MainHeroBanner = ({ children }: { children?: React.ReactNode }) => <SectionBanner k="hero" as="h1">{children}</SectionBanner>;
 export const ExploreBanner = () => <SectionBanner k="explore" />;
 export const HeritageBanner = () => <SectionBanner k="heritage" />;
 export const InternationalBanner = () => <SectionBanner k="international" />;

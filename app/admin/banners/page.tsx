@@ -18,7 +18,7 @@ export default async function BannersAdmin() {
         {bannerKeys.map((k) => {
           const def = resolveBanner(k, data?.value);
           return (
-            <details key={k} className="rounded-2xl border border-line bg-white p-5" open={k === "hero"}>
+            <details key={k} className="rounded-2xl border border-line bg-white p-5" open={k === bannerKeys[0]}>
               <summary className="cursor-pointer font-serif text-lg font-semibold text-forest">{def.name}{!def.enabled && <span className="ml-2 text-sm font-normal text-muted">(off)</span>}</summary>
               <div className="mt-4"><BannerForm def={def} /></div>
             </details>
