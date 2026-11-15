@@ -22,7 +22,7 @@ export default async function AttractionsPage({ searchParams }: { searchParams: 
   const filtered = !!(sp.q || sp.category || sp.community || sp.area);
   return (
     <>
-      <PageHeader title="Attractions" intro="Places to see and things to do across Asanteman." crumbs={[{ label: "Attractions" }]} />
+      <PageHeader title="Attractions" intro="Places to see and things to do across Asanteman." crumbs={[{ label: "Attractions" }]} image="waterfall" />
       <AdSlot placement="directory_top" />
       <Container className="py-10">
         <FilterBar action="/attractions" q={sp.q} values={{ area: sp.area, category: sp.category, community: sp.community }}

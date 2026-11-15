@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Bed, Calendar, Camera, Car, Compass, FileText, Info, Map as MapIcon, Phone, Quote, Star, Ticket, Users, Utensils } from "lucide-react";
 import { CardGrid, ContentCard, Photo } from "@/components/layout/blocks";
+import { asMedia, categoryImages, themeImages } from "@/config/images";
 import { NewsletterForm } from "@/components/forms/NewsletterForm";
 import { ButtonLink, Container } from "@/components/ui";
 import { AdSlot } from "@/components/ads/AdSlot";
@@ -187,7 +188,7 @@ export default async function HomePage() {
             <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {live.map((t) => (
                 <li key={t.id}><Link href={`/themes/${t.slug}`} className="group relative block aspect-[4/3] overflow-hidden rounded-2xl bg-forest">
-                  <Photo media={t.cover} sizes="(min-width:1024px) 25vw, 50vw" className="opacity-80 transition duration-500 group-hover:scale-105 motion-reduce:transition-none" />
+                  <Photo media={t.cover ?? asMedia(themeImages[t.slug])} sizes="(min-width:1024px) 25vw, 50vw" className="opacity-80 transition duration-500 group-hover:scale-105 motion-reduce:transition-none" />
                   <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent p-4 text-white"><span className="block font-serif text-xl font-semibold">{t.name}</span><span className="text-sm text-white/85">{themeCounts[t.slug]} {themeCounts[t.slug] === 1 ? "place or experience" : "places and experiences"}</span></span>
                 </Link></li>
               ))}
@@ -202,7 +203,7 @@ export default async function HomePage() {
           <ul className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
             {categoryCards.map((c) => (
               <li key={c.id}><Link href={`/attractions?category=${c.slug}`} className="group relative block aspect-[4/3] overflow-hidden rounded-2xl bg-forest-dark">
-                <Photo media={c.cover} sizes="(min-width:1024px) 25vw, 50vw" className="opacity-70 transition duration-500 group-hover:scale-105 motion-reduce:transition-none" />
+                <Photo media={c.cover ?? asMedia(categoryImages[c.slug])} sizes="(min-width:1024px) 25vw, 50vw" className="opacity-70 transition duration-500 group-hover:scale-105 motion-reduce:transition-none" />
                 <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent p-4 text-white"><span className="block font-serif text-lg font-semibold">{c.name}</span><span className="text-sm text-white/85">{c.count} {c.count === 1 ? "attraction" : "attractions"}</span></span>
               </Link></li>
             ))}

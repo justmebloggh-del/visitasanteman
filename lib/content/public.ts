@@ -1,3 +1,4 @@
+import { asMedia, destinationImages } from "@/config/images";
 import { listingSection, listingTypeLabels, PAGE_SIZE, type ListingType } from "@/config/site";
 import { supabaseConfigured } from "@/lib/env";
 import { createPublicClient } from "@/lib/supabase/server";
@@ -376,12 +377,17 @@ export async function listDestinations(o: { area?: string; limit?: number } = {}
     if (id) q = q.eq("administrative_area_id", id);
     if (o.limit) q = q.limit(o.limit);
     return q as never;
-  }, []);
+  }, []).then((rows) => rows.map(withBuiltInCover));
 }
 
 export async function getDestination(slug: string) {
   const rows = await run<DestinationItem[]>("destination", () => sb().from("destinations").select(DESTINATION).eq("slug", slug).limit(1) as never, []);
-  return rows[0] ?? null;
+  return rows[0] ? withBuiltInCover(rows[0]) : null;
+}
+
+/** A destination without an uploaded cover shows the built-in picture for it, if there is one (config/images.ts). */
+function withBuiltInCover(d: DestinationItem): DestinationItem {
+  return d.cover ? d : { ...d, cover: asMedia(destinationImages[d.slug]) };
 }
 
 // ── Ceremonies and festivals ──
@@ -429,16 +435,26 @@ export const getTestimonials = (limit = 3) =>
   run<Testimonial[]>("testimonials", () => sb().from("testimonials").select("id,author_name,author_origin,quote,rating").order("created_at", { ascending: false }).limit(limit) as never, []);
 
 export async function getGallery(entityType: string, entityId: string): Promise<MediaRef[]> {
-  const rows = await run<{ sort_order: number; media: MediaRef | null }[]>(
+  const rows = await run<{ sort_order: number; media: (MediaRef & { mime_type?: string }) | null }[]>(
     "gallery",
-    () => sb().from("media_links").select("sort_order, media:media_id(path,alt_text)").eq("entity_type", entityType).eq("entity_id", entityId).order("sort_order") as never,
+    () => sb().from("media_links").select("sort_order, media:media_id(path,alt_text,mime_type)").eq("entity_type", entityType).eq("entity_id", entityId).order("sort_order") as never,
     [],
   );
-  return rows.map((r) => r.media).filter((m): m is MediaRef => !!m);
+  return rows.map((r) => r.media).filter((m): m is MediaRef & { mime_type?: string } => !!m && !m.mime_type?.startsWith("video/")).map(({ path, alt_text }) => ({ path, alt_text }));
+}
+
+/** Videos attached to an item (MP4 or WebM stored in the media library). */
+export async function getVideos(entityType: string, entityId: string): Promise<MediaRef[]> {
+  const rows = await run<{ sort_order: number; media: (MediaRef & { mime_type?: string }) | null }[]>(
+    "videos",
+    () => sb().from("media_links").select("sort_order, media:media_id(path,alt_text,mime_type)").eq("entity_type", entityType).eq("entity_id", entityId).order("sort_order") as never,
+    [],
+  );
+  return rows.map((r) => r.media).filter((m): m is MediaRef & { mime_type?: string } => !!m && !!m.mime_type?.startsWith("video/")).map(({ path, alt_text }) => ({ path, alt_text }));
 }
 
 export async function getAllGalleryImages(limit = 60): Promise<(MediaRef & { caption: string | null; credit: string | null })[]> {
-  return run("gallery-all", () => sb().from("media").select("path,alt_text,caption,credit").eq("folder", "gallery").order("created_at", { ascending: false }).limit(limit) as never, []);
+  return run("gallery-all", () => sb().from("media").select("path,alt_text,caption,credit").eq("folder", "gallery").like("mime_type", "image/%").order("created_at", { ascending: false }).limit(limit) as never, []);
 }
 
 export async function getMapPoints(): Promise<MapPoint[]> {

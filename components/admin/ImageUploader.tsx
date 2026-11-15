@@ -6,7 +6,7 @@ import { Button, Input, Notice } from "@/components/ui";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 import { mediaUrl } from "@/lib/utils";
 
-export interface MediaItem { id: string; path: string; alt_text: string }
+export interface MediaItem { id: string; path: string; alt_text: string; mime_type?: string }
 
 const ALLOWED = ["image/jpeg", "image/png", "image/webp", "image/avif"];
 const MAX_INPUT = 15 * 1024 * 1024;     // reject huge originals before processing

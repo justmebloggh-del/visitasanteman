@@ -33,6 +33,7 @@ export interface ResourceDef {
   hasStatus: boolean;
   hasCover: boolean;
   galleryEntity?: string;
+  videos?: boolean;                                 // also offer video uploads (stored as media, linked like the gallery)
   children?: "rooms" | "menu";
   seo: boolean;
   softDelete: boolean;
@@ -234,7 +235,7 @@ export const resources: ResourceDef[] = [
   },
   {
     area: true, revisions: true, themeEntity: "event", key: "events", table: "events", label: "Events", singular: "event", titleField: "title", hasSlug: true,
-    hasStatus: true, hasCover: true, galleryEntity: "event", seo: true, softDelete: true, orderBy: { column: "starts_at", ascending: false },
+    hasStatus: true, hasCover: true, galleryEntity: "event", videos: true, seo: true, softDelete: true, orderBy: { column: "starts_at", ascending: false },
     listColumns: [{ name: "title", label: "Title" }, { name: "starts_at", label: "Starts" }, { name: "status", label: "Status" }],
     publicPath: (r) => `/events/${r.slug}`,
     fields: [

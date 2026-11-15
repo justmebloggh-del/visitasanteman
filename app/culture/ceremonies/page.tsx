@@ -23,7 +23,7 @@ export default async function CeremoniesPage({ searchParams }: { searchParams: P
   const filtered = !!(sp.q || sp.kind || sp.area);
   return (
     <>
-      <PageHeader title="Ceremonies and festivals" intro="Traditional ceremonies are not all public events. Each entry says whether visitors may attend and what the organisers ask of them." crumbs={[{ label: "Culture & Heritage", href: "/culture" }, { label: "Ceremonies" }]} />
+      <PageHeader title="Ceremonies and festivals" intro="Traditional ceremonies are not all public events. Each entry says whether visitors may attend and what the organisers ask of them." crumbs={[{ label: "Culture & Heritage", href: "/culture" }, { label: "Ceremonies" }]} image="kenteDisplay" />
       <Container className="py-10">
         <div className="mb-6 flex flex-wrap gap-3 text-sm">
           <Link href="/culture/calendar" className="rounded-full border border-line px-4 py-2 font-medium text-forest hover:bg-forest-soft">Calendar of confirmed dates</Link>

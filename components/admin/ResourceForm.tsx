@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useActionState } from "react";
 import { saveResource } from "@/app/admin/actions";
 import { CoordinatePicker } from "@/components/admin/CoordinatePicker";
+import { VideoUploader } from "@/components/admin/VideoUploader";
 import { ImageUploader, type MediaItem } from "@/components/admin/ImageUploader";
 import { SubmitButton } from "@/components/forms/SubmitButton";
 import { Field, Input, Notice, Select, Textarea } from "@/components/ui";
@@ -12,7 +13,7 @@ import type { FormState } from "@/lib/validations/forms";
 
 export interface ClientDef {
   key: string; singular: string; fields: FieldDef[]; hasSlug: boolean; hasCover: boolean;
-  galleryEntity?: string; seo: boolean; slugReadOnly: boolean; themeEntity?: string;
+  galleryEntity?: string; videos?: boolean; seo: boolean; slugReadOnly: boolean; themeEntity?: string;
 }
 
 const GROUPS: { id: NonNullable<FieldDef["group"]>; title: string }[] = [
@@ -51,10 +52,10 @@ function control(f: FieldDef, value: unknown, error: string | undefined, options
   }
 }
 
-export function ResourceForm({ def, id, initial, relations, isAdmin, canApprove, cover, gallery, themes, customAction, uploadFolder, cancelHref, partner, maxGallery }: {
+export function ResourceForm({ def, id, initial, relations, isAdmin, canApprove, cover, gallery, videos, themes, customAction, uploadFolder, cancelHref, partner, maxGallery }: {
   def: ClientDef; id: string | null; initial: Record<string, unknown>;
   relations: Record<string, { value: string; label: string }[]>; isAdmin: boolean; canApprove?: boolean;
-  cover: MediaItem[]; gallery: MediaItem[];
+  cover: MediaItem[]; gallery: MediaItem[]; videos?: MediaItem[];
   themes?: { options: { id: string; name: string; kind: string }[]; selected: string[] };
   customAction?: (prev: FormState, fd: FormData) => Promise<FormState>;
   uploadFolder?: string; cancelHref?: string; partner?: boolean; maxGallery?: number;
@@ -92,6 +93,7 @@ export function ResourceForm({ def, id, initial, relations, isAdmin, canApprove,
             </div>
             {g.id === "main" && def.hasCover && <div className="mt-5"><ImageUploader name="cover_media_id" label="Main photograph" initial={cover} folder={uploadFolder} hint="Shown on cards and at the top of the page." /></div>}
             {g.id === "main" && def.galleryEntity && <div className="mt-4"><ImageUploader name="gallery_media_ids" label="Image gallery" multiple initial={gallery} folder={uploadFolder} max={maxGallery} /></div>}
+            {g.id === "main" && def.galleryEntity && def.videos && <div className="mt-4"><VideoUploader name="video_media_ids" label="Videos" initial={videos ?? []} folder={uploadFolder} /></div>}
           </section>
         );
       })}

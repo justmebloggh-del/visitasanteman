@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
-import { EmptyState, PageHeader, Photo } from "@/components/layout/blocks";
+import { PageHeader, Photo } from "@/components/layout/blocks";
 import { buildMetadata } from "@/components/layout/seo";
 import { Container } from "@/components/ui";
+import { images as builtIn, type ImageKey } from "@/config/images";
 import { getAllGalleryImages } from "@/lib/content/public";
+
+// Built-in photographs (public/Asante), shown after any uploaded gallery photos. The chart and the map are not photographs.
+const BUILT_IN: ImageKey[] = ["festival", "kenteDisplay", "chief", "regalia", "regaliaBearer", "kenteLoom", "artisans", "fufu", "celebration", "lake", "waterfall", "jetty"];
 
 export const revalidate = 60;
 export const metadata: Metadata = buildMetadata({ title: "Gallery", description: "Photographs of Asanteman, its places and its people.", path: "/gallery" });
@@ -13,7 +17,7 @@ export default async function GalleryPage() {
     <>
       <PageHeader title="Gallery" intro="Asanteman in pictures." crumbs={[{ label: "Gallery" }]} />
       <Container className="py-10">
-        {images.length === 0 ? <EmptyState title="Photographs are coming soon" text="Photos uploaded to the “gallery” folder of the media library appear here." /> : (
+        {images.length > 0 && (
           <ul className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
             {images.map((m) => (
               <li key={m.path}><figure><div className="relative aspect-square overflow-hidden rounded-xl"><Photo media={m} sizes="(min-width:1024px) 25vw, 50vw" /></div>
@@ -21,6 +25,12 @@ export default async function GalleryPage() {
             ))}
           </ul>
         )}
+        <ul className={`grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 ${images.length > 0 ? "mt-3" : ""}`}>
+          {BUILT_IN.map((k) => (
+            <li key={k}><figure><div className="relative aspect-square overflow-hidden rounded-xl"><Photo media={{ path: builtIn[k].src, alt_text: builtIn[k].alt }} sizes="(min-width:1024px) 25vw, 50vw" position={builtIn[k].position} /></div>
+              <figcaption className="mt-1 text-xs text-muted">{builtIn[k].caption}</figcaption></figure></li>
+          ))}
+        </ul>
       </Container>
     </>
   );

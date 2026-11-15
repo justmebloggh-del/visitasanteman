@@ -53,7 +53,7 @@ export async function saveResource(resourceKey: string, id: string | null, _prev
   }
 
   if (def.galleryEntity && savedId) {
-    const ids = parseIdList(fd.get("gallery_media_ids"));
+    const ids = [...parseIdList(fd.get("gallery_media_ids")), ...(def.videos ? parseIdList(fd.get("video_media_ids")) : [])];
     await supabase.from("media_links").delete().eq("entity_type", def.galleryEntity).eq("entity_id", savedId);
     if (ids.length) {
       const { error } = await supabase.from("media_links").insert(ids.map((media_id, i) => ({ media_id, entity_type: def.galleryEntity, entity_id: savedId, sort_order: i })));

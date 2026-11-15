@@ -27,7 +27,7 @@ export default async function CulturalCalendar({ searchParams }: { searchParams:
 
   return (
     <>
-      <PageHeader title="Cultural calendar" intro="Only dates the organisers have confirmed appear here. Traditional dates are announced each year, so always check the official announcement before you travel." crumbs={[{ label: "Culture & Heritage", href: "/culture" }, { label: "Calendar" }]} />
+      <PageHeader title="Cultural calendar" intro="Only dates the organisers have confirmed appear here. Traditional dates are announced each year, so always check the official announcement before you travel." crumbs={[{ label: "Culture & Heritage", href: "/culture" }, { label: "Calendar" }]} image="festival" />
       <Container className="py-10">
         <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
           <div className="flex items-center gap-2" role="group" aria-label="Month">

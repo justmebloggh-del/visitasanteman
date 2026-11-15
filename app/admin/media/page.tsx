@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { AdminHeader, Flash } from "@/components/admin/ui";
 import { ImageUploader } from "@/components/admin/ImageUploader";
+import { VideoUploader } from "@/components/admin/VideoUploader";
 import { Pagination } from "@/components/layout/blocks";
 import { Button, Field, Input } from "@/components/ui";
 import { deleteMedia, updateMedia } from "@/app/admin/actions";
@@ -23,18 +24,23 @@ export default async function MediaLibrary({ searchParams }: { searchParams: Pro
 
   return (
     <>
-      <AdminHeader title="Media library" intro="Upload photographs once, then choose them on any page. Images are optimised automatically. Files in the “gallery” folder appear on the public Gallery page." />
+      <AdminHeader title="Media library" intro="Upload photographs and short videos once, then choose them on any page. Images are optimised automatically. Files in the “gallery” folder appear on the public Gallery page." />
       <Flash sp={sp} />
       <div className="mb-8 rounded-2xl border border-line bg-white p-5">
         <form className="mb-4 flex items-end gap-2" method="get"><Field label="Folder for new uploads and filter" htmlFor="folder"><Input id="folder" name="folder" defaultValue={folder} placeholder="general" pattern="[a-z0-9-]{1,40}" /></Field><Button variant="outline">Apply</Button></form>
         <ImageUploader key={folder} name="library_upload" label="Upload images" multiple initial={[]} folder={folder || "general"} hint="After uploading, refresh the page to see new files in the grid." />
+        <div className="mt-4"><VideoUploader key={`v-${folder}`} name="library_video_upload" label="Upload videos (MP4 or WebM, up to 50 MB)" initial={[]} folder={folder || "general"} hint="Attach a video to an event by editing the event. Uploaded here, it is only stored in the library." /></div>
       </div>
-      {(data ?? []).length === 0 ? <p className="rounded-2xl border border-dashed border-line bg-white p-10 text-center text-muted">No images yet.</p> : (
+      {(data ?? []).length === 0 ? <p className="rounded-2xl border border-dashed border-line bg-white p-10 text-center text-muted">No images or videos yet.</p> : (
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {data!.map((m) => (
             <li key={m.id} className="overflow-hidden rounded-2xl border border-line bg-white">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={mediaUrl(m.path) ?? ""} alt={m.alt_text} loading="lazy" className="aspect-[4/3] w-full object-cover" />
+              {m.mime_type?.startsWith("video/") ? (
+                <video src={mediaUrl(m.path) ?? undefined} controls preload="metadata" playsInline aria-label={m.alt_text} className="aspect-[4/3] w-full bg-black object-contain" />
+              ) : (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={mediaUrl(m.path) ?? ""} alt={m.alt_text} loading="lazy" className="aspect-[4/3] w-full object-cover" />
+              )}
               <form action={updateMedia.bind(null, m.id)} className="space-y-2 p-3">
                 <Field label="Alt text" htmlFor={`alt-${m.id}`}><Input id={`alt-${m.id}`} name="alt_text" defaultValue={m.alt_text} maxLength={300} /></Field>
                 <Field label="Caption" htmlFor={`cap-${m.id}`}><Input id={`cap-${m.id}`} name="caption" defaultValue={m.caption ?? ""} maxLength={300} /></Field>

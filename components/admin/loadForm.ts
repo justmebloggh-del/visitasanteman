@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 
 export const toClientDef = (def: ResourceDef): ClientDef => ({
   themeEntity: def.themeEntity, key: def.key, singular: def.singular, fields: def.fields, hasSlug: def.hasSlug, hasCover: def.hasCover,
-  galleryEntity: def.galleryEntity, seo: def.seo, slugReadOnly: false,
+  galleryEntity: def.galleryEntity, videos: def.videos, seo: def.seo, slugReadOnly: false,
 });
 
 /** Options for every relation field, loaded with the signed-in staff member's own permissions. */
@@ -26,7 +26,7 @@ export async function loadRelations(def: ResourceDef) {
   return out;
 }
 
-export async function loadMedia(coverId: string | null, entityType?: string, entityId?: string): Promise<{ cover: MediaItem[]; gallery: MediaItem[] }> {
+export async function loadMedia(coverId: string | null, entityType?: string, entityId?: string): Promise<{ cover: MediaItem[]; gallery: MediaItem[]; videos: MediaItem[] }> {
   const supabase = await createClient();
   const cover: MediaItem[] = [];
   if (coverId) {
@@ -34,11 +34,14 @@ export async function loadMedia(coverId: string | null, entityType?: string, ent
     if (data) cover.push(data);
   }
   let gallery: MediaItem[] = [];
+  let videos: MediaItem[] = [];
   if (entityType && entityId) {
-    const { data } = await supabase.from("media_links").select("sort_order, media:media_id(id,path,alt_text)").eq("entity_type", entityType).eq("entity_id", entityId).order("sort_order");
-    gallery = ((data ?? []) as unknown as { media: MediaItem | null }[]).map((r) => r.media).filter((m): m is MediaItem => !!m);
+    const { data } = await supabase.from("media_links").select("sort_order, media:media_id(id,path,alt_text,mime_type)").eq("entity_type", entityType).eq("entity_id", entityId).order("sort_order");
+    const all = ((data ?? []) as unknown as { media: MediaItem | null }[]).map((r) => r.media).filter((m): m is MediaItem => !!m);
+    gallery = all.filter((m) => !m.mime_type?.startsWith("video/"));
+    videos = all.filter((m) => m.mime_type?.startsWith("video/"));
   }
-  return { cover, gallery };
+  return { cover, gallery, videos };
 }
 
 /** All active themes, and the ones already attached to this record, for the theme picker. */

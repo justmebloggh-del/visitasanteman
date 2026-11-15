@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Breadcrumbs, Facts, Gallery, Photo, TextBlock } from "@/components/layout/blocks";
+import { Breadcrumbs, Facts, Gallery, Photo, TextBlock, VideoGallery } from "@/components/layout/blocks";
 import { breadcrumbLd, buildMetadata, JsonLd } from "@/components/layout/seo";
 import { RegistrationForm } from "@/components/events/RegistrationForm";
 import { Map } from "@/components/maps/Map";
 import { Badge, ButtonLink, Container } from "@/components/ui";
 import { eventStatusLabels } from "@/config/site";
 import { SITE_URL } from "@/lib/env";
-import { getEvent, getGallery } from "@/lib/content/public";
+import { getEvent, getGallery, getVideos } from "@/lib/content/public";
 import { eventDateText, formatDate, mediaUrl, safeUrl } from "@/lib/utils";
 
 export const revalidate = 60;
@@ -26,7 +26,7 @@ const ldStatus: Record<string, string> = {
 export default async function EventPage({ params }: { params: Promise<{ slug: string }> }) {
   const e = await getEvent((await params).slug);
   if (!e) notFound();
-  const gallery = await getGallery("event", e.id);
+  const [gallery, videos] = await Promise.all([getGallery("event", e.id), getVideos("event", e.id)]);
   const reg = safeUrl(e.registration_url);
   const hasCoords = e.latitude != null && e.longitude != null;
   return (
@@ -52,6 +52,7 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
           {e.summary && <p className="text-lg text-ink/90">{e.summary}</p>}
           <TextBlock title="About this event" text={e.description} />
           <Gallery images={gallery} />
+          <VideoGallery videos={videos} />
           {hasCoords && <section><h2 className="mb-3 text-2xl font-semibold text-forest">Location</h2>
             <Map points={[{ id: e.id, kind: "event", title: e.title, href: `/events/${e.slug}`, lat: e.latitude!, lng: e.longitude! }]} center={[e.longitude!, e.latitude!]} zoom={14} /></section>}
         </div>

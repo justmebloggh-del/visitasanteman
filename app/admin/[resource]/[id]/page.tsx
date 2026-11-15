@@ -45,7 +45,7 @@ export default async function EditResource({ params, searchParams }: { params: P
         <div className="mb-4"><Notice tone="info">This page needs review by someone qualified in data protection and consumer law (in Ghana, the Data Protection Act, 2012 (Act 843)) before it is published. List the cookie categories shown in the site&apos;s cookie settings; do not publish wording nobody has checked.</Notice></div>
       )}
       {row.deleted_at && <div className="mb-4"><Notice tone="error">This item has been deleted (archived). Saving will not restore it.</Notice></div>}
-      <ResourceForm def={toClientDef(def)} id={rowId} initial={row} relations={relations} isAdmin={isAdmin(user.role)} canApprove={canApprove(user.role)} cover={media.cover} gallery={media.gallery} themes={themes} />
+      <ResourceForm def={toClientDef(def)} id={rowId} initial={row} relations={relations} isAdmin={isAdmin(user.role)} canApprove={canApprove(user.role)} cover={media.cover} gallery={media.gallery} videos={media.videos} themes={themes} />
 
       {def.children === "rooms" && (
         <section className="mt-10 rounded-2xl border border-line bg-white p-5 sm:p-6">

@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Inbox, MapPin } from "lucide-react";
 import { Badge, ButtonLink, Container } from "@/components/ui";
+import { images, type ImageKey } from "@/config/images";
 import { mediaUrl } from "@/lib/utils";
 import type { MediaRef } from "@/types/content";
 
@@ -23,9 +24,16 @@ export function Breadcrumbs({ items }: { items: { label: string; href?: string }
 }
 
 /* ── Page header used by index pages ── */
-export function PageHeader({ title, intro, crumbs }: { title: string; intro?: string; crumbs?: { label: string; href?: string }[] }) {
+export function PageHeader({ title, intro, crumbs, image }: { title: string; intro?: string; crumbs?: { label: string; href?: string }[]; image?: ImageKey }) {
+  const pic = image ? images[image] : null;
   return (
-    <header className="bg-forest-dark text-white">
+    <header className="relative isolate overflow-hidden bg-forest-dark text-white">
+      {pic && (
+        <>
+          <Image src={pic.src} alt="" fill sizes="100vw" quality={75} className="-z-20 object-cover opacity-65" style={{ objectPosition: pic.position }} />
+          <div className="absolute inset-0 -z-10 bg-gradient-to-r from-forest-dark/90 via-forest-dark/60 to-forest-dark/30" aria-hidden />
+        </>
+      )}
       <Container className="py-12 sm:py-16">
         {crumbs && <div className="mb-4 [&_*]:!text-white/70 [&_[aria-current]]:!text-white"><Breadcrumbs items={crumbs} /></div>}
         <h1 className="text-3xl font-semibold sm:text-5xl">{title}</h1>
@@ -36,8 +44,8 @@ export function PageHeader({ title, intro, crumbs }: { title: string; intro?: st
 }
 
 /* ── Images ── */
-export function Photo({ media, sizes, className, priority }: {
-  media: MediaRef | null | undefined; sizes: string; className?: string; priority?: boolean;
+export function Photo({ media, sizes, className, priority, position }: {
+  media: MediaRef | null | undefined; sizes: string; className?: string; priority?: boolean; position?: string;
 }) {
   const src = mediaUrl(media?.path);
   if (!src) {
@@ -47,7 +55,7 @@ export function Photo({ media, sizes, className, priority }: {
       </div>
     );
   }
-  return <Image src={src} alt={media?.alt_text ?? ""} fill sizes={sizes} priority={priority} className={`object-cover ${className ?? ""}`} />;
+  return <Image src={src} alt={media?.alt_text ?? ""} fill sizes={sizes} priority={priority} className={`object-cover ${className ?? ""}`} style={position ? { objectPosition: position } : undefined} />;
 }
 
 /* ── Generic content card ── */
@@ -147,6 +155,28 @@ export function Gallery({ images }: { images: MediaRef[] }) {
             <Photo media={m} sizes="(min-width:768px) 33vw, 50vw" />
           </div>
         ))}
+      </div>
+    </section>
+  );
+}
+
+/** Videos for an item, played in the page. Nothing loads until the visitor presses play (preload="metadata"). */
+export function VideoGallery({ videos }: { videos: MediaRef[] }) {
+  if (!videos.length) return null;
+  return (
+    <section>
+      <h2 className="mb-3 text-2xl font-semibold text-forest">Videos</h2>
+      <div className="grid gap-4 md:grid-cols-2">
+        {videos.map((v) => {
+          const src = mediaUrl(v.path);
+          if (!src) return null;
+          return (
+            <figure key={v.path} className="overflow-hidden rounded-xl border border-line bg-white">
+              <video src={src} controls preload="metadata" playsInline aria-label={v.alt_text} className="aspect-video w-full bg-black" />
+              {v.alt_text && <figcaption className="px-3 py-2 text-sm text-muted">{v.alt_text}</figcaption>}
+            </figure>
+          );
+        })}
       </div>
     </section>
   );

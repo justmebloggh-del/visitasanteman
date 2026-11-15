@@ -18,7 +18,9 @@ export function slugify(input: string): string {
 
 /** Public URL of a file in the 'media' storage bucket. */
 export function mediaUrl(path: string | null | undefined): string | null {
-  if (!path || !SUPABASE_URL) return null;
+  if (!path) return null;
+  if (path.startsWith("/")) return path; // a picture shipped with the site (public folder)
+  if (!SUPABASE_URL) return null;
   return `${SUPABASE_URL}/storage/v1/object/public/media/${path}`;
 }
 

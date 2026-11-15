@@ -4,6 +4,7 @@ import { AdSlot } from "@/components/ads/AdSlot";
 import { Markdown } from "@/components/layout/Markdown";
 import { buildMetadata } from "@/components/layout/seo";
 import { Container } from "@/components/ui";
+import { images, pageImages } from "@/config/images";
 import { getPage } from "@/lib/content/public";
 import { formatDate, safeUrl } from "@/lib/utils";
 
@@ -14,6 +15,8 @@ export async function cmsMetadata(slug: string, fallbackTitle: string, path = `/
 
 export async function CmsPage({ slug, fallbackTitle, crumbs, children }: { slug: string; fallbackTitle: string; crumbs?: { label: string; href?: string }[]; children?: React.ReactNode }) {
   const page = await getPage(slug);
+  const fallbackKey = pageImages[slug];
+  const fallback = page?.body && fallbackKey ? images[fallbackKey] : null;
   return (
     <>
       <header className="bg-forest-dark text-white">
@@ -22,7 +25,12 @@ export async function CmsPage({ slug, fallbackTitle, crumbs, children }: { slug:
       </header>
       {slug.startsWith("culture") && <AdSlot placement="culture_top" />}
       <Container className="py-10">
-        {page?.cover && <div className="relative mb-8 aspect-[21/9] overflow-hidden rounded-2xl"><Photo media={page.cover} sizes="100vw" priority /></div>}
+        {page?.cover ? <div className="relative mb-8 aspect-[21/9] overflow-hidden rounded-2xl"><Photo media={page.cover} sizes="100vw" priority /></div> : fallback && (
+          <figure className="mb-8">
+            <div className="relative aspect-[21/9] overflow-hidden rounded-2xl bg-forest-soft"><Photo media={{ path: fallback.src, alt_text: fallback.alt }} sizes="(min-width:1024px) 1100px, 100vw" priority position={fallback.position} /></div>
+            {fallback.caption && <figcaption className="mt-2 text-sm text-muted">{fallback.caption}</figcaption>}
+          </figure>
+        )}
         {page?.body && (page.last_verified_at || page.source_label || page.source_url) && (
           <p className="mb-6 rounded-xl bg-mist p-4 text-sm text-muted">
             {page.last_verified_at && <><strong className="text-ink">Last verified:</strong> {formatDate(page.last_verified_at)}. </>}

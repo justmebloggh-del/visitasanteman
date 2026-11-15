@@ -36,6 +36,11 @@ _Last updated: 2026-11-09._ A fresh session can resume from this file.
 | Free event registration with optional capacity (`events.registration_enabled`, `capacity`, `event_registrations`, `register_for_event()`), form on the event page, staff list at `/admin/registrations` | done, tested |
 | Not built: ticketing and payments, QR check-in, exhibitor and booth applications, sponsor management and dashboards, judging scores, public voting, digital certificates, event revenue tracking, speaker registration, international currencies | open |
 
+## Images and videos (local, not pushed)
+- Event videos: the admin event form has a Videos uploader (MP4 or WebM, up to 50 MB, description required); videos are media rows linked to the event and play on the event page. The media library accepts videos too. Migration 20261122000023 widens the storage bucket.
+- Built-in photographs from `public/Asante` are catalogued in `config/images.ts` with plain descriptions, and used only where nothing was uploaded: index-page banners, CMS page banners, themes and attraction categories on the homepage, the Lake Bosomtwe destination, the districts map, the Adinkra chart on Traditions, and the Gallery. Uploaded pictures always win.
+- None of the Asante photographs is described as the Golden Stool. Photo credits and rights are not recorded and must be confirmed.
+
 ## Decisions
 - Cookie consent is stored in a first-party cookie (`vasa_consent`), not localStorage. Optional categories: Functional, Analytics, Advertising. The site currently uses no functional or advertising cookies; sponsored placements are first-party and cookie-free. GA loads only after Analytics consent (needs `NEXT_PUBLIC_GA_ID` at build time).
 - The cookie policy page is an empty CMS draft: wording must be written and reviewed by someone qualified (Ghana Data Protection Act, 2012, Act 843).
