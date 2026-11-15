@@ -32,6 +32,10 @@ export const mainNav: NavItem[] = [
     { label: "Why Asanteman", href: "/why-ashanti" }, { label: "Getting Around", href: "/getting-around" }, { label: "Travel Information", href: "/travel-information" },
     { label: "Visa and Entry", href: "/visa-and-entry" }, { label: "Travel Planner", href: "/travel-planner" }, { label: "Travel Guide", href: "/travel-guide" },
   ] },
+  { label: "International", children: [
+    { label: "VisitAsanteman International", href: "/international" }, { label: "Come Home to Ashanti", href: "/international/come-home-to-ashanti" },
+    { label: "Heritage and ancestral travel", href: "/international/heritage-travel" }, { label: "Events and partnerships", href: "/international/events-and-partnerships" },
+  ] },
   { label: "Media", children: [{ label: "News and Articles", href: "/articles" }, { label: "Gallery", href: "/gallery" }] },
   { label: "Business Directory", href: "/business-directory" },
   { label: "Jobs", href: "/jobs" },

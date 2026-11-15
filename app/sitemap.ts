@@ -11,6 +11,8 @@ const PAGE_PATHS: Record<string, string> = {
   about: "/about", explore: "/explore", "travel-guide": "/travel-guide", privacy: "/privacy", terms: "/terms",
   "why-ashanti": "/why-ashanti", "getting-around": "/getting-around", "travel-information": "/travel-information", "visa-and-entry": "/visa-and-entry", "cookie-policy": "/cookie-policy",
   "about-our-mission": "/about/our-mission", "about-partners": "/about/partners",
+  international: "/international", "international-come-home": "/international/come-home-to-ashanti",
+  "international-heritage-travel": "/international/heritage-travel", "international-partnerships": "/international/events-and-partnerships",
   culture: "/culture", "culture-history": "/culture/history", "culture-traditions": "/culture/traditions",
   "culture-festivals": "/culture/festivals", "culture-crafts": "/culture/crafts", "culture-food": "/culture/food",
 };
