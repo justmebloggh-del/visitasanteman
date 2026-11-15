@@ -1,4 +1,3 @@
-import { HeritageBanner } from "@/components/banners";
 import Link from "next/link";
 import { CmsPage, cmsMetadata } from "@/components/layout/CmsPage";
 
@@ -17,7 +16,7 @@ const topics = [
 
 export default function Page() {
   return (
-    <CmsPage slug="culture" fallbackTitle="Culture & Heritage" banner={<HeritageBanner />}>
+    <CmsPage slug="culture" fallbackTitle="Culture & Heritage">
       <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {topics.map((t) => (
           <li key={t.href}><Link href={t.href} className="block h-full rounded-2xl border border-line bg-white p-5 transition hover:shadow-md">

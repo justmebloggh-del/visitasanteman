@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AdSlot } from "@/components/ads/AdSlot";
-import { Breadcrumbs, CardGrid, ContentCard, Photo } from "@/components/layout/blocks";
+import { Breadcrumbs, CardGrid, ContentCard, Photo, DetailTop } from "@/components/layout/blocks";
 import { breadcrumbLd, buildMetadata, JsonLd } from "@/components/layout/seo";
 import { Map } from "@/components/maps/Map";
 import { Container } from "@/components/ui";
@@ -50,15 +50,11 @@ export default async function DistrictPage({ params }: { params: Promise<{ slug:
   return (
     <>
       <JsonLd data={breadcrumbLd([{ name: "Home", path: "/" }, { name: "Districts", path: "/districts" }, { name: area.name, path: `/districts/${area.slug}` }])} />
-      <div className="relative h-56 bg-forest sm:h-72">
-        <Photo media={area.cover} sizes="100vw" priority className="opacity-90" />
-        <div className="absolute inset-0 bg-gradient-to-t from-forest-dark/85 via-forest-dark/20 to-transparent" />
-        <Container className="absolute inset-x-0 bottom-0 pb-6 text-white">
-          <div className="[&_*]:!text-white/80 [&_[aria-current]]:!text-white"><Breadcrumbs items={[{ label: "Districts", href: "/districts" }, { label: area.name }]} /></div>
+      <DetailTop media={area.cover}>
+          <div><Breadcrumbs items={[{ label: "Districts", href: "/districts" }, { label: area.name }]} /></div>
           <h1 className="mt-2 text-3xl font-semibold sm:text-5xl">{area.name}</h1>
-          <p className="mt-1 text-sm text-white/80">{areaKindLabels[area.kind]}{area.capital_name ? ` · Capital: ${area.capital_name}` : ""}{area.region ? ` · ${area.region.name}` : ""}</p>
-        </Container>
-      </div>
+          <p className="mt-1 text-sm text-muted">{areaKindLabels[area.kind]}{area.capital_name ? ` · Capital: ${area.capital_name}` : ""}{area.region ? ` · ${area.region.name}` : ""}</p>
+      </DetailTop>
 
       <AdSlot placement="district_top" />
       <Container className="space-y-12 py-10">

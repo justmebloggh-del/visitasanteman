@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Breadcrumbs, Facts, Gallery, Photo, TextBlock, VideoGallery } from "@/components/layout/blocks";
+import { Breadcrumbs, Facts, Gallery, Photo, TextBlock, VideoGallery, DetailTop } from "@/components/layout/blocks";
 import { breadcrumbLd, buildMetadata, JsonLd } from "@/components/layout/seo";
 import { RegistrationForm } from "@/components/events/RegistrationForm";
 import { Map } from "@/components/maps/Map";
@@ -38,15 +38,11 @@ export default async function EventPage({ params }: { params: Promise<{ slug: st
         organizer: e.organiser ? { "@type": "Organization", name: e.organiser } : undefined, url: `${SITE_URL}/events/${e.slug}`,
       }} />
       <JsonLd data={breadcrumbLd([{ name: "Home", path: "/" }, { name: "Events", path: "/events" }, { name: e.title, path: `/events/${e.slug}` }])} />
-      <div className="relative h-56 bg-forest sm:h-80">
-        <Photo media={e.cover} sizes="100vw" priority className="opacity-90" />
-        <div className="absolute inset-0 bg-gradient-to-t from-forest-dark/80 via-transparent to-transparent" />
-        <Container className="absolute inset-x-0 bottom-0 pb-6 text-white">
-          <div className="[&_*]:!text-white/80 [&_[aria-current]]:!text-white"><Breadcrumbs items={[{ label: "Events", href: "/events" }, { label: e.title }]} /></div>
+      <DetailTop media={e.cover}>
+          <div><Breadcrumbs items={[{ label: "Events", href: "/events" }, { label: e.title }]} /></div>
           <h1 className="mt-2 text-3xl font-semibold sm:text-5xl">{e.title}</h1>
           {e.event_status !== "scheduled" && <Badge tone="red" className="mt-2">{eventStatusLabels[e.event_status]}</Badge>}
-        </Container>
-      </div>
+      </DetailTop>
       <Container className="grid gap-10 py-10 lg:grid-cols-3">
         <div className="space-y-10 lg:col-span-2">
           {e.summary && <p className="text-lg text-ink/90">{e.summary}</p>}

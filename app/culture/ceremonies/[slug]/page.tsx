@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Breadcrumbs, Facts, Photo, TextBlock } from "@/components/layout/blocks";
+import { Breadcrumbs, Facts, Photo, TextBlock, DetailTop } from "@/components/layout/blocks";
 import { breadcrumbLd, buildMetadata, JsonLd } from "@/components/layout/seo";
 import { AttendanceNotice, ceremonyWhen } from "@/components/listings/CeremonyBits";
 import { SourceNote } from "@/components/listings/AccessNotice";
@@ -35,15 +35,11 @@ export default async function CeremonyPage({ params }: { params: Promise<{ slug:
         <JsonLd data={{ "@context": "https://schema.org", "@type": "Event", name: c.name, startDate: c.starts_at, endDate: c.ends_at ?? undefined, description: c.summary ?? undefined, url, eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode" }} />
       )}
       <JsonLd data={breadcrumbLd([{ name: "Home", path: "/" }, { name: "Culture & Heritage", path: "/culture" }, { name: "Ceremonies", path: "/culture/ceremonies" }, { name: c.name, path: `/culture/ceremonies/${c.slug}` }])} />
-      <div className="relative h-56 bg-forest sm:h-72">
-        <Photo media={c.cover} sizes="100vw" priority className="opacity-90" />
-        <div className="absolute inset-0 bg-gradient-to-t from-forest-dark/85 via-forest-dark/20 to-transparent" />
-        <Container className="absolute inset-x-0 bottom-0 pb-6 text-white">
-          <div className="[&_*]:!text-white/80 [&_[aria-current]]:!text-white"><Breadcrumbs items={[{ label: "Ceremonies", href: "/culture/ceremonies" }, { label: c.name }]} /></div>
+      <DetailTop media={c.cover}>
+          <div><Breadcrumbs items={[{ label: "Ceremonies", href: "/culture/ceremonies" }, { label: c.name }]} /></div>
           <h1 className="mt-2 text-3xl font-semibold sm:text-5xl">{c.name}</h1>
-          <p className="mt-1 text-sm text-white/80">{ceremonyKindLabels[c.kind]}</p>
-        </Container>
-      </div>
+          <p className="mt-1 text-sm text-muted">{ceremonyKindLabels[c.kind]}</p>
+      </DetailTop>
       <Container className="grid gap-10 py-10 lg:grid-cols-3">
         <div className="space-y-8 lg:col-span-2">
           <AttendanceNotice attendance={c.attendance} notes={c.attendance_notes} />

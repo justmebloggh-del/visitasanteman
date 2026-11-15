@@ -39,12 +39,12 @@ export function SearchBox({ className, defaultValue }: { className?: string; def
     <form ref={box} action="/search" role="search" className={cn("relative flex gap-2 rounded-full bg-white p-1.5 shadow-lg", className)}>
       <label htmlFor="site-search" className="sr-only">What would you like to discover in Asanteman?</label>
       <input
-        id="site-search" name="q" type="search" value={value} autoComplete="off" placeholder="What would you like to discover in Asanteman?"
+        id="site-search" name="q" type="search" value={value} autoComplete="off" placeholder="Search Asanteman"
         onChange={(e) => setValue(e.target.value)} onKeyDown={(e) => { if (e.key === "Escape") setOpen(false); }}
         className="min-w-0 flex-1 rounded-full bg-transparent px-4 text-sm text-ink placeholder:text-muted/70 focus:outline-none"
       />
-      <button type="submit" className="inline-flex h-11 items-center gap-2 rounded-full bg-forest px-5 text-sm font-medium text-white hover:bg-forest-dark">
-        <Search className="size-4" aria-hidden />Search
+      <button type="submit" aria-label="Search" className="inline-flex h-11 items-center gap-2 rounded-full bg-forest px-4 text-sm sm:px-5 font-medium text-white hover:bg-forest-dark">
+        <Search className="size-4" aria-hidden /><span className="hidden min-[360px]:inline">Search</span>
       </button>
       {show && (
         <ul id={listId} aria-label="Search suggestions" className="absolute inset-x-2 top-full z-30 mt-2 overflow-hidden rounded-2xl border border-line bg-white text-left shadow-xl">

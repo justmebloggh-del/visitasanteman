@@ -1,3 +1,4 @@
+import { EventsBanner } from "@/components/banners";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { EmptyState, PageHeader } from "@/components/layout/blocks";
@@ -28,9 +29,10 @@ export default async function CulturalCalendar({ searchParams }: { searchParams:
   return (
     <>
       <PageHeader title="Cultural calendar" intro="Only dates the organisers have confirmed appear here. Traditional dates are announced each year, so always check the official announcement before you travel." crumbs={[{ label: "Culture & Heritage", href: "/culture" }, { label: "Calendar" }]} />
+      <EventsBanner />
       <Container className="py-10">
         <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-          <div className="flex items-center gap-2" role="group" aria-label="Month">
+          <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Month">
             <Link href={q(shift(month, -1))} className="rounded-full border border-line px-4 py-2 text-sm hover:bg-forest-soft" rel="nofollow">Previous</Link>
             <h2 className="min-w-40 text-center font-serif text-xl font-semibold text-forest">{monthLabel(month)}</h2>
             <Link href={q(shift(month, 1))} className="rounded-full border border-line px-4 py-2 text-sm hover:bg-forest-soft" rel="nofollow">Next</Link>

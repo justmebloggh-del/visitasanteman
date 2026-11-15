@@ -23,29 +23,18 @@ export function Breadcrumbs({ items }: { items: { label: string; href?: string }
   );
 }
 
-/* ── Page banner used on every page ── */
-// Banner photographs: kente and the seated chief with gold regalia (public/Asante). The same few pictures repeat on purpose,
-// so they are decorative (empty alt text) and chosen from the page title so each page always shows the same one.
-const BANNER_PHOTOS: ImageKey[] = ["chief", "kenteDisplay", "chief", "kenteLoom"];
-const bannerPhoto = (title: string): ImageKey => BANNER_PHOTOS[[...title].reduce((n, c) => n + c.charCodeAt(0), 0) % BANNER_PHOTOS.length];
-
-export function PageHeader({ title, intro, crumbs, photo = true }: { title: string; intro?: string; crumbs?: { label: string; href?: string }[]; photo?: boolean }) {
-  const key = bannerPhoto(title);
+/* ── Page title band, used at the top of every page ── */
+// Not a banner: no photograph and no emblem. A deep green band with the kente strip, the title and a gold rule. The promotional
+// banners (components/banners) carry the emblem and sit under it on the pages that have one.
+export function PageHeader({ title, intro, crumbs }: { title: string; intro?: string; crumbs?: { label: string; href?: string }[] }) {
   return (
     <header className="relative isolate overflow-hidden bg-gradient-to-br from-forest-dark via-forest-dark to-forest text-white">
       <div className="kente-strip" aria-hidden />
-      <Container className={`py-10 sm:py-14 ${photo ? "grid items-center gap-8 lg:grid-cols-[1fr_auto]" : ""}`}>
-        <div>
-          {crumbs && <div className="mb-4 [&_*]:!text-white/70 [&_[aria-current]]:!text-white"><Breadcrumbs items={crumbs} /></div>}
-          <h1 className="font-serif text-3xl font-semibold sm:text-5xl">{title}</h1>
-          <span className="mt-4 block h-1 w-20 rounded-full bg-gold" aria-hidden />
-          {intro && <p className="mt-4 max-w-2xl text-base text-white/85 sm:text-lg">{intro}</p>}
-        </div>
-        {photo && (
-          <div className="justify-self-start rounded-xl border-4 border-gold bg-black/30 shadow-2xl lg:justify-self-end">
-            <StaticPhoto image={key} priority decorative className="max-h-52 rounded-lg sm:max-h-60 lg:max-h-64" />
-          </div>
-        )}
+      <Container className="py-10 sm:py-14">
+        {crumbs && <div className="mb-4 [&_*]:!text-white/70 [&_[aria-current]]:!text-white"><Breadcrumbs items={crumbs} /></div>}
+        <h1 className="font-serif text-3xl font-semibold sm:text-5xl">{title}</h1>
+        <span className="mt-4 block h-1 w-20 rounded-full bg-gold" aria-hidden />
+        {intro && <p className="mt-4 max-w-2xl text-base text-white/85 sm:text-lg">{intro}</p>}
       </Container>
       <div className="kente-strip" aria-hidden />
     </header>
@@ -201,5 +190,27 @@ export function VideoGallery({ videos }: { videos: MediaRef[] }) {
         })}
       </div>
     </section>
+  );
+}
+
+/**
+ * Top of a detail page: title, badges and facts on the left, the main photograph at the top-right of the content area.
+ * On phones the photograph comes first, then the text. The frame has one size and shape on every page (4:3, rounded), and
+ * is left out when the page has no photograph rather than showing an empty box.
+ */
+export function DetailTop({ media, children }: { media: MediaRef | null | undefined; children: React.ReactNode }) {
+  const has = !!media?.path;
+  return (
+    <header className="border-b border-line bg-gradient-to-b from-mist to-white">
+      <div className="kente-strip" aria-hidden />
+      <Container className={`grid items-start gap-6 py-8 sm:py-10 ${has ? "lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:gap-10" : ""}`}>
+        <div className="order-2 min-w-0 text-ink lg:order-1 [&_h1]:font-serif [&_h1]:text-forest">{children}</div>
+        {has && (
+          <div className="relative order-1 aspect-[4/3] w-full overflow-hidden rounded-2xl border border-line bg-forest-soft shadow-md lg:order-2">
+            <Photo media={media} sizes="(min-width:1024px) 26rem, 100vw" priority />
+          </div>
+        )}
+      </Container>
+    </header>
   );
 }

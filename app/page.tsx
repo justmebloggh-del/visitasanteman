@@ -8,7 +8,7 @@ import { NewsletterForm } from "@/components/forms/NewsletterForm";
 import { ButtonLink, Container } from "@/components/ui";
 import { AdSlot } from "@/components/ads/AdSlot";
 import { Map } from "@/components/maps/Map";
-import { HomeBannerRotator, MainHeroBanner } from "@/components/banners";
+import { MainHeroBanner } from "@/components/banners";
 import { SearchBox } from "@/components/layout/SearchBox";
 import { WelcomeSlideshow, type Slide } from "@/components/home/WelcomeSlideshow";
 import { educationCfg, sportsCfg, transportCfg } from "@/config/domains";
@@ -73,13 +73,12 @@ export default async function HomePage() {
   const glanceItems = ((sections.glance?.config as { items?: { label: string; value: string }[] } | undefined)?.items ?? []).filter((i) => i.label && i.value);
   const highlightItems = ((sections.highlights?.config as { items?: { title: string; text: string; href: string }[] } | undefined)?.items ?? [])
     .filter((c) => c.title && c.href && (c.href.startsWith("/") || /^https?:\/\//.test(c.href)));
-  const heroImg = mediaUrl(String(hero?.config?.image_path ?? ""));
 
   return (
     <>
       {/* Hero: the main banner (words and links editable in Admin, Banners). The search box stays inside it. */}
       {on("hero") && (
-        <MainHeroBanner imageSrc={heroImg} imageAlt={String(hero?.config?.image_alt ?? "")}>
+        <MainHeroBanner>
           <SearchBox className="mt-8 max-w-xl" />
         </MainHeroBanner>
       )}
@@ -115,9 +114,6 @@ export default async function HomePage() {
           </div>
         </Block>
       )}
-
-      {/* Promotional banners, one at a time (switch any off in Admin, Banners) */}
-      <HomeBannerRotator />
 
       {/* At a glance and highlights: edited in Admin > Homepage */}
       {on("glance") && glanceItems.length > 0 && (

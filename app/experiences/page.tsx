@@ -1,4 +1,3 @@
-import { TourismBanner } from "@/components/banners";
 import type { Metadata } from "next";
 import { CardGrid, ContentCard, EmptyState, PageHeader, Pagination } from "@/components/layout/blocks";
 import { FilterBar } from "@/components/layout/FilterBar";
@@ -22,8 +21,7 @@ export default async function ExperiencesPage({ searchParams }: { searchParams: 
   const filtered = !!(sp.q || sp.category || sp.area);
   return (
     <>
-      <PageHeader title="Tours and experiences" intro="Activities run by local providers. Send a booking request and the provider will confirm availability." crumbs={[{ label: "Experiences" }]} photo={false} />
-      <TourismBanner />
+      <PageHeader title="Tours and experiences" intro="Activities run by local providers. Send a booking request and the provider will confirm availability." crumbs={[{ label: "Experiences" }]} />
       <AdSlot placement="directory_top" />
       <Container className="py-10">
         <FilterBar action="/experiences" q={sp.q} values={{ area: sp.area, category: sp.category }}

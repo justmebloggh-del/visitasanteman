@@ -2,7 +2,7 @@ import { EducationBanner } from "@/components/banners";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AlertTriangle } from "lucide-react";
-import { Breadcrumbs, CardGrid, ContentCard, EmptyState, Facts, PageHeader, Pagination, Photo, TextBlock } from "@/components/layout/blocks";
+import { Breadcrumbs, CardGrid, ContentCard, EmptyState, Facts, PageHeader, Pagination, Photo, TextBlock, DetailTop } from "@/components/layout/blocks";
 import { FilterBar } from "@/components/layout/FilterBar";
 import { breadcrumbLd, JsonLd } from "@/components/layout/seo";
 import { AccessNotice, SourceNote, accessLabels } from "@/components/listings/AccessNotice";
@@ -31,7 +31,7 @@ export async function DomainIndex({ cfg, searchParams }: { cfg: DomainCfg; searc
   ];
   return (
     <>
-      <PageHeader title={cfg.title} intro={cfg.intro} crumbs={[...(cfg.crumbs ?? []).slice(0, -1), { label: cfg.title }]} photo={cfg.key !== "education"} />
+      <PageHeader title={cfg.title} intro={cfg.intro} crumbs={[...(cfg.crumbs ?? []).slice(0, -1), { label: cfg.title }]} />
       {cfg.key === "education" && <EducationBanner />}
       <Container className="py-10">
         {cfg.key === "sports" && (
@@ -71,15 +71,11 @@ export async function DomainDetail({ cfg, slug }: { cfg: DomainCfg; slug: string
   return (
     <>
       <JsonLd data={breadcrumbLd([{ name: "Home", path: "/" }, { name: cfg.title, path: cfg.base }, { name: r.name, path: `${cfg.base}/${r.slug}` }])} />
-      <div className="relative h-56 bg-forest sm:h-72">
-        <Photo media={r.cover} sizes="100vw" priority className="opacity-90" />
-        <div className="absolute inset-0 bg-gradient-to-t from-forest-dark/85 via-forest-dark/20 to-transparent" />
-        <Container className="absolute inset-x-0 bottom-0 pb-6 text-white">
-          <div className="[&_*]:!text-white/80 [&_[aria-current]]:!text-white"><Breadcrumbs items={[{ label: cfg.title, href: cfg.base }, { label: r.name }]} /></div>
+      <DetailTop media={r.cover}>
+          <div><Breadcrumbs items={[{ label: cfg.title, href: cfg.base }, { label: r.name }]} /></div>
           <h1 className="mt-2 text-3xl font-semibold sm:text-5xl">{r.name}</h1>
-          {cfg.kindColumn && <p className="mt-1 text-sm text-white/80">{cfg.kinds?.[String(r[cfg.kindColumn])]}</p>}
-        </Container>
-      </div>
+          {cfg.kindColumn && <p className="mt-1 text-sm text-muted">{cfg.kinds?.[String(r[cfg.kindColumn])]}</p>}
+      </DetailTop>
       <Container className="grid gap-10 py-10 lg:grid-cols-3">
         <div className="space-y-8 lg:col-span-2">
           {showFacility && (

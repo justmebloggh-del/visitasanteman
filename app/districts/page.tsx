@@ -1,3 +1,4 @@
+import { ExploreBanner } from "@/components/banners";
 import { images } from "@/config/images";
 import type { Metadata } from "next";
 import { CardGrid, ContentCard, EmptyState, PageHeader, StaticPhoto } from "@/components/layout/blocks";
@@ -20,6 +21,7 @@ export default async function DistrictsPage() {
   return (
     <>
       <PageHeader title="Districts" intro="The Ashanti Region is governed through metropolitan, municipal and district assemblies. Start with the area you plan to visit." crumbs={[{ label: "Districts" }]} />
+      <ExploreBanner />
       <Container className="space-y-12 py-10">
         <figure className="mx-auto" style={{ maxWidth: images.districtMap.width }}>
           <StaticPhoto image="districtMap" className="w-full rounded-2xl border border-line bg-white" />

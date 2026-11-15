@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Breadcrumbs, CardGrid, ContentCard, Gallery, Photo, TextBlock } from "@/components/layout/blocks";
+import { Breadcrumbs, CardGrid, ContentCard, Gallery, Photo, TextBlock, DetailTop } from "@/components/layout/blocks";
 import { breadcrumbLd, buildMetadata, JsonLd } from "@/components/layout/seo";
 import { Map } from "@/components/maps/Map";
 import { ButtonLink, Container } from "@/components/ui";
@@ -34,14 +34,10 @@ export default async function CommunityPage({ params }: { params: Promise<{ slug
   return (
     <>
       <JsonLd data={breadcrumbLd([{ name: "Home", path: "/" }, { name: "Communities", path: "/communities" }, { name: c.name, path: `/communities/${c.slug}` }])} />
-      <div className="relative h-60 bg-forest sm:h-80">
-        <Photo media={c.cover} sizes="100vw" priority className="opacity-90" />
-        <div className="absolute inset-0 bg-gradient-to-t from-forest-dark/80 via-transparent to-transparent" />
-        <Container className="absolute inset-x-0 bottom-0 pb-6 text-white">
-          <div className="[&_*]:!text-white/80 [&_[aria-current]]:!text-white"><Breadcrumbs items={[{ label: "Communities", href: "/communities" }, { label: c.name }]} /></div>
+      <DetailTop media={c.cover}>
+          <div><Breadcrumbs items={[{ label: "Communities", href: "/communities" }, { label: c.name }]} /></div>
           <h1 className="mt-2 text-3xl font-semibold sm:text-5xl">{c.name}</h1>
-        </Container>
-      </div>
+      </DetailTop>
       <Container className="space-y-12 py-10">
         <div className="max-w-3xl space-y-10">
           {c.summary && <p className="text-lg text-ink/90">{c.summary}</p>}

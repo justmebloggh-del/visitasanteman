@@ -1,4 +1,3 @@
-import { AwardsBanner } from "@/components/banners";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader, Photo } from "@/components/layout/blocks";
@@ -13,8 +12,7 @@ export default async function AwardsPage() {
   const programmes = await listAwardProgrammes();
   return (
     <>
-      <PageHeader title="Awards" intro="Recognising excellence in Asanteman. Every programme publishes its categories, eligibility rules and evaluation criteria. Sponsorship or payment never guarantees a nomination or an award." crumbs={[{ label: "Awards" }]} photo={false} />
-      <AwardsBanner />
+      <PageHeader title="Awards" intro="Recognising excellence in Asanteman. Every programme publishes its categories, eligibility rules and evaluation criteria. Sponsorship or payment never guarantees a nomination or an award." crumbs={[{ label: "Awards" }]} />
       <Container className="py-10">
         {programmes.length === 0 ? (
           <p className="rounded-2xl bg-mist p-6 text-muted">No award programmes have been announced yet. Please check back soon.</p>

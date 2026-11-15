@@ -41,11 +41,12 @@ _Last updated: 2026-11-09._ A fresh session can resume from this file.
 - Built-in photographs from `public/Asante` are catalogued in `config/images.ts` with plain descriptions, and used only where nothing was uploaded: index-page banners, CMS page banners, themes and attraction categories on the homepage, the Lake Bosomtwe destination, the districts map, the Adinkra chart on Traditions, and the Gallery. Uploaded pictures always win.
 - None of the Asante photographs is described as the Golden Stool. Photo credits and rights are not recorded and must be confirmed.
 
-## Banner collection (local, not pushed)
-- 14 banners (config/banners.ts) share one design (components/banners/Banner.tsx): animated green-and-gold kente background, words left, photograph centre, gold emblem at the far right (own grid column, so nothing overlaps it; phones keep it at the far right, smaller). Named components in components/banners/index.tsx; homepage rotator with controls; slow animations off under reduced motion.
-- Words, links and on/off are editable in Admin, Banners (stored in site_settings "banners"). Banner 14 (expo) is off by default: no expo exists yet.
-- The emblem is the owner's painted artwork `public/Asante/sika dwa.jpg` (components/banners/SikaDwaEmblem.tsx), shown in a gold-ringed circle. It is not an official depiction of the Golden Stool: confirm accuracy and rights with the custodians before launch.
-- The main menu was shortened (Stay & Dine, About groups) because 13 items overflowed at 1440 px.
+## Banner collection and image layout (local, not pushed)
+- 14 banners (config/banners.ts), no photographs: a green kente weave (3 variants), heritage gold, real HTML text, and the owner's Sika Dwa artwork (`public/Asante/sika dwa.jpeg`, white background removed into `public/brand/sika-dwa-emblem.png`) at the far right in its own grid column. Three compositions and three entrances vary the look. Each banner appears on exactly one page (`bannerPlacement`), never links to its own page, and is editable in Admin, Banners. Banner 14 (expo) is off by default.
+- Page title band (`PageHeader`): plain kente strip, title and rule; no photo, no emblem.
+- Page photographs sit at the top-right of the content area (first on phones): `DetailTop` on 10 detail templates and articles, and the CMS page layout. One 4:3 rounded frame everywhere; no frame when there is no photo.
+- The emblem artwork's accuracy and the right to use it must be confirmed with the custodians (Manhyia Palace). The tagline stays "Discover Asanteman".
+- Main menu shortened (Stay & Dine, About groups). Lint ignores the generated MapLibre worker.
 
 ## Decisions
 - Cookie consent is stored in a first-party cookie (`vasa_consent`), not localStorage. Optional categories: Functional, Analytics, Advertising. The site currently uses no functional or advertising cookies; sponsored placements are first-party and cookie-free. GA loads only after Analytics consent (needs `NEXT_PUBLIC_GA_ID` at build time).

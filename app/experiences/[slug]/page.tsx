@@ -5,7 +5,7 @@ import { BadgeCheck, Clock, Users } from "lucide-react";
 import { BookingForm } from "@/components/bookings/BookingForm";
 import { Reviews } from "@/components/bookings/Reviews";
 import { EnquiryForm } from "@/components/forms/EnquiryForm";
-import { Breadcrumbs, Facts, Gallery, Photo, TextBlock } from "@/components/layout/blocks";
+import { Breadcrumbs, Facts, Gallery, Photo, TextBlock, DetailTop } from "@/components/layout/blocks";
 import { breadcrumbLd, buildMetadata, JsonLd } from "@/components/layout/seo";
 import { Map } from "@/components/maps/Map";
 import { Badge, ButtonLink, Container, Notice } from "@/components/ui";
@@ -34,19 +34,15 @@ export default async function ExperiencePage({ params }: { params: Promise<{ slu
     <>
       {reviews.count > 0 && <JsonLd data={{ "@context": "https://schema.org", "@type": "Product", name: e.title, aggregateRating: { "@type": "AggregateRating", ratingValue: reviews.average, reviewCount: reviews.count } }} />}
       <JsonLd data={breadcrumbLd([{ name: "Home", path: "/" }, { name: "Experiences", path: "/experiences" }, { name: e.title, path: `/experiences/${e.slug}` }])} />
-      <div className="relative h-60 bg-forest sm:h-96">
-        <Photo media={e.cover} sizes="100vw" priority className="opacity-90" />
-        <div className="absolute inset-0 bg-gradient-to-t from-forest-dark/80 via-transparent to-transparent" />
-        <Container className="absolute inset-x-0 bottom-0 pb-6 text-white">
-          <div className="[&_*]:!text-white/80 [&_[aria-current]]:!text-white"><Breadcrumbs items={[{ label: "Experiences", href: "/experiences" }, { label: e.title }]} /></div>
+      <DetailTop media={e.cover}>
+          <div><Breadcrumbs items={[{ label: "Experiences", href: "/experiences" }, { label: e.title }]} /></div>
           <h1 className="mt-2 text-3xl font-semibold sm:text-5xl">{e.title}</h1>
           <p className="mt-2 flex flex-wrap items-center gap-3 text-sm">
             <Badge tone="blue">{experienceCategoryLabels[e.category]}</Badge>
             {e.duration_minutes && <span className="inline-flex items-center gap-1"><Clock className="size-4" aria-hidden />{formatDuration(e.duration_minutes)}</span>}
             {participants && <span className="inline-flex items-center gap-1"><Users className="size-4" aria-hidden />{participants}</span>}
           </p>
-        </Container>
-      </div>
+      </DetailTop>
       <Container className="grid gap-10 py-10 lg:grid-cols-3">
         <div className="space-y-10 lg:col-span-2">
           {!e.provider_verified && <Notice tone="info">The provider has not yet confirmed availability for this experience. Send a request and we will check with them before anything is confirmed.</Notice>}

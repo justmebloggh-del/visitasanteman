@@ -26,11 +26,15 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
     <>
       <JsonLd data={{ "@context": "https://schema.org", "@type": "Article", headline: a.title, datePublished: a.published_at ?? undefined, image: mediaUrl(a.cover?.path) ?? undefined, mainEntityOfPage: url }} />
       <JsonLd data={breadcrumbLd([{ name: "Home", path: "/" }, { name: "Articles", path: "/articles" }, { name: a.title, path: `/articles/${a.slug}` }])} />
-      <Container className="max-w-4xl py-10">
+      <Container className="max-w-5xl py-10">
+        <div className={a.cover ? "grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,20rem)] lg:gap-10" : ""}>
+        <div className="order-2 min-w-0 lg:order-1">
         <Breadcrumbs items={[{ label: "Articles", href: "/articles" }, { label: a.title }]} />
         <h1 className="mt-4 text-3xl font-semibold text-forest sm:text-5xl">{a.title}</h1>
         <p className="mt-3 flex flex-wrap items-center gap-2 text-sm text-muted">{a.category && <Badge tone="blue">{a.category.name}</Badge>}{a.published_at && <time dateTime={a.published_at}>{formatDate(a.published_at)}</time>}</p>
-        {a.cover && <div className="relative mt-6 aspect-[16/9] overflow-hidden rounded-2xl"><Photo media={a.cover} sizes="(min-width:896px) 896px, 100vw" priority /></div>}
+        </div>
+        {a.cover && <div className="relative order-1 aspect-[4/3] w-full overflow-hidden rounded-2xl border border-line shadow-md lg:order-2"><Photo media={a.cover} sizes="(min-width:1024px) 20rem, 100vw" priority /></div>}
+        </div>
         <div className="mt-8"><Markdown>{a.body}</Markdown></div>
         {a.tags.length > 0 && <ul className="mt-8 flex flex-wrap gap-2">{a.tags.map((t) => <li key={t}><Badge>{t}</Badge></li>)}</ul>}
         <p className="mt-8 flex flex-wrap gap-4 border-t border-line pt-5 text-sm">

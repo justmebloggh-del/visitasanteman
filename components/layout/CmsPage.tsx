@@ -17,28 +17,36 @@ export async function CmsPage({ slug, fallbackTitle, crumbs, children, banner }:
   const page = await getPage(slug);
   const fallbackKey = pageImages[slug];
   const fallback = page?.body && fallbackKey ? images[fallbackKey] : null;
+  const hasImage = !!page?.cover || !!fallback;
   return (
     <>
-      <PageHeader title={page?.title ?? fallbackTitle} crumbs={[...(crumbs ?? []), { label: page?.title ?? fallbackTitle }]} photo={!banner} />
+      <PageHeader title={page?.title ?? fallbackTitle} crumbs={[...(crumbs ?? []), { label: page?.title ?? fallbackTitle }]} />
       {banner}
       {slug.startsWith("culture") && <AdSlot placement="culture_top" />}
-      <Container className="py-10">
-        {page?.cover ? <div className="relative mb-8 aspect-[21/9] overflow-hidden rounded-2xl"><Photo media={page.cover} sizes="100vw" priority /></div> : fallback && (
-          <figure className="mb-8">
-            <StaticPhoto image={fallbackKey} priority className="max-h-[22rem] rounded-2xl sm:max-h-[30rem]" />
-            {fallback.caption && <figcaption className="mt-2 text-sm text-muted">{fallback.caption}</figcaption>}
+      <Container className={`py-10 ${hasImage ? "grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] lg:gap-10" : ""}`}>
+        {/* The page photograph sits at the top-right of the content (first on phones). It is the uploaded cover, or a built-in picture. */}
+        {hasImage && (
+          <figure className="order-1 lg:order-2">
+            {page?.cover ? (
+              <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-line bg-forest-soft shadow-md"><Photo media={page.cover} sizes="(min-width:1024px) 22rem, 100vw" priority /></div>
+            ) : (
+              <StaticPhoto image={fallbackKey!} priority className="max-h-[26rem] rounded-2xl border border-line shadow-md" />
+            )}
+            {!page?.cover && fallback?.caption && <figcaption className="mt-2 text-sm text-muted">{fallback.caption}</figcaption>}
           </figure>
         )}
-        {page?.body && (page.last_verified_at || page.source_label || page.source_url) && (
-          <p className="mb-6 rounded-xl bg-mist p-4 text-sm text-muted">
-            {page.last_verified_at && <><strong className="text-ink">Last verified:</strong> {formatDate(page.last_verified_at)}. </>}
-            {(page.source_label || page.source_url) && <><strong className="text-ink">Source:</strong> {page.source_label ?? "official source"}{page.source_url && safeUrl(page.source_url) && <> (<a href={safeUrl(page.source_url)!} className="underline" rel="noopener noreferrer" target="_blank">link</a>)</>}.</>}
-          </p>
-        )}
-        {page?.body ? <Markdown>{page.body}</Markdown> : (
-          <p className="rounded-2xl bg-mist p-6 text-muted">This page is being prepared. Please check back soon.</p>
-        )}
-        {children}
+        <div className="order-2 min-w-0 lg:order-1">
+          {page?.body && (page.last_verified_at || page.source_label || page.source_url) && (
+            <p className="mb-6 rounded-xl bg-mist p-4 text-sm text-muted">
+              {page.last_verified_at && <><strong className="text-ink">Last verified:</strong> {formatDate(page.last_verified_at)}. </>}
+              {(page.source_label || page.source_url) && <><strong className="text-ink">Source:</strong> {page.source_label ?? "official source"}{page.source_url && safeUrl(page.source_url) && <> (<a href={safeUrl(page.source_url)!} className="underline" rel="noopener noreferrer" target="_blank">link</a>)</>}.</>}
+            </p>
+          )}
+          {page?.body ? <Markdown>{page.body}</Markdown> : (
+            <p className="rounded-2xl bg-mist p-6 text-muted">This page is being prepared. Please check back soon.</p>
+          )}
+          {children}
+        </div>
       </Container>
     </>
   );

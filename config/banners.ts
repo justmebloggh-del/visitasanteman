@@ -1,8 +1,9 @@
-import type { ImageKey } from "@/config/images";
-
 /**
  * The banner collection. Text and links can be changed by an administrator in Admin, Banners (stored in
  * site_settings under "banners"); these are the defaults. Every link points to a page that exists.
+ *
+ * Banners are not photographs: green kente, heritage gold and the emblem at the far right. Each banner appears on exactly one page (see
+ * config/banner-placement.ts) and never links to the page it sits on.
  *
  * Banners 7, 8 and 14 describe programmes and an expo that are still in planning. Nothing is bookable yet, so their buttons
  * lead to existing pages, and the expo banner is switched off until the event is real.
@@ -11,6 +12,13 @@ export type BannerKey =
   | "hero" | "explore" | "heritage" | "international" | "comeHome" | "events" | "youth" | "education"
   | "arts" | "tourism" | "business" | "media" | "awards" | "expo";
 
+export interface BannerStyle {
+  /** Which kente-inspired weave fills the background (see globals.css). */
+  pattern: "a" | "b" | "c";
+  /** standard: words in one block. ledger: headline, then message and buttons in a second column. stacked: big headline over a row of message and buttons. */
+  layout: "standard" | "ledger" | "stacked";
+  motion: "rise" | "slide" | "fade";
+}
 export interface BannerButton { label: string; href: string }
 export interface BannerDef {
   key: BannerKey;
@@ -21,53 +29,53 @@ export interface BannerDef {
   message: string;
   description?: string;
   buttons: BannerButton[];
-  /** Photograph in the centre of the banner (built-in, config/images.ts). Left out where no picture truly fits. */
-  image?: ImageKey;
+  /** How this banner looks. Every banner shares the green and gold identity and the emblem at the far right; these vary the weave, the composition and the entrance. */
+  style: BannerStyle;
   enabled: boolean;
 }
 
 export const bannerDefs: Record<BannerKey, BannerDef> = {
-  hero: { key: "hero", name: "Homepage hero", kicker: "Asanteman, Ghana", headline: "Akwaaba to Asanteman",
+  hero: { key: "hero", style: { pattern: "a", layout: "stacked", motion: "rise" }, name: "Homepage hero", kicker: "Asanteman, Ghana", headline: "Akwaaba to Asanteman",
     message: "A Kingdom of Heritage. A People of Pride. A Destination of Discovery.",
     description: "Discover the royal heritage, extraordinary destinations, rich culture, delicious cuisine and warm hospitality of the Ashanti Region.",
-    buttons: [{ label: "Explore Ashanti", href: "/destinations" }, { label: "Plan Your Visit", href: "/travel-planner" }], image: "kenteDisplay", enabled: true },
-  explore: { key: "explore", name: "Explore Ashanti", headline: "Discover the beauty of Ashanti",
+    buttons: [{ label: "Explore Ashanti", href: "/destinations" }, { label: "Plan Your Visit", href: "/travel-planner" }], enabled: true },
+  explore: { key: "explore", style: { pattern: "a", layout: "standard", motion: "rise" }, name: "Explore Ashanti", headline: "Discover the beauty of Ashanti",
     message: "From historic royal landmarks to breathtaking natural attractions, discover the extraordinary destinations of Asanteman.",
-    buttons: [{ label: "Explore Destinations", href: "/destinations" }], image: "lake", enabled: true },
-  heritage: { key: "heritage", name: "Heritage and culture", headline: "Rooted in history. Rich in culture.",
+    buttons: [{ label: "Explore Destinations", href: "/destinations" }], enabled: true },
+  heritage: { key: "heritage", style: { pattern: "b", layout: "ledger", motion: "slide" }, name: "Heritage and culture", headline: "Rooted in history. Rich in culture.",
     message: "Discover the traditions, royal heritage, craftsmanship, festivals and cultural identity that make Asanteman unique.",
-    buttons: [{ label: "Explore Our Heritage", href: "/culture" }], image: "regalia", enabled: true },
-  international: { key: "international", name: "VisitAsanteman International", headline: "Your roots. Your heritage. Your Asanteman.",
+    buttons: [{ label: "Explore Our Heritage", href: "/culture" }], enabled: true },
+  international: { key: "international", style: { pattern: "c", layout: "standard", motion: "fade" }, name: "VisitAsanteman International", headline: "Your roots. Your heritage. Your Asanteman.",
     message: "Connecting Ghana, Africa and the global African diaspora through heritage, culture, travel and shared experiences.",
-    buttons: [{ label: "Discover Your Heritage", href: "/international/heritage-travel" }], image: "chief", enabled: true },
-  comeHome: { key: "comeHome", name: "Come Home to Ashanti", headline: "Come home to Ashanti",
+    buttons: [{ label: "Discover Your Heritage", href: "/international/heritage-travel" }], enabled: true },
+  comeHome: { key: "comeHome", style: { pattern: "a", layout: "stacked", motion: "slide" }, name: "Come Home to Ashanti", headline: "Come home to Ashanti",
     message: "Reconnect with your roots. Experience our culture. Discover the land of your heritage.",
-    buttons: [{ label: "Begin Your Journey", href: "/travel-planner" }], image: "kenteDisplay", enabled: true },
-  events: { key: "events", name: "Events and exhibitions", headline: "Where culture meets opportunity",
+    buttons: [{ label: "Begin Your Journey", href: "/travel-planner" }], enabled: true },
+  events: { key: "events", style: { pattern: "c", layout: "ledger", motion: "rise" }, name: "Events and exhibitions", headline: "Where culture meets opportunity",
     message: "Experience international exhibitions, cultural festivals, business conferences, award ceremonies and unforgettable events.",
-    buttons: [{ label: "Discover Our Events", href: "/events" }], image: "festival", enabled: true },
-  youth: { key: "youth", name: "Youth empowerment", headline: "Empowering the next generation",
+    buttons: [{ label: "Discover Our Events", href: "/events" }], enabled: true },
+  youth: { key: "youth", style: { pattern: "b", layout: "standard", motion: "fade" }, name: "Youth empowerment", headline: "Empowering the next generation",
     message: "Creating opportunities for young people through education, innovation, leadership, skills development and entrepreneurship.",
     buttons: [{ label: "Explore Youth Programmes", href: "/education" }], enabled: true },
-  education: { key: "education", name: "Education and inter-school programmes", headline: "Celebrating knowledge. Preserving our heritage.",
+  education: { key: "education", style: { pattern: "a", layout: "ledger", motion: "slide" }, name: "Education and inter-school programmes", headline: "Celebrating knowledge. Preserving our heritage.",
     message: "Bringing schools and young talents together through Asante history, educational competitions, arts and cultural programmes.",
-    buttons: [{ label: "Discover Education Programmes", href: "/education" }], enabled: true },
-  arts: { key: "arts", name: "Asante arts and culture", headline: "The art. The rhythm. The soul of Asanteman.",
+    buttons: [{ label: "Discover Education Programmes", href: "/education/events" }], enabled: true },
+  arts: { key: "arts", style: { pattern: "b", layout: "stacked", motion: "rise" }, name: "Asante arts and culture", headline: "The art. The rhythm. The soul of Asanteman.",
     message: "Celebrating traditional music, dance, Kente, Adinkra, craftsmanship, fashion, storytelling and artistic excellence.",
-    buttons: [{ label: "Experience Our Culture", href: "/culture/traditions" }], image: "kenteLoom", enabled: true },
-  tourism: { key: "tourism", name: "Tourism and travel experiences", headline: "Experience Ashanti beyond expectations",
+    buttons: [{ label: "Experience Our Culture", href: "/culture/ceremonies" }], enabled: true },
+  tourism: { key: "tourism", style: { pattern: "c", layout: "standard", motion: "slide" }, name: "Tourism and travel experiences", headline: "Experience Ashanti beyond expectations",
     message: "Explore breathtaking destinations, discover authentic experiences, enjoy local cuisine and experience the warmth of our people.",
-    buttons: [{ label: "Explore Experiences", href: "/experiences" }], image: "waterfall", enabled: true },
-  business: { key: "business", name: "Business and investment", headline: "Discover opportunities. Invest in Ashanti.",
+    buttons: [{ label: "Explore Experiences", href: "/experiences" }], enabled: true },
+  business: { key: "business", style: { pattern: "b", layout: "ledger", motion: "fade" }, name: "Business and investment", headline: "Discover opportunities. Invest in Ashanti.",
     message: "Connecting businesses, entrepreneurs, investors and development partners to opportunities across the Ashanti Region.",
-    buttons: [{ label: "Explore Business Opportunities", href: "/investment" }], image: "artisans", enabled: true },
-  media: { key: "media", name: "VisitAsanteman Media", headline: "Stories that bring Asanteman to the world",
+    buttons: [{ label: "Explore Business Opportunities", href: "/investment" }], enabled: true },
+  media: { key: "media", style: { pattern: "a", layout: "standard", motion: "slide" }, name: "VisitAsanteman Media", headline: "Stories that bring Asanteman to the world",
     message: "Explore our documentaries, destination stories, cultural features and inspiring discoveries.",
     buttons: [{ label: "Watch and Discover", href: "/articles" }], enabled: true },
-  awards: { key: "awards", name: "Award shows and excellence", headline: "Recognising excellence. Celebrating greatness.",
+  awards: { key: "awards", style: { pattern: "c", layout: "stacked", motion: "fade" }, name: "Award shows and excellence", headline: "Recognising excellence. Celebrating greatness.",
     message: "Honouring outstanding achievements in business, education, tourism, culture, leadership and community development.",
     buttons: [{ label: "Discover Our Awards", href: "/awards" }], enabled: true },
-  expo: { key: "expo", name: "Business and tourism expo", kicker: "In planning", headline: "Ashanti Business, Tourism & Investment Expo",
+  expo: { key: "expo", style: { pattern: "b", layout: "standard", motion: "rise" }, name: "Business and tourism expo", kicker: "In planning", headline: "Ashanti Business, Tourism & Investment Expo",
     message: "Bringing together businesses, investors, innovators, tourism leaders and international partners.",
     buttons: [{ label: "Become an Exhibitor", href: "/international/events-and-partnerships" }], enabled: false },
 };
@@ -91,3 +99,10 @@ export function resolveBanner(key: BannerKey, saved?: unknown): BannerDef {
     buttons: buttons.length ? buttons : base.buttons, enabled: typeof o.enabled === "boolean" ? o.enabled : base.enabled,
   };
 }
+
+/** The one page each banner appears on. Kept here so a banner can never be shown twice by accident. */
+export const bannerPlacement: Record<BannerKey, string> = {
+  hero: "/", explore: "/districts", heritage: "/culture/history", international: "/international", comeHome: "/international/come-home-to-ashanti",
+  events: "/culture/calendar", awards: "/events", arts: "/culture/traditions", tourism: "/accommodation", business: "/business-directory",
+  media: "/gallery", youth: "/jobs", education: "/education", expo: "/international/events-and-partnerships",
+};

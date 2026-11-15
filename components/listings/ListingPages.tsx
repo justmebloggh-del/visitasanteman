@@ -1,3 +1,4 @@
+import { BusinessBanner, TourismBanner } from "@/components/banners";
 import { notFound } from "next/navigation";
 import { BadgeCheck, Globe, Mail, MessageCircle, Navigation, Phone } from "lucide-react";
 import { SourceNote } from "@/components/listings/AccessNotice";
@@ -6,7 +7,7 @@ import { AdSlot } from "@/components/ads/AdSlot";
 import { BookingForm } from "@/components/bookings/BookingForm";
 import { Reviews } from "@/components/bookings/Reviews";
 import { EnquiryForm } from "@/components/forms/EnquiryForm";
-import { Breadcrumbs, CardGrid, ContentCard, EmptyState, Facts, Gallery, PageHeader, Pagination, Photo, TextBlock } from "@/components/layout/blocks";
+import { Breadcrumbs, CardGrid, ContentCard, EmptyState, Facts, Gallery, PageHeader, Pagination, Photo, TextBlock, DetailTop } from "@/components/layout/blocks";
 import { FilterBar } from "@/components/layout/FilterBar";
 import { breadcrumbLd, JsonLd } from "@/components/layout/seo";
 import { Map } from "@/components/maps/Map";
@@ -127,19 +128,15 @@ export async function ListingDetail({ group, slug }: { group: Group; slug: strin
       <ViewPing listingId={listing.id} />
       <JsonLd data={ld} />
       <JsonLd data={breadcrumbLd([{ name: "Home", path: "/" }, { name: group.title, path: `/${group.base}` }, { name: listing.name, path: `/${group.detail}/${listing.slug}` }])} />
-      <div className="relative h-64 bg-forest sm:h-96">
-        <Photo media={listing.cover} sizes="100vw" priority className="opacity-90" />
-        <div className="absolute inset-0 bg-gradient-to-t from-forest-dark/80 via-transparent to-transparent" />
-        <Container className="absolute inset-x-0 bottom-0 pb-6 text-white">
-          <div className="[&_*]:!text-white/80 [&_[aria-current]]:!text-white"><Breadcrumbs items={[{ label: group.title, href: `/${group.base}` }, { label: listing.name }]} /></div>
+      <DetailTop media={listing.cover}>
+          <div><Breadcrumbs items={[{ label: group.title, href: `/${group.base}` }, { label: listing.name }]} /></div>
           <h1 className="mt-2 text-3xl font-semibold sm:text-5xl">{listing.name}</h1>
-          <p className="mt-2 flex flex-wrap items-center gap-2 text-sm text-white/90">
+          <p className="mt-2 flex flex-wrap items-center gap-2 text-sm text-muted">
             <Badge tone="blue">{listingTypeLabels[listing.type as ListingType]}</Badge>
             {listing.is_verified && <Badge tone="gold"><BadgeCheck className="size-3.5" aria-hidden />Verified by VisitAsanteman</Badge>}
             {listing.community && <span>{listing.community.name}</span>}
           </p>
-        </Container>
-      </div>
+      </DetailTop>
 
       <Container className="grid gap-10 py-10 lg:grid-cols-3">
         <div className="space-y-10 lg:col-span-2">

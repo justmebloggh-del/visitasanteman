@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { EnquiryForm } from "@/components/forms/EnquiryForm";
-import { Breadcrumbs, Facts, Photo, TextBlock } from "@/components/layout/blocks";
+import { Breadcrumbs, Facts, Photo, TextBlock, DetailTop } from "@/components/layout/blocks";
 import { breadcrumbLd, buildMetadata, JsonLd } from "@/components/layout/seo";
 import { StageBadge, StageNotice } from "@/components/investment/StageBadge";
 import { Map } from "@/components/maps/Map";
@@ -26,15 +26,11 @@ export default async function InvestmentPage({ params }: { params: Promise<{ slu
   return (
     <>
       <JsonLd data={breadcrumbLd([{ name: "Home", path: "/" }, { name: "Investment", path: "/investment" }, { name: p.title, path: `/investment/${p.slug}` }])} />
-      <div className="relative h-56 bg-forest sm:h-80">
-        <Photo media={p.cover} sizes="100vw" priority className="opacity-90" />
-        <div className="absolute inset-0 bg-gradient-to-t from-forest-dark/80 via-transparent to-transparent" />
-        <Container className="absolute inset-x-0 bottom-0 pb-6 text-white">
-          <div className="[&_*]:!text-white/80 [&_[aria-current]]:!text-white"><Breadcrumbs items={[{ label: "Investment", href: "/investment" }, { label: p.title }]} /></div>
+      <DetailTop media={p.cover}>
+          <div><Breadcrumbs items={[{ label: "Investment", href: "/investment" }, { label: p.title }]} /></div>
           <h1 className="mt-2 text-3xl font-semibold sm:text-5xl">{p.title}</h1>
           <StageBadge stage={p.stage} className="mt-2" />
-        </Container>
-      </div>
+      </DetailTop>
       <Container className="grid gap-10 py-10 lg:grid-cols-3">
         <div className="space-y-8 lg:col-span-2">
           <StageNotice stage={p.stage} source={p.stage_source} />

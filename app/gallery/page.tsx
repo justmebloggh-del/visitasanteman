@@ -16,7 +16,7 @@ export default async function GalleryPage() {
   const images = await getAllGalleryImages();
   return (
     <>
-      <PageHeader title="Gallery" intro="Asanteman in pictures." crumbs={[{ label: "Gallery" }]} photo={false} />
+      <PageHeader title="Gallery" intro="Asanteman in pictures." crumbs={[{ label: "Gallery" }]} />
       <MediaBanner />
       <Container className="py-10">
         {images.length > 0 && (

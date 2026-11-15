@@ -21,7 +21,7 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
   const filtered = Boolean(sp.q || sp.category || sp.type || sp.area);
   return (
     <>
-      <PageHeader title="Jobs and Careers" intro="Discover opportunities. Build your career. Grow Asanteman." crumbs={[{ label: "Jobs" }]} photo={false} />
+      <PageHeader title="Jobs and Careers" intro="Discover opportunities. Build your career. Grow Asanteman." crumbs={[{ label: "Jobs" }]} />
       <YouthBanner />
       <Container className="space-y-6 py-10">
         <FilterBar action="/jobs" q={sp.q} qLabel="Job title or keyword" values={{ category: sp.category, type: sp.type, area: sp.area }} filters={[

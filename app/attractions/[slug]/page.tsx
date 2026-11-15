@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Navigation, Phone } from "lucide-react";
-import { Breadcrumbs, CardGrid, ContentCard, Facts, Gallery, Photo, TextBlock } from "@/components/layout/blocks";
+import { Breadcrumbs, CardGrid, ContentCard, Facts, Gallery, Photo, TextBlock, DetailTop } from "@/components/layout/blocks";
 import { breadcrumbLd, buildMetadata, JsonLd } from "@/components/layout/seo";
 import { Map } from "@/components/maps/Map";
 import { AccessNotice, SourceNote } from "@/components/listings/AccessNotice";
@@ -47,15 +47,11 @@ export default async function AttractionPage({ params }: { params: Promise<{ slu
         geo: hasCoords ? { "@type": "GeoCoordinates", latitude: a.latitude, longitude: a.longitude } : undefined,
       }} />
       <JsonLd data={breadcrumbLd([{ name: "Home", path: "/" }, { name: "Attractions", path: "/attractions" }, { name: a.name, path: `/attractions/${a.slug}` }])} />
-      <div className="relative h-64 bg-forest sm:h-[26rem]">
-        <Photo media={a.cover} sizes="100vw" priority className="opacity-90" />
-        <div className="absolute inset-0 bg-gradient-to-t from-forest-dark/80 via-transparent to-transparent" />
-        <Container className="absolute inset-x-0 bottom-0 pb-6 text-white">
-          <div className="[&_*]:!text-white/80 [&_[aria-current]]:!text-white"><Breadcrumbs items={[{ label: "Attractions", href: "/attractions" }, { label: a.name }]} /></div>
+      <DetailTop media={a.cover}>
+          <div><Breadcrumbs items={[{ label: "Attractions", href: "/attractions" }, { label: a.name }]} /></div>
           <h1 className="mt-2 text-3xl font-semibold sm:text-5xl">{a.name}</h1>
           <p className="mt-2 flex flex-wrap gap-2">{a.category && <Badge tone="blue">{a.category.name}</Badge>}{a.community && <Badge tone="gold">{a.community.name}</Badge>}</p>
-        </Container>
-      </div>
+      </DetailTop>
 
       <Container className="grid gap-10 py-10 lg:grid-cols-3">
         <div className="space-y-10 lg:col-span-2">
