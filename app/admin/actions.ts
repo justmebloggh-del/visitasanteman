@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { resourceMap } from "@/config/admin-resources";
+import { bannerKeys } from "@/config/banners";
 import { canApprove, isAdmin, requireAdmin, requireApprover, requireMediaAccess, requireStaff, requireSuperAdmin, type AppRole } from "@/lib/auth/session";
 import { parseIdList, parseResourceForm } from "@/lib/admin/parse";
 import { createClient } from "@/lib/supabase/server";
@@ -342,4 +343,32 @@ export async function setRegistrationStatus(id: string, status: string) {
   const { error } = await supabase.from("event_registrations").update({ status }).eq("id", id);
   revalidatePath("/admin/registrations");
   redirect(`/admin/registrations?${error ? "error=1" : "saved=1"}`);
+}
+
+// ── Banner collection (words, links and on/off, stored in site_settings under "banners") ──
+export async function saveBanner(key: string, _prev: FormState, fd: FormData): Promise<FormState> {
+  const me = await requireAdmin();
+  if (!(bannerKeys as string[]).includes(key)) return { ok: false, message: "Unknown banner." };
+  const t = (n: string, max: number) => String(fd.get(n) ?? "").trim().slice(0, max);
+  const errors: Record<string, string> = {};
+  const buttons: { label: string; href: string }[] = [];
+  for (const n of [1, 2]) {
+    const label = t(`label${n}`, 60), href = t(`href${n}`, 300);
+    if (!label && !href) continue;
+    if (!label) errors[`label${n}`] = "Add the button text";
+    else if (!(href.startsWith("/") && !href.startsWith("//")) && !/^https:\/\//.test(href)) errors[`href${n}`] = "Use a page on this site (starting with /) or an https:// address";
+    else buttons.push({ label, href });
+  }
+  const headline = t("headline", 200), message = t("message", 400);
+  if (!headline) errors.headline = "A headline is needed";
+  if (!message) errors.message = "A supporting message is needed";
+  if (Object.keys(errors).length) return { ok: false, message: "Please fix the highlighted fields.", errors };
+
+  const supabase = await createClient();
+  const { data: row } = await supabase.from("site_settings").select("value").eq("key", "banners").maybeSingle();
+  const value = { ...((row?.value as Record<string, unknown>) ?? {}), [key]: { headline, message, description: t("description", 500), kicker: t("kicker", 60), buttons, enabled: fd.get("enabled") === "on" } };
+  const { error } = await supabase.from("site_settings").upsert({ key: "banners", value, updated_by: me.id });
+  if (error) return friendly(error);
+  flush();
+  return { ok: true, message: "Saved." };
 }

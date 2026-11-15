@@ -1,3 +1,4 @@
+import { MediaBanner } from "@/components/banners";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CardGrid, ContentCard, EmptyState, PageHeader, Pagination } from "@/components/layout/blocks";
@@ -18,7 +19,8 @@ export default async function ArticlesPage({ searchParams }: { searchParams: Pro
   const [result, categories] = await Promise.all([listArticles({ category: sp.category, page: toPage(sp.page) }), getArticleCategories()]);
   return (
     <>
-      <PageHeader title="Stories and travel inspiration" intro="Guides, culture and news from across Asanteman." crumbs={[{ label: "Articles" }]} />
+      <PageHeader title="Stories and travel inspiration" intro="Guides, culture and news from across Asanteman." crumbs={[{ label: "Articles" }]} photo={false} />
+      <MediaBanner />
       <Container className="py-10">
         <nav aria-label="Categories" className="mb-8 flex flex-wrap gap-2">
           <Link href="/articles" className={cn("rounded-full border px-4 py-1.5 text-sm", !sp.category ? "border-forest bg-forest text-white" : "border-line")}>All</Link>

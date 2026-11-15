@@ -1,3 +1,4 @@
+import { ExploreBanner } from "@/components/banners";
 import type { Metadata } from "next";
 import { CardGrid, ContentCard, EmptyState, PageHeader, Pagination } from "@/components/layout/blocks";
 import { FilterBar } from "@/components/layout/FilterBar";
@@ -22,7 +23,8 @@ export default async function AttractionsPage({ searchParams }: { searchParams: 
   const filtered = !!(sp.q || sp.category || sp.community || sp.area);
   return (
     <>
-      <PageHeader title="Attractions" intro="Places to see and things to do across Asanteman." crumbs={[{ label: "Attractions" }]} />
+      <PageHeader title="Attractions" intro="Places to see and things to do across Asanteman." crumbs={[{ label: "Attractions" }]} photo={false} />
+      <ExploreBanner />
       <AdSlot placement="directory_top" />
       <Container className="py-10">
         <FilterBar action="/attractions" q={sp.q} values={{ area: sp.area, category: sp.category, community: sp.community }}

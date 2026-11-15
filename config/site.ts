@@ -25,8 +25,7 @@ export const mainNav: NavItem[] = [
     { label: "Culture & Heritage", href: "/culture" }, { label: "Ceremonies & festivals", href: "/culture/ceremonies" }, { label: "Cultural calendar", href: "/culture/calendar" },
   ] },
   { label: "Experiences", href: "/experiences" },
-  { label: "Where to Stay", href: "/accommodation" },
-  { label: "Food & Dining", href: "/restaurants" },
+  { label: "Stay & Dine", children: [{ label: "Where to Stay", href: "/accommodation" }, { label: "Food & Dining", href: "/restaurants" }] },
   { label: "Events & Awards", children: [{ label: "Events", href: "/events" }, { label: "Awards", href: "/awards" }] },
   { label: "Plan Your Visit", children: [
     { label: "Why Asanteman", href: "/why-ashanti" }, { label: "Getting Around", href: "/getting-around" }, { label: "Travel Information", href: "/travel-information" },
@@ -39,8 +38,7 @@ export const mainNav: NavItem[] = [
   { label: "Media", children: [{ label: "News and Articles", href: "/articles" }, { label: "Gallery", href: "/gallery" }] },
   { label: "Business Directory", href: "/business-directory" },
   { label: "Jobs", href: "/jobs" },
-  { label: "About Us", href: "/about" },
-  { label: "Contact", href: "/contact" },
+  { label: "About", children: [{ label: "About Us", href: "/about" }, { label: "Contact", href: "/contact" }] },
 ];
 export const planVisit = { href: "/travel-planner", label: "Plan Your Visit" };
 

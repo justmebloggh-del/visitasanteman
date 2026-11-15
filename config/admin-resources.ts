@@ -691,6 +691,7 @@ export const adminNav = [
   { href: "/admin/pages", label: "Pages" },
   { href: "/admin/testimonials", label: "Testimonials" },
   { href: "/admin/homepage", label: "Homepage" },
+  { href: "/admin/banners", label: "Banners" },
   { href: "/admin/quick-links", label: "Homepage quick links" },
   { href: "/admin/media", label: "Media library" },
   { group: "Geography" },

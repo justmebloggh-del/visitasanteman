@@ -1,3 +1,4 @@
+import { EducationBanner } from "@/components/banners";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AlertTriangle } from "lucide-react";
@@ -30,7 +31,8 @@ export async function DomainIndex({ cfg, searchParams }: { cfg: DomainCfg; searc
   ];
   return (
     <>
-      <PageHeader title={cfg.title} intro={cfg.intro} crumbs={[...(cfg.crumbs ?? []).slice(0, -1), { label: cfg.title }]} />
+      <PageHeader title={cfg.title} intro={cfg.intro} crumbs={[...(cfg.crumbs ?? []).slice(0, -1), { label: cfg.title }]} photo={cfg.key !== "education"} />
+      {cfg.key === "education" && <EducationBanner />}
       <Container className="py-10">
         {cfg.key === "sports" && (
           <div className="mb-6 flex flex-wrap gap-3 text-sm">

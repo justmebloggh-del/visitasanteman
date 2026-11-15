@@ -13,13 +13,14 @@ export async function cmsMetadata(slug: string, fallbackTitle: string, path = `/
   return buildMetadata({ title: p?.title ?? fallbackTitle, description: p?.seo_description, path, image: p?.cover, seoTitle: p?.seo_title, canonical: p?.canonical_url, noindex: p ? p.noindex : true });
 }
 
-export async function CmsPage({ slug, fallbackTitle, crumbs, children }: { slug: string; fallbackTitle: string; crumbs?: { label: string; href?: string }[]; children?: React.ReactNode }) {
+export async function CmsPage({ slug, fallbackTitle, crumbs, children, banner }: { slug: string; fallbackTitle: string; crumbs?: { label: string; href?: string }[]; children?: React.ReactNode; banner?: React.ReactNode }) {
   const page = await getPage(slug);
   const fallbackKey = pageImages[slug];
   const fallback = page?.body && fallbackKey ? images[fallbackKey] : null;
   return (
     <>
-      <PageHeader title={page?.title ?? fallbackTitle} crumbs={[...(crumbs ?? []), { label: page?.title ?? fallbackTitle }]} />
+      <PageHeader title={page?.title ?? fallbackTitle} crumbs={[...(crumbs ?? []), { label: page?.title ?? fallbackTitle }]} photo={!banner} />
+      {banner}
       {slug.startsWith("culture") && <AdSlot placement="culture_top" />}
       <Container className="py-10">
         {page?.cover ? <div className="relative mb-8 aspect-[21/9] overflow-hidden rounded-2xl"><Photo media={page.cover} sizes="100vw" priority /></div> : fallback && (

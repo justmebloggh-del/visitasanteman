@@ -41,6 +41,12 @@ _Last updated: 2026-11-09._ A fresh session can resume from this file.
 - Built-in photographs from `public/Asante` are catalogued in `config/images.ts` with plain descriptions, and used only where nothing was uploaded: index-page banners, CMS page banners, themes and attraction categories on the homepage, the Lake Bosomtwe destination, the districts map, the Adinkra chart on Traditions, and the Gallery. Uploaded pictures always win.
 - None of the Asante photographs is described as the Golden Stool. Photo credits and rights are not recorded and must be confirmed.
 
+## Banner collection (local, not pushed)
+- 14 banners (config/banners.ts) share one design (components/banners/Banner.tsx): animated green-and-gold kente background, words left, photograph centre, gold emblem at the far right (own grid column, so nothing overlaps it; phones keep it at the far right, smaller). Named components in components/banners/index.tsx; homepage rotator with controls; slow animations off under reduced motion.
+- Words, links and on/off are editable in Admin, Banners (stored in site_settings "banners"). Banner 14 (expo) is off by default: no expo exists yet.
+- The emblem is interim stylised artwork (components/banners/SikaDwaEmblem.tsx), NOT an official depiction of the Golden Stool. Replace it with custodian-approved artwork before launch.
+- The main menu was shortened (Stay & Dine, About groups) because 13 items overflowed at 1440 px.
+
 ## Decisions
 - Cookie consent is stored in a first-party cookie (`vasa_consent`), not localStorage. Optional categories: Functional, Analytics, Advertising. The site currently uses no functional or advertising cookies; sponsored placements are first-party and cookie-free. GA loads only after Analytics consent (needs `NEXT_PUBLIC_GA_ID` at build time).
 - The cookie policy page is an empty CMS draft: wording must be written and reviewed by someone qualified (Ghana Data Protection Act, 2012, Act 843).

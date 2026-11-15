@@ -8,6 +8,7 @@ import { NewsletterForm } from "@/components/forms/NewsletterForm";
 import { ButtonLink, Container } from "@/components/ui";
 import { AdSlot } from "@/components/ads/AdSlot";
 import { Map } from "@/components/maps/Map";
+import { HomeBannerRotator, MainHeroBanner } from "@/components/banners";
 import { SearchBox } from "@/components/layout/SearchBox";
 import { WelcomeSlideshow, type Slide } from "@/components/home/WelcomeSlideshow";
 import { educationCfg, sportsCfg, transportCfg } from "@/config/domains";
@@ -76,40 +77,11 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* Hero */}
+      {/* Hero: the main banner (words and links editable in Admin, Banners). The search box stays inside it. */}
       {on("hero") && (
-        <section className="relative isolate overflow-hidden bg-forest-dark text-white">
-          {/* Fallback layer: shown while the video loads and for visitors who prefer reduced motion */}
-          {heroImg ? (
-            <Image src={heroImg} alt={String(hero?.config?.image_alt ?? "")} fill priority sizes="100vw" className="-z-20 object-cover opacity-60" />
-          ) : (
-            <div className="absolute inset-0 -z-20 bg-gradient-to-br from-forest-dark via-forest to-lake-dark" aria-hidden />
-          )}
-          <video
-            className="absolute inset-0 -z-10 size-full object-cover opacity-70 motion-reduce:hidden"
-            src="/hero-video.mp4"
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="metadata"
-            aria-hidden
-            tabIndex={-1}
-          />
-          <div className="absolute inset-0 -z-10 bg-gradient-to-t from-forest-dark/80 via-forest-dark/30 to-forest-dark/40" aria-hidden />
-          <Container className="flex min-h-[78vh] flex-col justify-center py-20">
-            <p className="mb-4 text-sm font-medium uppercase tracking-[0.2em] text-gold">Asanteman, Ghana</p>
-            <h1 className="max-w-3xl text-4xl font-semibold leading-tight sm:text-6xl">
-              {hero?.title ?? "Discover Asanteman. Experience Our Heritage."}
-            </h1>
-            <p className="mt-5 max-w-xl text-lg text-white/85">{hero?.subtitle || "Plan your visit to Asanteman, Ghana: its places, its people and its heritage, district by district."}</p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <ButtonLink href="/explore" variant="accent" size="lg">Explore Asanteman</ButtonLink>
-              <ButtonLink href={planVisit.href} variant="light" size="lg">{planVisit.label}</ButtonLink>
-            </div>
-            <SearchBox className="mt-10 max-w-xl" />
-          </Container>
-        </section>
+        <MainHeroBanner imageSrc={heroImg} imageAlt={String(hero?.config?.image_alt ?? "")}>
+          <SearchBox className="mt-8 max-w-xl" />
+        </MainHeroBanner>
       )}
 
       {/* Quick links: managed in Admin, hidden while their page is unpublished */}
@@ -143,6 +115,9 @@ export default async function HomePage() {
           </div>
         </Block>
       )}
+
+      {/* Promotional banners, one at a time (switch any off in Admin, Banners) */}
+      <HomeBannerRotator />
 
       {/* At a glance and highlights: edited in Admin > Homepage */}
       {on("glance") && glanceItems.length > 0 && (

@@ -1,3 +1,4 @@
+import { BusinessBanner } from "@/components/banners";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CardGrid, ContentCard, EmptyState, PageHeader } from "@/components/layout/blocks";
@@ -16,7 +17,8 @@ export default async function InvestmentIndex({ searchParams }: { searchParams: 
   const items = await listInvestments({ stage });
   return (
     <>
-      <PageHeader title="Invest in Asanteman tourism" intro="Opportunities and partnerships for sustainable tourism." crumbs={[{ label: "Investment" }]} />
+      <PageHeader title="Invest in Asanteman tourism" intro="Opportunities and partnerships for sustainable tourism." crumbs={[{ label: "Investment" }]} photo={false} />
+      <BusinessBanner />
       <Container className="py-10">
         <p className="mb-6 max-w-3xl rounded-2xl bg-mist p-4 text-sm text-muted">Every project below is labelled with its real status. <strong>Proposed concepts and opportunities under consideration are not approved or funded projects.</strong> Nothing here is an offer of securities or a guarantee of returns. Do your own due diligence.</p>
         <nav aria-label="Filter by stage" className="mb-8 flex flex-wrap gap-2">
