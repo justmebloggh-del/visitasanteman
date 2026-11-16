@@ -1,8 +1,8 @@
-import { EducationBanner } from "@/components/banners";
+import { PageTop } from "@/components/banners/PageTop";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AlertTriangle } from "lucide-react";
-import { Breadcrumbs, CardGrid, ContentCard, EmptyState, Facts, PageHeader, Pagination, Photo, TextBlock, DetailTop } from "@/components/layout/blocks";
+import { Breadcrumbs, CardGrid, ContentCard, EmptyState, Facts, Pagination, Photo, TextBlock, DetailTop } from "@/components/layout/blocks";
 import { FilterBar } from "@/components/layout/FilterBar";
 import { breadcrumbLd, JsonLd } from "@/components/layout/seo";
 import { AccessNotice, SourceNote, accessLabels } from "@/components/listings/AccessNotice";
@@ -31,8 +31,7 @@ export async function DomainIndex({ cfg, searchParams }: { cfg: DomainCfg; searc
   ];
   return (
     <>
-      <PageHeader title={cfg.title} intro={cfg.intro} crumbs={[...(cfg.crumbs ?? []).slice(0, -1), { label: cfg.title }]} />
-      {cfg.key === "education" && <EducationBanner />}
+      <PageTop banner={cfg.key === "education" ? "education" : undefined} title={cfg.title} intro={cfg.intro} crumbs={[...(cfg.crumbs ?? []).slice(0, -1), { label: cfg.title }]} />
       <Container className="py-10">
         {cfg.key === "sports" && (
           <div className="mb-6 flex flex-wrap gap-3 text-sm">

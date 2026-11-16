@@ -1,4 +1,4 @@
-import { AwardsBanner } from "@/components/banners";
+import { PageTop } from "@/components/banners/PageTop";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CalendarDays, List } from "lucide-react";
@@ -29,7 +29,7 @@ export default async function EventsPage({ searchParams }: { searchParams: Promi
 
   return (
     <>
-      <AwardsBanner as="h1" crumbs={[{ label: "Events and festivals" }]} />
+      <PageTop banner="awards" title="Events and festivals" intro="What is happening across Asanteman." crumbs={[{ label: "Events and festivals" }]} />
       <Container className="py-10">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div className="flex gap-2" role="group" aria-label="View">

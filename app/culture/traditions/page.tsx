@@ -1,4 +1,3 @@
-import { ArtsBanner } from "@/components/banners";
 import Image from "next/image";
 import Link from "next/link";
 import { images } from "@/config/images";
@@ -9,7 +8,7 @@ export const generateMetadata = () => cmsMetadata("culture-traditions", "Traditi
 
 export default function Page() {
   return (
-    <CmsPage slug="culture-traditions" fallbackTitle="Traditions" banner={<ArtsBanner />} crumbs={[{ label: "Culture & Heritage", href: "/culture" }]}>
+    <CmsPage slug="culture-traditions" fallbackTitle="Traditions" banner="arts" crumbs={[{ label: "Culture & Heritage", href: "/culture" }]}>
       <section className="mt-10" aria-labelledby="adinkra">
         <h2 id="adinkra" className="mb-2 text-2xl font-semibold text-forest">Adinkra symbols</h2>
         <p className="mb-4 max-w-2xl text-muted">Adinkra cloth printing is one of the crafts above. Each symbol has a name and a meaning that belongs to the tradition, so we show the names only and leave the meanings to the people who keep them.</p>

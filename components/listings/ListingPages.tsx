@@ -1,4 +1,4 @@
-import { BusinessBanner, TourismBanner } from "@/components/banners";
+import { PageTop } from "@/components/banners/PageTop";
 import { notFound } from "next/navigation";
 import { BadgeCheck, Globe, Mail, MessageCircle, Navigation, Phone } from "lucide-react";
 import { SourceNote } from "@/components/listings/AccessNotice";
@@ -7,7 +7,7 @@ import { AdSlot } from "@/components/ads/AdSlot";
 import { BookingForm } from "@/components/bookings/BookingForm";
 import { Reviews } from "@/components/bookings/Reviews";
 import { EnquiryForm } from "@/components/forms/EnquiryForm";
-import { Breadcrumbs, CardGrid, ContentCard, EmptyState, Facts, Gallery, PageHeader, Pagination, Photo, TextBlock, DetailTop } from "@/components/layout/blocks";
+import { Breadcrumbs, CardGrid, ContentCard, EmptyState, Facts, Gallery, Pagination, Photo, TextBlock, DetailTop } from "@/components/layout/blocks";
 import { FilterBar } from "@/components/layout/FilterBar";
 import { breadcrumbLd, JsonLd } from "@/components/layout/seo";
 import { Map } from "@/components/maps/Map";
@@ -50,7 +50,7 @@ export async function ListingIndex({ group, searchParams }: {
 
   return (
     <>
-      <PageHeader title={group.title} intro={group.intro} crumbs={[{ label: group.title }]} />
+      <PageTop banner={group.base === "accommodation" ? "tourism" : group.base === "business-directory" ? "business" : undefined} title={group.title} intro={group.intro} crumbs={[{ label: group.title }]} />
       <AdSlot placement="directory_top" />
       <Container className="py-10">
         <FilterBar

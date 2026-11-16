@@ -1,7 +1,7 @@
-import { YouthBanner } from "@/components/banners";
+import { PageTop } from "@/components/banners/PageTop";
 import type { Metadata } from "next";
 import { FilterBar } from "@/components/layout/FilterBar";
-import { EmptyState, PageHeader, Pagination } from "@/components/layout/blocks";
+import { EmptyState, Pagination } from "@/components/layout/blocks";
 import { buildMetadata } from "@/components/layout/seo";
 import { VacancyCard } from "@/components/jobs/VacancyCard";
 import { ButtonLink, Container, Notice } from "@/components/ui";
@@ -21,8 +21,7 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
   const filtered = Boolean(sp.q || sp.category || sp.type || sp.area);
   return (
     <>
-      <PageHeader title="Jobs and Careers" intro="Discover opportunities. Build your career. Grow Asanteman." crumbs={[{ label: "Jobs" }]} />
-      <YouthBanner />
+      <PageTop banner="youth" title="Jobs and Careers" intro="Discover opportunities. Build your career. Grow Asanteman." crumbs={[{ label: "Jobs" }]} />
       <Container className="space-y-6 py-10">
         <FilterBar action="/jobs" q={sp.q} qLabel="Job title or keyword" values={{ category: sp.category, type: sp.type, area: sp.area }} filters={[
           { name: "category", label: "Field", options: categories.map((c) => ({ value: c.slug, label: c.name })) },

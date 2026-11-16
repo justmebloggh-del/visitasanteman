@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
-import { PageHeader, Photo, StaticPhoto } from "@/components/layout/blocks";
+import type { BannerKey } from "@/config/banners";
+import { PageTop } from "@/components/banners/PageTop";
+import { Photo, StaticPhoto } from "@/components/layout/blocks";
 import { AdSlot } from "@/components/ads/AdSlot";
 import { Markdown } from "@/components/layout/Markdown";
 import { buildMetadata } from "@/components/layout/seo";
@@ -13,15 +15,14 @@ export async function cmsMetadata(slug: string, fallbackTitle: string, path = `/
   return buildMetadata({ title: p?.title ?? fallbackTitle, description: p?.seo_description, path, image: p?.cover, seoTitle: p?.seo_title, canonical: p?.canonical_url, noindex: p ? p.noindex : true });
 }
 
-export async function CmsPage({ slug, fallbackTitle, crumbs, children, banner, fallback: emptyFallback, bannerIsHeader }: { slug: string; fallbackTitle: string; crumbs?: { label: string; href?: string }[]; children?: React.ReactNode; banner?: React.ReactNode; /** The banner opens the page and replaces the title block. */ bannerIsHeader?: boolean; /** Shown instead of "being prepared" when the page has no written body. */ fallback?: React.ReactNode }) {
+export async function CmsPage({ slug, fallbackTitle, crumbs, children, banner, fallback: emptyFallback }: { slug: string; fallbackTitle: string; crumbs?: { label: string; href?: string }[]; children?: React.ReactNode; /** The banner that opens this page, right under the menu. */ banner?: BannerKey; /** Shown instead of "being prepared" when the page has no written body. */ fallback?: React.ReactNode }) {
   const page = await getPage(slug);
   const fallbackKey = pageImages[slug];
   const fallback = page?.body && fallbackKey ? images[fallbackKey] : null;
   const hasImage = !!page?.cover || !!fallback;
   return (
     <>
-      {!bannerIsHeader && <PageHeader title={page?.title ?? fallbackTitle} crumbs={[...(crumbs ?? []), { label: page?.title ?? fallbackTitle }]} />}
-      {banner}
+      <PageTop banner={banner} title={page?.title ?? fallbackTitle} crumbs={[...(crumbs ?? []), { label: page?.title ?? fallbackTitle }]} />
       {slug.startsWith("culture") && <AdSlot placement="culture_top" />}
       <Container className={`py-10 ${hasImage ? "grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] lg:gap-10" : ""}`}>
         {/* The page photograph sits at the top-right of the content (first on phones). It is the uploaded cover, or a built-in picture. */}

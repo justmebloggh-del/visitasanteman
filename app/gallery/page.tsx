@@ -1,4 +1,4 @@
-import { MediaBanner } from "@/components/banners";
+import { PageTop } from "@/components/banners/PageTop";
 import type { Metadata } from "next";
 import { Photo, StaticPhoto } from "@/components/layout/blocks";
 import { buildMetadata } from "@/components/layout/seo";
@@ -16,7 +16,7 @@ export default async function GalleryPage() {
   const images = await getAllGalleryImages();
   return (
     <>
-      <MediaBanner as="h1" crumbs={[{ label: "Gallery" }]} />
+      <PageTop banner="media" title="Gallery" intro="Asanteman in pictures." crumbs={[{ label: "Gallery" }]} />
       <Container className="py-10">
         {images.length > 0 && (
           <ul className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
