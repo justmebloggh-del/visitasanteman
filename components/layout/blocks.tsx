@@ -28,12 +28,12 @@ export function Breadcrumbs({ items }: { items: { label: string; href?: string }
 // banners (components/banners) carry the emblem and sit under it on the pages that have one.
 export function PageHeader({ title, intro, crumbs }: { title: string; intro?: string; crumbs?: { label: string; href?: string }[] }) {
   return (
-    <header className="relative isolate overflow-hidden bg-gradient-to-br from-forest-dark via-forest-dark to-forest text-white">
+    <header className="page-header relative isolate overflow-hidden bg-gradient-to-br from-forest-dark via-forest-dark to-forest text-white">
       <div className="kente-strip" aria-hidden />
-      <Container className="py-10 sm:py-14">
-        {crumbs && <div className="mb-4 [&_*]:!text-white/70 [&_[aria-current]]:!text-white"><Breadcrumbs items={crumbs} /></div>}
+      <Container className="page-header-inner py-10 sm:py-14">
+        {crumbs && <div className="page-crumbs mb-4"><Breadcrumbs items={crumbs} /></div>}
         <h1 className="font-serif text-3xl font-semibold sm:text-5xl">{title}</h1>
-        <span className="mt-4 block h-1 w-20 rounded-full bg-gold" aria-hidden />
+        <span className="page-header-rule mt-4 block h-1 w-20 rounded-full bg-gold" aria-hidden />
         {intro && <p className="mt-4 max-w-2xl text-base text-white/85 sm:text-lg">{intro}</p>}
       </Container>
       <div className="kente-strip" aria-hidden />
