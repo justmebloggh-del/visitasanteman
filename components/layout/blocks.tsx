@@ -1,3 +1,4 @@
+import { BannerShell } from "@/components/banners/BannerShell";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Inbox, MapPin } from "lucide-react";
@@ -27,18 +28,8 @@ export function Breadcrumbs({ items }: { items: { label: string; href?: string }
 // Not a banner: no photograph and no emblem. A deep green band with the kente strip, the title and a gold rule. The promotional
 // banners (components/banners) carry the emblem and sit under it on the pages that have one.
 export function PageHeader({ title, intro, crumbs }: { title: string; intro?: string; crumbs?: { label: string; href?: string }[] }) {
-  return (
-    <header className="page-header relative isolate overflow-hidden bg-gradient-to-br from-forest-dark via-forest-dark to-forest text-white">
-      <div className="kente-strip" aria-hidden />
-      <Container className="page-header-inner py-10 sm:py-14">
-        {crumbs && <div className="page-crumbs mb-4"><Breadcrumbs items={crumbs} /></div>}
-        <h1 className="font-serif text-3xl font-semibold sm:text-5xl">{title}</h1>
-        <span className="page-header-rule mt-4 block h-1 w-20 rounded-full bg-gold" aria-hidden />
-        {intro && <p className="mt-4 max-w-2xl text-base text-white/85 sm:text-lg">{intro}</p>}
-      </Container>
-      <div className="kente-strip" aria-hidden />
-    </header>
-  );
+  // Same banner as every other page, so all pages open identically.
+  return <BannerShell title={title} message={intro} crumbs={crumbs && <Breadcrumbs items={crumbs} />} />;
 }
 
 /**
