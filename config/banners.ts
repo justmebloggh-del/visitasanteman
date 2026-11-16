@@ -40,7 +40,7 @@ export const bannerDefs: Record<BannerKey, BannerDef> = {
     buttons: [{ label: "Explore Destinations", href: "/destinations" }], enabled: true },
   heritage: { key: "heritage", style: { pattern: "b", layout: "ledger", motion: "slide" }, name: "Heritage and culture", headline: "Rooted in history. Rich in culture.",
     message: "Discover the traditions, royal heritage, craftsmanship, festivals and cultural identity that make Asanteman unique.",
-    buttons: [{ label: "Explore Our Heritage", href: "/culture" }], enabled: true },
+    buttons: [{ label: "Explore Our Heritage", href: "/culture/history" }], enabled: true },
   international: { key: "international", style: { pattern: "c", layout: "standard", motion: "fade" }, name: "VisitAsanteman International", headline: "Your roots. Your heritage. Your Asanteman.",
     message: "Connecting Ghana, Africa and the global African diaspora through heritage, culture, travel and shared experiences.",
     buttons: [{ label: "Discover Your Heritage", href: "/international/heritage-travel" }], enabled: true },
@@ -98,7 +98,7 @@ export function resolveBanner(key: BannerKey, saved?: unknown): BannerDef {
 
 /** The one page each banner appears on. Kept here so a banner can never be shown twice by accident. */
 export const bannerPlacement: Record<BannerKey, string> = {
-  explore: "/districts", heritage: "/culture/history", international: "/international", comeHome: "/international/come-home-to-ashanti",
+  explore: "/districts", heritage: "/culture", international: "/international", comeHome: "/international/come-home-to-ashanti",
   events: "/culture/calendar", awards: "/events", arts: "/culture/traditions", tourism: "/accommodation", business: "/business-directory",
   media: "/gallery", youth: "/jobs", education: "/education", expo: "/international/events-and-partnerships",
 };

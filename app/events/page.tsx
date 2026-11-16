@@ -2,7 +2,7 @@ import { AwardsBanner } from "@/components/banners";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CalendarDays, List } from "lucide-react";
-import { EmptyState, PageHeader, Pagination } from "@/components/layout/blocks";
+import { EmptyState, Pagination } from "@/components/layout/blocks";
 import { buildMetadata } from "@/components/layout/seo";
 import { Badge, Container } from "@/components/ui";
 import { eventStatusLabels } from "@/config/site";
@@ -29,8 +29,7 @@ export default async function EventsPage({ searchParams }: { searchParams: Promi
 
   return (
     <>
-      <PageHeader title="Events and festivals" intro="What is happening across Asanteman." crumbs={[{ label: "Events" }]} />
-      <AwardsBanner />
+      <AwardsBanner as="h1" crumbs={[{ label: "Events and festivals" }]} />
       <Container className="py-10">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div className="flex gap-2" role="group" aria-label="View">

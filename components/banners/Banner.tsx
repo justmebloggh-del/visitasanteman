@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Container, buttonClasses } from "@/components/ui";
+import { Breadcrumbs } from "@/components/layout/blocks";
 import { SikaDwaEmblem } from "@/components/banners/SikaDwaEmblem";
 import type { BannerDef } from "@/config/banners";
 import { cn } from "@/lib/utils";
@@ -10,8 +11,10 @@ import { cn } from "@/lib/utils";
  * shrinks but stays at the far right. Three weaves, three compositions and three entrances give each banner its own look
  * (set per banner in config/banners.ts) while the identity stays the same.
  */
-export function Banner({ def, as: Heading = "h2", children, className }: {
+export function Banner({ def, as: Heading = "h2", children, className, crumbs }: {
   def: BannerDef; as?: "h1" | "h2"; children?: React.ReactNode; className?: string;
+  /** Opening banner: the banner is the page header (its headline is the h1) and the breadcrumb sits inside it. */
+  crumbs?: { label: string; href?: string }[];
 }) {
   const { pattern, layout, motion } = def.style;
   const hero = Heading === "h1";
@@ -38,7 +41,9 @@ export function Banner({ def, as: Heading = "h2", children, className }: {
         <span className="gold-mote left-[40%] top-[82%] size-1" style={{ animationDelay: "4s" }} />
         <span className="gold-mote left-[62%] top-[74%] size-1.5" style={{ animationDelay: "8s" }} />
       </div>
-      <Container className={cn("grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 sm:gap-x-8", hero ? "py-12 sm:py-16 lg:py-20" : "py-8 sm:py-10 lg:py-12")}>
+      {hero && <div className="kente-strip" aria-hidden />}
+      <Container className={cn("grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 sm:gap-x-8", hero ? "py-10 sm:py-14 lg:py-20" : "py-8 sm:py-10 lg:py-12")}>
+        {crumbs && <div className="page-crumbs col-span-2 mb-5 sm:mb-8"><Breadcrumbs items={crumbs} /></div>}
         <div className="min-w-0">
           {def.kicker && <p className="banner-rise mb-2 text-left text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-soft-gold sm:text-xs">{def.kicker}</p>}
           {layout === "ledger" ? (
