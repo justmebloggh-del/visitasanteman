@@ -13,7 +13,7 @@ export async function cmsMetadata(slug: string, fallbackTitle: string, path = `/
   return buildMetadata({ title: p?.title ?? fallbackTitle, description: p?.seo_description, path, image: p?.cover, seoTitle: p?.seo_title, canonical: p?.canonical_url, noindex: p ? p.noindex : true });
 }
 
-export async function CmsPage({ slug, fallbackTitle, crumbs, children, banner }: { slug: string; fallbackTitle: string; crumbs?: { label: string; href?: string }[]; children?: React.ReactNode; banner?: React.ReactNode }) {
+export async function CmsPage({ slug, fallbackTitle, crumbs, children, banner, fallback: emptyFallback }: { slug: string; fallbackTitle: string; crumbs?: { label: string; href?: string }[]; children?: React.ReactNode; banner?: React.ReactNode; /** Shown instead of "being prepared" when the page has no written body. */ fallback?: React.ReactNode }) {
   const page = await getPage(slug);
   const fallbackKey = pageImages[slug];
   const fallback = page?.body && fallbackKey ? images[fallbackKey] : null;
@@ -42,7 +42,7 @@ export async function CmsPage({ slug, fallbackTitle, crumbs, children, banner }:
               {(page.source_label || page.source_url) && <><strong className="text-ink">Source:</strong> {page.source_label ?? "official source"}{page.source_url && safeUrl(page.source_url) && <> (<a href={safeUrl(page.source_url)!} className="underline" rel="noopener noreferrer" target="_blank">link</a>)</>}.</>}
             </p>
           )}
-          {page?.body ? <Markdown>{page.body}</Markdown> : (
+          {page?.body ? <Markdown>{page.body}</Markdown> : emptyFallback ?? (
             <p className="rounded-2xl bg-mist p-6 text-muted">This page is being prepared. Please check back soon.</p>
           )}
           {children}
