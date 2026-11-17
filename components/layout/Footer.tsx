@@ -47,7 +47,7 @@ export async function Footer() {
     <footer className="mt-24 bg-forest-dark text-white/85">
       <Container className="grid gap-10 py-14 md:grid-cols-2 lg:grid-cols-4">
         <div>
-          <Wordmark tone="light" className="text-3xl" />
+          <Wordmark size="lg" />
           <p className="mt-4 text-sm leading-relaxed">{siteConfig.description}</p>
           {socials.length > 0 && (
             <ul className="mt-4 flex flex-wrap gap-3 text-sm">

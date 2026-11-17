@@ -19,7 +19,7 @@ export function Header({ districts = [] }: { districts?: NavDistrict[] }) {
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-white/95 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-[4.75rem] max-w-7xl items-center gap-3 px-4 sm:px-6 lg:px-8">
         <Link href="/" className="shrink-0" aria-label={`${siteConfig.name}, home`}>
           <Wordmark />
         </Link>
@@ -47,7 +47,7 @@ export function Header({ districts = [] }: { districts?: NavDistrict[] }) {
       <nav aria-label="Main" className="hidden border-t border-line bg-white xl:block"><DesktopNav districts={districts} /></nav>
 
       {open && (
-        <div id="mobile-menu" className="fixed inset-x-0 top-16 h-[calc(100dvh-4rem)] overflow-y-auto bg-white px-4 pb-10 pt-4 xl:hidden">
+        <div id="mobile-menu" className="fixed inset-x-0 top-[4.75rem] h-[calc(100dvh-4.75rem)] overflow-y-auto bg-white px-4 pb-10 pt-4 xl:hidden">
           <ButtonLink href={planVisit.href} onClick={() => setOpen(false)} className="w-full">{planVisit.label}</ButtonLink>
           <nav aria-label="Mobile"><MobileNav onNavigate={() => setOpen(false)} districts={districts} /></nav>
           <div className="mt-6"><AccountMenu stacked /></div>
