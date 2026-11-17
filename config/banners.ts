@@ -35,9 +35,9 @@ export interface BannerDef {
 }
 
 export const bannerDefs: Record<BannerKey, BannerDef> = {
-  explore: { key: "explore", style: { pattern: "a", layout: "standard", motion: "rise" }, name: "Explore Ashanti", headline: "Discover the beauty of Ashanti",
+  explore: { key: "explore", style: { pattern: "a", layout: "standard", motion: "rise" }, name: "Explore Ashanti", headline: "Discover the History of Asanteman",
     message: "From historic royal landmarks to breathtaking natural attractions, discover the extraordinary destinations of Asanteman.",
-    buttons: [{ label: "Explore Destinations", href: "/destinations" }], enabled: true },
+    buttons: [{ label: "Read Our History", href: "/culture/history" }], enabled: true },
   heritage: { key: "heritage", style: { pattern: "b", layout: "ledger", motion: "slide" }, name: "Heritage and culture", headline: "Rooted in history. Rich in culture.",
     message: "Discover the traditions, royal heritage, craftsmanship, festivals and cultural identity that make Asanteman unique.",
     buttons: [{ label: "Explore Our Heritage", href: "/culture/history" }], enabled: true },

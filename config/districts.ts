@@ -1,0 +1,53 @@
+/**
+ * The 43 assemblies of the Ashanti Region as first loaded into the database (migrations 20261113000004 and 20261122000012).
+ * Sources: Ghana Statistical Service figures via citypopulation.de, and Wikipedia "Districts of Ghana". They agree on 1 metropolitan,
+ * 18 municipal and 24 ordinary district assemblies. This is NOT the official list: the Local Government Service pages could not be
+ * reached. It is shown on /districts only while no district has been activated in Admin, and it is labelled as being checked.
+ */
+export type DistrictKind = "metropolitan" | "municipal" | "district";
+export const districtKindLabels: Record<DistrictKind, string> = { metropolitan: "Metropolitan assembly", municipal: "Municipal assemblies", district: "District assemblies" };
+export const listedDistricts: { name: string; kind: DistrictKind }[] = [
+  { name: "Kumasi Metropolitan", kind: "metropolitan" },
+  { name: "Ahafo Ano North Municipal", kind: "municipal" },
+  { name: "Asante Akim Central Municipal", kind: "municipal" },
+  { name: "Asante Akim South Municipal", kind: "municipal" },
+  { name: "Asokore Mampong Municipal", kind: "municipal" },
+  { name: "Asokwa Municipal", kind: "municipal" },
+  { name: "Atwima Nwabiagya Municipal", kind: "municipal" },
+  { name: "Bekwai Municipal", kind: "municipal" },
+  { name: "Ejisu Municipal", kind: "municipal" },
+  { name: "Ejura/Sekyedumase Municipal", kind: "municipal" },
+  { name: "Juaben Municipal", kind: "municipal" },
+  { name: "Kwabre East Municipal", kind: "municipal" },
+  { name: "Kwadaso Municipal", kind: "municipal" },
+  { name: "Mampong Municipal", kind: "municipal" },
+  { name: "Obuasi Municipal", kind: "municipal" },
+  { name: "Offinso Municipal", kind: "municipal" },
+  { name: "Oforikrom Municipal", kind: "municipal" },
+  { name: "Old Tafo Municipal", kind: "municipal" },
+  { name: "Suame Municipal", kind: "municipal" },
+  { name: "Adansi Asokwa District", kind: "district" },
+  { name: "Adansi North District", kind: "district" },
+  { name: "Adansi South District", kind: "district" },
+  { name: "Afigya Kwabre North District", kind: "district" },
+  { name: "Afigya Kwabre South District", kind: "district" },
+  { name: "Ahafo Ano South East District", kind: "district" },
+  { name: "Ahafo Ano South West District", kind: "district" },
+  { name: "Akrofuom District", kind: "district" },
+  { name: "Amansie Central District", kind: "district" },
+  { name: "Amansie South District", kind: "district" },
+  { name: "Amansie West District", kind: "district" },
+  { name: "Asante Akim North District", kind: "district" },
+  { name: "Atwima Kwanwoma District", kind: "district" },
+  { name: "Atwima Mponua District", kind: "district" },
+  { name: "Atwima Nwabiagya North District", kind: "district" },
+  { name: "Bosome Freho District", kind: "district" },
+  { name: "Bosomtwe District", kind: "district" },
+  { name: "Obuasi East District", kind: "district" },
+  { name: "Offinso North District", kind: "district" },
+  { name: "Sekyere Afram Plains District", kind: "district" },
+  { name: "Sekyere Central District", kind: "district" },
+  { name: "Sekyere East District", kind: "district" },
+  { name: "Sekyere Kumawu District", kind: "district" },
+  { name: "Sekyere South District", kind: "district" },
+];

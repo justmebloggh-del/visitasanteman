@@ -27,7 +27,7 @@ export interface NavItem { label: string; href?: string; children?: NavChild[] }
 // written are CMS pages that show "being prepared" until an administrator publishes them.
 export const mainNav: NavItem[] = [
   { label: "Explore Asanteman", children: [
-    { label: "Destinations", href: "/destinations" }, { label: "Browse by district", href: "/districts", districts: true },
+    { label: "Destinations", href: "/destinations" }, { label: "Districts", href: "/districts", districts: true },
     { label: "Attractions", href: "/attractions" },
   ] },
   { label: "Culture & Heritage", children: [
