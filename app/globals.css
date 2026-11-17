@@ -203,3 +203,8 @@ h1, h2, h3 {
 .banner.kente-c { background-position: 100% 50%; }
 .banner .kente-veil { background: linear-gradient(90deg, rgba(10, 46, 33, 0.94) 0%, rgba(10, 46, 33, 0.8) 50%, rgba(10, 46, 33, 0.5) 100%); }
 @media (max-width: 1023px) { .banner .kente-veil { background: linear-gradient(180deg, rgba(10, 46, 33, 0.82) 0%, rgba(10, 46, 33, 0.7) 100%); } }
+
+/* Top bar of the header: the green and gold kente cloth (public/brand/kente-texture.jpg) under a dark green veil so the logo,
+   search and account buttons stay clear. The menu bar underneath is untouched. */
+.nav-kente { position: relative; isolation: isolate; background: #0d3828 url("/brand/kente-texture.jpg") center / cover no-repeat; }
+.nav-kente::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(10, 46, 33, 0.82) 0%, rgba(10, 46, 33, 0.7) 100%); }

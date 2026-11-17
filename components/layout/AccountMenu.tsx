@@ -14,7 +14,7 @@ type State = { loading: true } | { loading: false; signedIn: boolean; staff: boo
  * Display-only. Whether a user may see /admin is decided on the server (layout + RLS);
  * this just decides which links to show.
  */
-export function AccountMenu({ stacked }: { stacked?: boolean }) {
+export function AccountMenu({ stacked, onDark }: { stacked?: boolean; /** Sits on the dark kente top bar. */ onDark?: boolean }) {
   const [state, setState] = useState<State>(supabaseConfigured ? { loading: true } : { loading: false, signedIn: false, staff: false });
   const router = useRouter();
 
@@ -36,24 +36,25 @@ export function AccountMenu({ stacked }: { stacked?: boolean }) {
 
   if (state.loading) return <div className="h-10 w-28" aria-hidden />;
 
+  const ghost = onDark ? "text-white hover:bg-white/10" : undefined;
   const wrap = cn("flex items-center gap-2 whitespace-nowrap", stacked && "flex-col items-stretch");
 
   if (!state.signedIn) {
     return (
       <div className={wrap}>
-        <Link href="/login" className={buttonClasses("ghost", "sm", stacked ? "border border-line" : undefined)}>Log in</Link>
-        <Link href="/register" className={buttonClasses("primary", "sm")}>Register</Link>
+        <Link href="/login" className={buttonClasses("ghost", "sm", stacked ? "border border-line" : ghost)}>Log in</Link>
+        <Link href="/register" className={buttonClasses(onDark ? "light" : "primary", "sm")}>Register</Link>
       </div>
     );
   }
   return (
     <div className={wrap}>
-      {state.staff && <Link href="/admin" className={buttonClasses("outline", "sm")}>Admin</Link>}
-      {!state.staff && <Link href="/account/bookings" className={buttonClasses("ghost", "sm")}>My bookings</Link>}
-      {state.partner && <Link href="/partner/dashboard" className={buttonClasses("outline", "sm")}>Partner portal</Link>}
+      {state.staff && <Link href="/admin" className={buttonClasses(onDark ? "light" : "outline", "sm")}>Admin</Link>}
+      {!state.staff && <Link href="/account/bookings" className={buttonClasses("ghost", "sm", ghost)}>My bookings</Link>}
+      {state.partner && <Link href="/partner/dashboard" className={buttonClasses(onDark ? "light" : "outline", "sm")}>Partner portal</Link>}
       <button
         type="button"
-        className={buttonClasses("ghost", "sm", stacked ? "border border-line" : undefined)}
+        className={buttonClasses("ghost", "sm", stacked ? "border border-line" : ghost)}
         onClick={async () => { await createBrowserSupabase().auth.signOut(); router.refresh(); }}
       >
         Sign out

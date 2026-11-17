@@ -19,28 +19,31 @@ export function Header({ districts = [] }: { districts?: NavDistrict[] }) {
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-white/95 backdrop-blur">
+      {/* The top bar (logo, search, account) is coloured with the kente cloth; the menu bar below is unchanged. */}
+      <div className="nav-kente">
       <div className="mx-auto flex h-[4.75rem] max-w-7xl items-center gap-3 px-4 sm:px-6 lg:px-8">
         <Link href="/" className="shrink-0" aria-label="Visit Asanteman Homepage">
           <Wordmark animated />
         </Link>
 
         <div className="ml-auto flex items-center gap-2">
-          <Link href="/search" aria-label="Search" className="grid size-10 place-items-center rounded-full hover:bg-forest-soft">
-            <Search className="size-5 text-forest" />
+          <Link href="/search" aria-label="Search" className="grid size-10 place-items-center rounded-full hover:bg-white/10">
+            <Search className="size-5 text-white" />
           </Link>
-          <ButtonLink href={planVisit.href} size="sm" className="hidden sm:inline-flex">{planVisit.label}</ButtonLink>
-          <div className="hidden sm:block"><AccountMenu /></div>
+          <ButtonLink href={planVisit.href} variant="accent" size="sm" className="hidden sm:inline-flex">{planVisit.label}</ButtonLink>
+          <div className="hidden sm:block"><AccountMenu onDark /></div>
           <button
             type="button"
-            className="grid size-10 place-items-center rounded-full hover:bg-forest-soft xl:hidden"
+            className="grid size-10 place-items-center rounded-full hover:bg-white/10 xl:hidden"
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
             aria-controls="mobile-menu"
             onClick={() => setOpen((v) => !v)}
           >
-            {open ? <X className="size-6 text-forest" /> : <Menu className="size-6 text-forest" />}
+            {open ? <X className="size-6 text-white" /> : <Menu className="size-6 text-white" />}
           </button>
         </div>
+      </div>
       </div>
 
       {/* Full menu bar: wide screens only. Smaller screens use the menu button. */}
