@@ -20,7 +20,8 @@ export const metadata: Metadata = {
   description: siteConfig.description,
   openGraph: { siteName: siteConfig.name, type: "website", locale: "en_GH" },
   appleWebApp: { capable: true, title: siteConfig.displayName, statusBarStyle: "default" },
-  verification: process.env.NEXT_PUBLIC_GSC_VERIFICATION ? { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION } : undefined,
+  // Google Search Console ownership tag (public by design). NEXT_PUBLIC_GSC_VERIFICATION overrides it if the property is ever re-verified.
+  verification: { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION || "USM5rFk06MJdrPtG7I0vmbncreECrMRxWGwtZ8t0jps" },
 };
 
 export const viewport: Viewport = { themeColor: "#174b35", width: "device-width", initialScale: 1 };
