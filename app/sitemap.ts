@@ -27,7 +27,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const awards = await listAwardProgrammes();
   const base = (p: string) => `${SITE_URL}${p}`;
   const count = (t: string) => s.listings.filter((l) => listingSection(l.type) === t).length;
-  const always = ["", "/map", "/contact", "/partner", "/partner-with-us", "/advertise", "/travel-planner"];
+  const always = ["", "/manhyia", "/map", "/contact", "/partner", "/partner-with-us", "/advertise", "/travel-planner"];
   const sections: [string, number][] = [
     ["/attractions", s.attractions.length], ["/districts", s.districts.length], ["/destinations", s.destinations.length], ["/communities", s.communities.length],
     ["/accommodation", count("accommodation")], ["/restaurants", count("restaurants")], ["/venues", count("venues")], ["/markets", count("markets")],

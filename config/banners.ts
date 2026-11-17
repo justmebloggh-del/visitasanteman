@@ -10,7 +10,7 @@
  */
 export type BannerKey =
   | "explore" | "heritage" | "international" | "comeHome" | "events" | "youth" | "education"
-  | "arts" | "tourism" | "business" | "media" | "awards" | "expo";
+  | "arts" | "tourism" | "business" | "media" | "awards" | "expo" | "manhyia";
 
 export interface BannerStyle {
   /** Which kente-inspired weave fills the background (see globals.css). */
@@ -71,6 +71,9 @@ export const bannerDefs: Record<BannerKey, BannerDef> = {
   awards: { key: "awards", style: { pattern: "c", layout: "stacked", motion: "fade" }, name: "Award shows and excellence", headline: "Recognising excellence. Celebrating greatness.",
     message: "Honouring outstanding achievements in business, education, tourism, culture, leadership and community development.",
     buttons: [{ label: "Discover Our Awards", href: "/awards" }], enabled: true },
+  manhyia: { key: "manhyia", style: { pattern: "b", layout: "standard", motion: "fade" }, name: "Manhyia Palace", headline: "Manhyia Palace",
+    message: "The seat of the Asantehene in Kumasi, and home to the Manhyia Palace Museum.",
+    buttons: [{ label: "Plan Your Visit", href: "/travel-planner" }], enabled: true },
   expo: { key: "expo", style: { pattern: "b", layout: "standard", motion: "rise" }, name: "Business and tourism expo", kicker: "In planning", headline: "Ashanti Business, Tourism & Investment Expo",
     message: "Bringing together businesses, investors, innovators, tourism leaders and international partners.",
     buttons: [{ label: "Become an Exhibitor", href: "/international/events-and-partnerships" }], enabled: false },
@@ -100,5 +103,5 @@ export function resolveBanner(key: BannerKey, saved?: unknown): BannerDef {
 export const bannerPlacement: Record<BannerKey, string> = {
   explore: "/districts", heritage: "/culture", international: "/international", comeHome: "/international/come-home-to-ashanti",
   events: "/culture/calendar", awards: "/events", arts: "/culture/traditions", tourism: "/accommodation", business: "/business-directory",
-  media: "/gallery", youth: "/jobs", education: "/education", expo: "/international/events-and-partnerships",
+  media: "/gallery", youth: "/jobs", education: "/education", expo: "/international/events-and-partnerships", manhyia: "/manhyia",
 };

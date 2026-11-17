@@ -32,6 +32,7 @@ export const mainNav: NavItem[] = [
   ] },
   { label: "Culture & Heritage", children: [
     { label: "Culture & Heritage", href: "/culture" }, { label: "Ceremonies & festivals", href: "/culture/ceremonies" }, { label: "Cultural calendar", href: "/culture/calendar" },
+    { label: "Manhyia Palace", href: "/manhyia" },
   ] },
   { label: "Experiences", href: "/experiences" },
   { label: "Stay & Dine", children: [{ label: "Where to Stay", href: "/accommodation" }, { label: "Food & Dining", href: "/restaurants" }] },
