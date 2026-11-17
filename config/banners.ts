@@ -10,7 +10,7 @@
  */
 export type BannerKey =
   | "explore" | "heritage" | "international" | "comeHome" | "events" | "youth" | "education"
-  | "arts" | "tourism" | "business" | "media" | "awards" | "expo" | "manhyia";
+  | "arts" | "tourism" | "business" | "media" | "awards" | "expo" | "manhyia" | "districts";
 
 export interface BannerStyle {
   /** Which kente-inspired weave fills the background (see globals.css). */
@@ -35,8 +35,11 @@ export interface BannerDef {
 }
 
 export const bannerDefs: Record<BannerKey, BannerDef> = {
-  explore: { key: "explore", style: { pattern: "a", layout: "standard", motion: "rise" }, name: "Explore Ashanti", headline: "Discover the History of Asanteman",
-    message: "From historic royal landmarks to breathtaking natural attractions, discover the extraordinary destinations of Asanteman.",
+  explore: { key: "explore", style: { pattern: "a", layout: "standard", motion: "rise" }, name: "History of Asanteman", headline: "Discover the History of Asanteman",
+    message: "From the first Akan states to the Asante kingdom: how Asanteman came to be, and the places that hold its story.",
+    buttons: [{ label: "Explore Districts", href: "/districts" }], enabled: true },
+  districts: { key: "districts", style: { pattern: "a", layout: "standard", motion: "rise" }, name: "Districts", headline: "Discover the Districts of Asanteman",
+    message: "The metropolitan, municipal and district assemblies of the Ashanti Region, and the places in each.",
     buttons: [{ label: "Read Our History", href: "/culture/history" }], enabled: true },
   heritage: { key: "heritage", style: { pattern: "b", layout: "ledger", motion: "slide" }, name: "Heritage and culture", headline: "Rooted in history. Rich in culture.",
     message: "Discover the traditions, royal heritage, craftsmanship, festivals and cultural identity that make Asanteman unique.",
@@ -101,7 +104,7 @@ export function resolveBanner(key: BannerKey, saved?: unknown): BannerDef {
 
 /** The one page each banner appears on. Kept here so a banner can never be shown twice by accident. */
 export const bannerPlacement: Record<BannerKey, string> = {
-  explore: "/districts", heritage: "/culture", international: "/international", comeHome: "/international/come-home-to-ashanti",
+  explore: "/culture/history", districts: "/districts", heritage: "/culture", international: "/international", comeHome: "/international/come-home-to-ashanti",
   events: "/culture/calendar", awards: "/events", arts: "/culture/traditions", tourism: "/accommodation", business: "/business-directory",
   media: "/gallery", youth: "/jobs", education: "/education", expo: "/international/events-and-partnerships", manhyia: "/manhyia",
 };

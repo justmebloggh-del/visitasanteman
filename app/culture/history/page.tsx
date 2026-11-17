@@ -7,7 +7,7 @@ export const generateMetadata = () => cmsMetadata("culture-history", "History", 
 
 export default function Page() {
   return (
-    <CmsPage slug="culture-history" fallbackTitle="History" crumbs={[{ label: "Culture & Heritage", href: "/culture" }]}>
+    <CmsPage slug="culture-history" fallbackTitle="History" banner="explore" crumbs={[{ label: "Culture & Heritage", href: "/culture" }]}>
       <AsanteRise />
       <p className="mt-12 text-sm text-muted"><Link href="/culture" className="text-lake-dark underline">Back to Culture & Heritage</Link></p>
     </CmsPage>
