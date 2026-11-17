@@ -101,9 +101,9 @@ function Calendar({ month, events }: { month: string; events: Awaited<ReturnType
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
-        <Link href={`/events?view=calendar&month=${key(prev)}`} className="rounded-full border border-line px-4 py-2 text-sm hover:bg-mist">Previous</Link>
+        <Link href={`/events?view=calendar&month=${key(prev)}`} rel="nofollow" className="rounded-full border border-line px-4 py-2 text-sm hover:bg-mist">Previous</Link>
         <h2 className="font-serif text-xl font-semibold text-forest">{new Intl.DateTimeFormat("en-GB", { month: "long", year: "numeric", timeZone: "UTC" }).format(first)}</h2>
-        <Link href={`/events?view=calendar&month=${key(next)}`} className="rounded-full border border-line px-4 py-2 text-sm hover:bg-mist">Next</Link>
+        <Link href={`/events?view=calendar&month=${key(next)}`} rel="nofollow" className="rounded-full border border-line px-4 py-2 text-sm hover:bg-mist">Next</Link>
       </div>
       <div className="grid grid-cols-7 gap-px overflow-hidden rounded-xl border border-line bg-line text-xs">
         {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => <div key={d} className="bg-mist p-2 text-center font-medium text-muted">{d}</div>)}
