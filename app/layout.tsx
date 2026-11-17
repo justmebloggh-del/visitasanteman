@@ -5,7 +5,7 @@ import { Footer } from "@/components/layout/Footer";
 import { PwaRegister } from "@/components/layout/PwaRegister";
 import { Header } from "@/components/layout/Header";
 import { JsonLd } from "@/components/layout/seo";
-import { siteConfig } from "@/config/site";
+import { siteConfig, socialDefaults } from "@/config/site";
 import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
 import { getSettings, listAreas } from "@/lib/content/public";
 import { SITE_URL } from "@/lib/env";
@@ -36,7 +36,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-white focus:px-4 focus:py-2">
           Skip to content
         </a>
-        <JsonLd data={{ "@context": "https://schema.org", "@type": "Organization", name: siteConfig.name, url: SITE_URL }} />
+        <JsonLd data={{ "@context": "https://schema.org", "@type": "Organization", name: siteConfig.name, url: SITE_URL, sameAs: Object.values({ ...socialDefaults, ...Object.fromEntries(Object.entries(settings.social ?? {}).filter(([, v]) => typeof v === "string" && v.trim())) }).map(String).filter((u) => /^https:\/\//.test(u)) }} />
         <Header districts={navDistricts} />
         <main id="main" className="flex-1">{children}</main>
         <Footer />

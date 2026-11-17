@@ -23,7 +23,7 @@ export function SettingsForm({ s }: { s: S }) {
         {f("email", "Email", c.email, { type: "email" })}{f("phone", "Phone", c.phone)}
         {f("whatsapp", "WhatsApp number", c.whatsapp, { hint: "Digits with country code, e.g. 233XXXXXXXXX. Switches on the floating “Chat on WhatsApp” button; leave blank to hide it." })}{f("address", "Address", c.address)}
       </Card>
-      <Card title="Social media (full links)">{f("facebook", "Facebook", so.facebook, { type: "url" })}{f("instagram", "Instagram", so.instagram, { type: "url" })}{f("x", "X / Twitter", so.x, { type: "url" })}{f("youtube", "YouTube", so.youtube, { type: "url" })}</Card>
+      <Card title="Social media (full links)">{f("facebook", "Facebook", so.facebook, { type: "url" })}{f("instagram", "Instagram", so.instagram, { type: "url" })}{f("tiktok", "TikTok", so.tiktok, { type: "url" })}{f("x", "X / Twitter", so.x, { type: "url" })}{f("youtube", "YouTube", so.youtube, { type: "url" })}</Card>
       <Card title="Map starting view">
         {f("center_lat", "Centre latitude", m.center_lat, { type: "number", step: "any" })}{f("center_lng", "Centre longitude", m.center_lng, { type: "number", step: "any" })}
         {f("zoom", "Zoom (1-18)", m.zoom, { type: "number", step: "any" })}

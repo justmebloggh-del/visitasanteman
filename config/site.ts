@@ -10,6 +10,15 @@ export const siteConfig = {
   region: "Ashanti Region",
 };
 
+/** Official social media accounts. An administrator can replace any of these in Admin, Settings; these are used until then. */
+export const socialDefaults: Record<string, string> = {
+  facebook: "https://www.facebook.com/profile.php?id=61596528336030",
+  instagram: "https://www.instagram.com/visitasanteman",
+  tiktok: "https://www.tiktok.com/@visit_asanteman",
+  youtube: "https://www.youtube.com/@visitasanteman",
+};
+export const socialLabels: Record<string, string> = { facebook: "Facebook", instagram: "Instagram", tiktok: "TikTok", youtube: "YouTube", x: "X" };
+
 /** A top-level menu item: a plain link, or a group of links opened from a button. */
 export interface NavChild { label: string; href: string; /** Shows the list of districts as a nested submenu. */ districts?: boolean }
 export interface NavItem { label: string; href?: string; children?: NavChild[] }

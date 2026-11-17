@@ -281,7 +281,7 @@ export async function saveSettings(_prev: FormState, fd: FormData): Promise<Form
   const s = (n: string, max = 300) => String(fd.get(n) ?? "").trim().slice(0, max);
   const errors: Record<string, string> = {};
   const social: Record<string, string> = {};
-  for (const k of ["facebook", "instagram", "x", "youtube"]) {
+  for (const k of ["facebook", "instagram", "tiktok", "x", "youtube"]) {
     const v = s(k);
     if (v && !safeUrl(v)) errors[k] = "Must start with http:// or https://";
     social[k] = v;

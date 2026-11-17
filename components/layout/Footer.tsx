@@ -5,7 +5,7 @@ import { HashtagTicker } from "@/components/layout/HashtagTicker";
 import { Wordmark } from "@/components/brand/Wordmark";
 import { Container } from "@/components/ui";
 import { NewsletterForm } from "@/components/forms/NewsletterForm";
-import { siteConfig } from "@/config/site";
+import { siteConfig, socialDefaults, socialLabels } from "@/config/site";
 import { getSettings } from "@/lib/content/public";
 import { safeUrl, whatsappLink } from "@/lib/utils";
 
@@ -41,7 +41,9 @@ export async function Footer() {
   const settings = await getSettings();
   const contact = settings.contact ?? {};
   const social = settings.social ?? {};
-  const socials = Object.entries(social).filter(([, v]) => safeUrl(String(v)));
+  const merged: Record<string, string> = { ...socialDefaults };
+  for (const [k, v] of Object.entries(social)) if (typeof v === "string" && v.trim()) merged[k] = v.trim();
+  const socials = Object.entries(merged).filter(([, v]) => safeUrl(String(v)));
 
   return (
     <footer className="mt-24 bg-forest-dark text-white/85">
@@ -52,7 +54,7 @@ export async function Footer() {
           {socials.length > 0 && (
             <ul className="mt-4 flex flex-wrap gap-3 text-sm">
               {socials.map(([name, url]) => (
-                <li key={name}><a href={safeUrl(String(url))!} rel="noopener noreferrer" target="_blank" className="capitalize underline-offset-4 hover:underline">{name}</a></li>
+                <li key={name}><a href={safeUrl(String(url))!} rel="noopener noreferrer" target="_blank" className="underline-offset-4 hover:underline" aria-label={`${socialLabels[name] ?? name} (opens in a new tab)`}>{socialLabels[name] ?? name}</a></li>
               ))}
             </ul>
           )}
