@@ -1,7 +1,7 @@
 import { BannerShell } from "@/components/banners/BannerShell";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Inbox, MapPin } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight, Inbox, MapPin } from "lucide-react";
 import { Badge, ButtonLink, Container } from "@/components/ui";
 import { images, type ImageKey } from "@/config/images";
 import { mediaUrl } from "@/lib/utils";
@@ -203,5 +203,25 @@ export function DetailTop({ media, children }: { media: MediaRef | null | undefi
         )}
       </Container>
     </header>
+  );
+}
+
+/** A homepage-style section: heading, optional subtitle and "more" link, content. Used on the homepage and the Attractions page. */
+export function Block({ title, subtitle, more, tone, children }: {
+  title?: string | null; subtitle?: string | null; more?: { href: string; label: string }; tone?: "mist"; children: React.ReactNode;
+}) {
+  return (
+    <section className={tone === "mist" ? "mt-20 bg-mist py-16" : "mt-20"}>
+      <Container>
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            {title && <h2 className="text-3xl font-semibold text-forest sm:text-4xl">{title}</h2>}
+            {subtitle && <p className="mt-2 max-w-2xl text-muted">{subtitle}</p>}
+          </div>
+          {more && <Link href={more.href} className="inline-flex items-center gap-1 text-sm font-medium text-forest hover:underline">{more.label}<ArrowRight className="size-4" /></Link>}
+        </div>
+        {children}
+      </Container>
+    </section>
   );
 }

@@ -3,6 +3,7 @@ import { CardGrid, ContentCard, EmptyState, PageHeader, Pagination } from "@/com
 import { FilterBar } from "@/components/layout/FilterBar";
 import { buildMetadata } from "@/components/layout/seo";
 import { AdSlot } from "@/components/ads/AdSlot";
+import { AttractionsShowcase } from "@/components/attractions/AttractionsShowcase";
 import { Container } from "@/components/ui";
 import { getAttractionCategories, listAreas, listAttractions, listCommunities, toPage } from "@/lib/content/public";
 
@@ -43,6 +44,8 @@ export default async function AttractionsPage({ searchParams }: { searchParams: 
         )}
         <Pagination page={result.page} pageCount={result.pageCount} basePath="/attractions" params={{ q: sp.q, category: sp.category, community: sp.community, area: sp.area }} />
       </Container>
+      {/* Only on the plain, first page of the list: not while filtering or paging */}
+      {!filtered && result.page === 1 && <AttractionsShowcase />}
     </>
   );
 }

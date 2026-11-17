@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Bed, Calendar, Camera, Car, Compass, FileText, Info, Map as MapIcon, Phone, Quote, Star, Ticket, Users, Utensils } from "lucide-react";
-import { CardGrid, ContentCard, Photo } from "@/components/layout/blocks";
-import { asMedia, categoryImages, themeImages } from "@/config/images";
+import { Block, CardGrid, ContentCard, Photo } from "@/components/layout/blocks";
+import { asMedia, themeImages } from "@/config/images";
 import { NewsletterForm } from "@/components/forms/NewsletterForm";
 import { ButtonLink, Container } from "@/components/ui";
 import { AdSlot } from "@/components/ads/AdSlot";
@@ -11,11 +11,9 @@ import { Map } from "@/components/maps/Map";
 import { SearchBox } from "@/components/layout/SearchBox";
 import { WelcomeSlideshow } from "@/components/home/WelcomeSlideshow";
 import { manhyiaSlides } from "@/config/manhyia";
-import { educationCfg, sportsCfg, transportCfg } from "@/config/domains";
-import { listDomain } from "@/lib/content/domains";
 import { ceremonyKindLabels, stageLabels, eventStatusLabels, experienceCategoryLabels, listingTypeLabels, accommodationTypes, businessTypes, restaurantTypes, planVisit, type ListingType } from "@/config/site";
 import {
-  getCategoryCards, getHomepageSections, getQuickLinks, getThemeCounts, listThemes, listCeremonies, getTestimonials, listArticles, listAttractions, listCommunities, listDestinations, listEvents,
+  getHomepageSections, getQuickLinks, getThemeCounts, listThemes, listCeremonies, getTestimonials, listArticles, listEvents,
   listExperiences, listListings, getMapPoints, getSettings, listInvestments,
 } from "@/lib/content/public";
 import { SITE_URL } from "@/lib/env";
@@ -29,25 +27,21 @@ const QUICK_ICONS: Record<string, typeof Compass> = { car: Car, info: Info, "fil
 export const metadata: Metadata = { alternates: { canonical: SITE_URL } };
 
 export default async function HomePage() {
-  const [sections, attractions, experiences, stays, food, communities, events, articles, testimonials, points, settings, investments, destinations, businesses, cultureStories, ceremonies, education, sports, transport, quickLinks, categoryCards, themeList, themeCounts] = await Promise.all([
+  const [sections, experiences, stays, food, events, articles, testimonials, points, settings, investments, businesses, cultureStories, ceremonies, quickLinks, themeList, themeCounts] = await Promise.all([
     getHomepageSections(),
-    listAttractions({ limit: 6 }),
     listExperiences({ limit: 3 }),
     listListings(accommodationTypes, { limit: 3 }),
     listListings(restaurantTypes, { limit: 3 }),
-    listCommunities(),
     listEvents({ limit: 3 }),
     listArticles({ limit: 3 }),
     getTestimonials(3),
     getMapPoints(),
     getSettings(),
     listInvestments({ limit: 3 }),
-    listDestinations({ limit: 6 }),
     listListings(businessTypes, { limit: 3 }),
     listArticles({ category: "culture-heritage", limit: 3 }),
     listCeremonies({ when: "upcoming", limit: 3 }),
-    listDomain(educationCfg, { limit: 3 }), listDomain(sportsCfg, { limit: 3 }), listDomain(transportCfg, { limit: 3 }),
-    getQuickLinks(), getCategoryCards(), listThemes(), getThemeCounts(),
+    getQuickLinks(), listThemes(), getThemeCounts(),
   ]);
   const mapCfg = settings.map ?? {};
 
@@ -154,17 +148,6 @@ export default async function HomePage() {
         </Block>
       )}
 
-      {/* B. Explore the region: featured destinations and browse by district */}
-      {on("destinations") && destinations.length > 0 && (
-        <Block title={sections.destinations?.title ?? "Explore the region"} subtitle={sections.destinations?.subtitle ?? "Featured destinations and the districts of Asanteman."} more={{ href: "/districts", label: "All districts" }}>
-          {destinations.length > 0 && (
-            <CardGrid>
-              {destinations.map((d) => <ContentCard key={d.id} href={`/destinations/${d.slug}`} title={d.name} summary={d.summary} media={d.cover} meta={d.area?.name} />)}
-            </CardGrid>
-          )}
-        </Block>
-      )}
-
       {/* Experience themes: Eat, Wear, See, Feel (only those with published content) */}
       {(() => {
         const live = themeList.filter((t) => t.kind === "experience_theme" && (themeCounts[t.slug] ?? 0) > 0);
@@ -182,35 +165,11 @@ export default async function HomePage() {
         );
       })()}
 
-      {/* Explore by type: attraction categories with published attractions */}
-      {categoryCards.length > 0 && (
-        <Block tone="mist" title="Explore by type" subtitle="Find attractions by what they are." more={{ href: "/attractions", label: "All attractions" }}>
-          <ul className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-            {categoryCards.map((c) => (
-              <li key={c.id}><Link href={`/attractions?category=${c.slug}`} className="group relative block aspect-[4/3] overflow-hidden rounded-2xl bg-forest-dark">
-                <Photo media={c.cover ?? asMedia(categoryImages[c.slug])} sizes="(min-width:1024px) 25vw, 50vw" className="opacity-70 transition duration-500 group-hover:scale-105 motion-reduce:transition-none" />
-                <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent p-4 text-white"><span className="block font-serif text-lg font-semibold">{c.name}</span><span className="text-sm text-white/85">{c.count} {c.count === 1 ? "attraction" : "attractions"}</span></span>
-              </Link></li>
-            ))}
-          </ul>
-        </Block>
-      )}
-
       {/* Map: always on the homepage (the Map menu link moved here); districts live in the Explore Asanteman menu */}
       <Block title="Explore the map" subtitle="Attractions, places to stay, food and events with verified locations across Asanteman." more={{ href: "/map", label: "Open full map" }}>
         <Map points={points} center={[Number(mapCfg.center_lng ?? -1.6), Number(mapCfg.center_lat ?? 6.7)]} zoom={Number(mapCfg.zoom ?? 8)} />
         {points.length === 0 && <p className="mt-3 text-sm text-muted">Places appear on the map once their locations have been checked.</p>}
       </Block>
-
-      {on("attractions") && attractions.items.length > 0 && (
-        <Block title={sections.attractions?.title} subtitle={sections.attractions?.subtitle} more={{ href: "/attractions", label: "All attractions" }}>
-          <CardGrid>
-            {attractions.items.map((a) => (
-              <ContentCard key={a.id} href={`/attractions/${a.slug}`} title={a.name} summary={a.summary} media={a.cover} meta={a.community?.name ?? a.category?.name} badge={a.category?.name} />
-            ))}
-          </CardGrid>
-        </Block>
-      )}
 
       {/* D1. Upcoming ceremonies and festivals: only dates the organisers have confirmed */}
       {on("ceremonies") && ceremonies.items.length > 0 && (
@@ -264,21 +223,6 @@ export default async function HomePage() {
         </Block>
       )}
 
-      {on("communities") && communities.length > 0 && (
-        <Block title={sections.communities?.title} subtitle={sections.communities?.subtitle} more={{ href: "/communities", label: "All communities" }}>
-          <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-            {communities.slice(0, 8).map((c) => (
-              <li key={c.id}>
-                <Link href={`/communities/${c.slug}`} className="group relative block aspect-[4/3] overflow-hidden rounded-2xl bg-forest">
-                  <Photo media={c.cover} sizes="(min-width:1024px) 25vw, 50vw" className="opacity-80 transition duration-500 group-hover:scale-105" />
-                  <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4 font-serif text-lg font-semibold text-white">{c.name}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </Block>
-      )}
-
       {on("events") && events.items.length > 0 && (
         <Block tone="mist" title={sections.events?.title} subtitle={sections.events?.subtitle} more={{ href: "/events", label: "All events" }}>
           <ul className="grid gap-4 md:grid-cols-3">
@@ -325,16 +269,6 @@ export default async function HomePage() {
           </ul>
         </Block>
       )}
-
-      {/* Education, sports and transport: each part appears only when it has published records */}
-      {[{ cfg: educationCfg, data: education, heading: "Education and learning" }, { cfg: sportsCfg, data: sports, heading: "Sports and recreation" }, { cfg: transportCfg, data: transport, heading: "Getting around" }]
-        .filter((x) => x.data.items.length > 0).map((x, i) => (
-          <Block key={x.cfg.key} tone={i % 2 === 0 ? "mist" : undefined} title={x.heading} more={{ href: x.cfg.base, label: `All ${x.cfg.noun}s` }}>
-            <CardGrid>
-              {x.data.items.map((r) => <ContentCard key={r.id} href={`${x.cfg.base}/${r.slug}`} title={r.name} summary={r.summary} media={r.cover} meta={[x.cfg.kindColumn ? x.cfg.kinds?.[String(r[x.cfg.kindColumn])] : null, r.area?.name].filter(Boolean).join(" · ")} />)}
-            </CardGrid>
-          </Block>
-        ))}
 
       {/* I. Plan your visit: always available, these are working tools */}
       <Block title={sections.plan?.title ?? "Plan your visit"} subtitle={sections.plan?.subtitle ?? "Build an itinerary, read the travel guide or find places on the map."}>
@@ -391,24 +325,5 @@ export default async function HomePage() {
         )}
       </Container>
     </>
-  );
-}
-
-function Block({ title, subtitle, more, tone, children }: {
-  title?: string | null; subtitle?: string | null; more?: { href: string; label: string }; tone?: "mist"; children: React.ReactNode;
-}) {
-  return (
-    <section className={tone === "mist" ? "mt-20 bg-mist py-16" : "mt-20"}>
-      <Container>
-        <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
-          <div>
-            {title && <h2 className="text-3xl font-semibold text-forest sm:text-4xl">{title}</h2>}
-            {subtitle && <p className="mt-2 max-w-2xl text-muted">{subtitle}</p>}
-          </div>
-          {more && <Link href={more.href} className="inline-flex items-center gap-1 text-sm font-medium text-forest hover:underline">{more.label}<ArrowRight className="size-4" /></Link>}
-        </div>
-        {children}
-      </Container>
-    </section>
   );
 }
