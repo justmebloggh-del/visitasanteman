@@ -7,13 +7,15 @@ import { cn } from "@/lib/utils";
  * The logo is the round VISIT ASANTEMAN badge (public/brand/logo.png, cut from public/new-logo.jpeg); the name is already
  * written inside it, so there is no separate wordmark. The readable name and tagline are in the text for screen readers.
  */
-export function Wordmark({ className, size = "md" }: { tone?: "dark" | "light"; className?: string; size?: "md" | "lg" }) {
+export function Wordmark({ className, size = "md", animated }: { tone?: "dark" | "light"; className?: string; size?: "md" | "lg"; /** Entrance, glow and shimmer (header only). */ animated?: boolean }) {
   return (
     <span className={cn("inline-flex items-center", className)}>
-      <Image
-        src="/brand/logo.png" alt="" width={512} height={512} priority sizes={size === "lg" ? "7rem" : "4rem"}
-        className={cn("shrink-0 rounded-full", size === "lg" ? "size-28" : "size-14 sm:size-16")}
-      />
+      <span className={cn("rounded-full", animated && "logo-anim")}>
+        <Image
+          src="/brand/logo.png" alt="" width={512} height={512} priority sizes={size === "lg" ? "7rem" : "4rem"}
+          className={cn("shrink-0 rounded-full object-contain", size === "lg" ? "size-28" : "size-12 sm:size-16")}
+        />
+      </span>
       <span className="sr-only">{siteConfig.name}. {siteConfig.tagline}</span>
     </span>
   );

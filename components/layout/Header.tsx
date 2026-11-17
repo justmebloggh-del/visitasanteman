@@ -6,7 +6,7 @@ import { Menu, Search, X } from "lucide-react";
 import { Wordmark } from "@/components/brand/Wordmark";
 import { ButtonLink } from "@/components/ui";
 import { DesktopNav, MobileNav, type NavDistrict } from "@/components/layout/MainNav";
-import { planVisit, siteConfig } from "@/config/site";
+import { planVisit } from "@/config/site";
 import { AccountMenu } from "@/components/layout/AccountMenu";
 
 export function Header({ districts = [] }: { districts?: NavDistrict[] }) {
@@ -20,8 +20,8 @@ export function Header({ districts = [] }: { districts?: NavDistrict[] }) {
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-white/95 backdrop-blur">
       <div className="mx-auto flex h-[4.75rem] max-w-7xl items-center gap-3 px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="shrink-0" aria-label={`${siteConfig.name}, home`}>
-          <Wordmark />
+        <Link href="/" className="shrink-0" aria-label="Visit Asanteman Homepage">
+          <Wordmark animated />
         </Link>
 
         <div className="ml-auto flex items-center gap-2">

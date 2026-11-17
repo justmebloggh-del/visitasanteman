@@ -175,3 +175,23 @@ h1, h2, h3 {
 
 .page-crumbs * { color: rgb(255 255 255 / 0.7); }
 .page-crumbs [aria-current] { color: #fff; }
+
+/* ───────── Header logo: a restrained entrance, gold glow and an occasional soft shimmer ─────────
+   The logo image itself is never altered. The glow and the shimmer are separate layers drawn over/around it, shaped to its
+   circle. Continuous effects run on wide screens only; phones get the entrance and the hover/tap glow. */
+.logo-anim { position: relative; display: inline-flex; border-radius: 9999px; animation: logo-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) backwards; transition: transform 0.35s ease, box-shadow 0.35s ease; }
+.logo-anim::before, .logo-anim::after { content: ""; position: absolute; inset: 0; border-radius: 9999px; pointer-events: none; }
+.logo-anim::before { box-shadow: 0 0 0 0 rgba(213, 166, 66, 0); }
+.logo-anim::after { background: linear-gradient(115deg, transparent 42%, rgba(255, 238, 180, 0.42) 50%, transparent 58%) 160% 0 / 260% 100% no-repeat; opacity: 0; }
+.logo-anim:hover { transform: scale(1.02); box-shadow: 0 0 16px 2px rgba(213, 166, 66, 0.4); }
+@keyframes logo-in { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+@keyframes logo-glow { 0%, 100% { box-shadow: 0 0 0 0 rgba(213, 166, 66, 0); } 50% { box-shadow: 0 0 14px 2px rgba(213, 166, 66, 0.38); } }
+@keyframes logo-sheen { 0%, 70% { background-position: 160% 0; opacity: 0; } 74% { opacity: 1; } 96% { opacity: 1; } 100% { background-position: -60% 0; opacity: 0; } }
+@media (min-width: 640px) {
+  .logo-anim::before { animation: logo-glow 6s ease-in-out 1.2s infinite; }
+  .logo-anim::after { animation: logo-sheen 11s ease-in-out 3s infinite; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .logo-anim, .logo-anim::before, .logo-anim::after { animation: none !important; }
+  .logo-anim:hover { transform: none; }
+}
