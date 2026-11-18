@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CheckCircle2, Circle } from "lucide-react";
+import { InboxPanel } from "@/components/admin/InboxPanel";
 import { AdminHeader, StatusBadge } from "@/components/admin/ui";
 import { accommodationTypes, businessTypes, restaurantTypes } from "@/config/site";
 import { requireStaff } from "@/lib/auth/session";
@@ -61,6 +62,7 @@ export default async function Dashboard() {
   return (
     <>
       <AdminHeader title="Dashboard" intro="Overview of the platform." />
+      <InboxPanel />
       <ul className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
         {stats.map((s) => (
           <li key={s.label}><Link href={s.href} className="block rounded-2xl border border-line bg-white p-5 transition hover:shadow-md">

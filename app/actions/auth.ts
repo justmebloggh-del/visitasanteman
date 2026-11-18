@@ -33,14 +33,20 @@ export async function login(_prev: FormState, formData: FormData): Promise<FormS
       console.error("[login] blocked by Supabase CAPTCHA protection:", error.message);
       return { ok: false, message: "Sign-in is temporarily unavailable because of a security setting on the service. Please try again later or contact the site team." };
     }
+    console.error("[login] rejected:", error.code ?? error.status, error.message);
     const unconfirmed = /confirm/i.test(error.message);
     return { ok: false, message: unconfirmed ? "Please verify your email address first. Check your inbox." : "Incorrect email or password." };
   }
   // No specific page requested: staff go straight to the admin dashboard.
   const target = safeNext(formData.get("next"), "");
-  if (target) redirect(target);
   const user = await getSessionUser();
-  redirect(user && (isStaff(user.role) || canManageMedia(user.role)) ? "/admin" : "/");
+  const hasAdminAccess = !!user && (isStaff(user.role) || canManageMedia(user.role));
+  // Signed in, but the account is not an administrator: say so here, instead of bouncing to the homepage with no explanation.
+  if (target.startsWith("/admin") && !hasAdminAccess) {
+    return { ok: false, message: "You are signed in, but this account does not have administrator access yet. A super administrator must give it the admin role." };
+  }
+  if (target) redirect(target);
+  redirect(hasAdminAccess ? "/admin" : "/");
 }
 
 export async function register(_prev: FormState, formData: FormData): Promise<FormState> {
