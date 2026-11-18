@@ -11,6 +11,9 @@ import {
 
 const NOT_CONFIGURED: FormState = { ok: false, message: "Sign-in is not available yet because the service is not configured." };
 
+/** The Cloudflare Turnstile token, when the form carried one. Supabase checks it only if CAPTCHA is switched on for the project. */
+const captchaToken = (fd: FormData) => String(fd.get("cf-turnstile-response") ?? "").slice(0, 4096) || undefined;
+
 /** Only allow same-site relative redirects (prevents open redirects). */
 function safeNext(next: FormDataEntryValue | null, fallback = "/"): string {
   const v = typeof next === "string" ? next : "";
@@ -24,14 +27,14 @@ export async function login(_prev: FormState, formData: FormData): Promise<FormS
   if (!(await rateLimit("login", 8, 10 * 60_000))) return { ok: false, message: "Too many attempts. Please wait a few minutes." };
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword(parsed.data);
+  const { error } = await supabase.auth.signInWithPassword({ ...parsed.data, options: { captchaToken: captchaToken(formData) } });
   if (error) {
     // Do not reveal whether the account exists.
     // A CAPTCHA switched on in the Supabase dashboard rejects every sign-in that carries no CAPTCHA token (this site sends none).
     // Say so plainly instead of blaming the password.
     if (error.code === "captcha_failed" || /captcha/i.test(error.message)) {
       console.error("[login] blocked by Supabase CAPTCHA protection:", error.message);
-      return { ok: false, message: "Sign-in is temporarily unavailable because of a security setting on the service. Please try again later or contact the site team." };
+      return { ok: false, message: "The security check did not complete. Please wait for the check to finish, then try again." };
     }
     console.error("[login] rejected:", error.code ?? error.status, error.message);
     const unconfirmed = /confirm/i.test(error.message);
@@ -60,7 +63,7 @@ export async function register(_prev: FormState, formData: FormData): Promise<Fo
     email: parsed.data.email,
     password: parsed.data.password,
     // Role is NOT sent from here; the database trigger always assigns 'visitor'.
-    options: { data: { full_name: parsed.data.full_name }, emailRedirectTo: `${SITE_URL}/auth/callback` },
+    options: { data: { full_name: parsed.data.full_name }, emailRedirectTo: `${SITE_URL}/auth/callback`, captchaToken: captchaToken(formData) },
   });
   if (error) {
     console.error("[register]", error.message);
@@ -78,6 +81,7 @@ export async function requestPasswordReset(_prev: FormState, formData: FormData)
   const supabase = await createClient();
   const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email, {
     redirectTo: `${SITE_URL}/auth/callback?next=/reset-password`,
+    captchaToken: captchaToken(formData),
   });
   if (error) console.error("[reset]", error.message);
   // Same answer either way so accounts cannot be enumerated.

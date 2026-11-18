@@ -2,10 +2,14 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { requireStaff } from "@/lib/auth/session";
 import { statusLabels, isUserFacing } from "@/lib/bookings";
 import { SITE_URL } from "@/lib/env";
 import { sendEmail } from "@/lib/notifications/email";
 import { createClient } from "@/lib/supabase/server";
+
+/** Only same-site paths, so a tampered return address cannot send someone to another website. */
+const safeBack = (b: string) => (b.startsWith("/") && !b.startsWith("//") && !b.includes("\\") ? b : "/");
 
 /**
  * Used by providers (partner portal) and staff (admin). Authorisation is enforced by the database
@@ -38,15 +42,19 @@ export async function manageBooking(bookingId: string, status: string, back: str
 }
 
 export async function moderateReview(id: string, status: "published" | "rejected", back: string) {
+  await requireStaff();
+  if (status !== "published" && status !== "rejected") redirect(`${safeBack(back)}?error=1`);
   const supabase = await createClient();
   await supabase.from("reviews").update({ status }).eq("id", id);   // RLS: staff only
   revalidatePath("/", "layout");
-  redirect(`${back}?saved=1`);
+  redirect(`${safeBack(back)}?saved=1`);
 }
 
 export async function replyToReview(id: string, back: string, fd: FormData) {
   const supabase = await createClient();
+  const { data: auth } = await supabase.auth.getUser();
+  if (!auth.user) redirect("/login");
   await supabase.rpc("reply_to_review", { p_review: id, p_reply: String(fd.get("reply") ?? "").slice(0, 1000) });
   revalidatePath("/", "layout");
-  redirect(`${back}?saved=1`);
+  redirect(`${safeBack(back)}?saved=1`);
 }

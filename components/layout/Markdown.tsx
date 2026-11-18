@@ -8,7 +8,7 @@ export function Markdown({ children }: { children: string }) {
         components={{
           a: ({ href, children: c }) => {
             const external = /^https?:\/\//.test(href ?? "");
-            const ok = external || (href ?? "").startsWith("/") || (href ?? "").startsWith("#") || (href ?? "").startsWith("mailto:");
+            const ok = external || ((href ?? "").startsWith("/") && !(href ?? "").startsWith("//")) || (href ?? "").startsWith("#") || (href ?? "").startsWith("mailto:");
             return ok ? <a href={href} {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}>{c}</a> : <span>{c}</span>;
           },
         }}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { CaptchaWidget } from "@/components/forms/CaptchaWidget";
 import { SubmitButton } from "@/components/forms/SubmitButton";
 import { Field, Input, Notice } from "@/components/ui";
 import type { FormState } from "@/lib/validations/forms";
@@ -35,10 +36,11 @@ export function AuthForm({ mode, action, next }: { mode: Mode; action: Action; n
         </Field>
       )}
       {mode !== "forgot" && (
-        <Field label={mode === "reset" ? "New password" : "Password"} htmlFor="password" error={err.password} hint={mode === "login" ? undefined : "At least 8 characters."}>
+        <Field label={mode === "reset" ? "New password" : "Password"} htmlFor="password" error={err.password} hint={mode === "login" ? undefined : "At least 10 characters."}>
           <Input id="password" name="password" type="password" autoComplete={mode === "login" ? "current-password" : "new-password"} required aria-invalid={!!err.password} />
         </Field>
       )}
+      {mode !== "reset" && <CaptchaWidget resetSignal={state} />}
       <SubmitButton className="w-full" pendingText={copy[mode].pending}>{copy[mode].cta}</SubmitButton>
     </form>
   );

@@ -34,7 +34,7 @@ export const loginSchema = z.object({
 export const registerSchema = z.object({
   full_name: text(120).min(2, "Enter your full name"),
   email: z.string().trim().toLowerCase().email("Enter a valid email address"),
-  password: z.string().min(8, "Use at least 8 characters").max(72),
+  password: z.string().min(10, "Use at least 10 characters").max(72),
 });
 
 export const forgotSchema = z.object({
@@ -42,7 +42,7 @@ export const forgotSchema = z.object({
 });
 
 export const resetSchema = z.object({
-  password: z.string().min(8, "Use at least 8 characters").max(72),
+  password: z.string().min(10, "Use at least 10 characters").max(72),
 });
 
 export type FormState = { ok?: boolean; message?: string; errors?: Record<string, string> };

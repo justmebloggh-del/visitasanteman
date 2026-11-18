@@ -27,3 +27,5 @@ Set locally in `.env.local` (git-ignored) and in production in Vercel → Projec
 ## Rules
 - The Supabase **service-role key** is used **only** by the payment module (`lib/payments`, via `lib/supabase/admin.ts`). Keep it server-only, never in a `NEXT_PUBLIC_` variable, and do not import the admin client anywhere else.
 - Never put secrets in the database (`site_settings` is publicly readable) or in documentation.
+
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | No | Yes | Cloudflare Turnstile site key (public). Needed only when CAPTCHA is on in Supabase (Authentication, Attack Protection, provider Turnstile, with its secret key). Without it the sign-in forms send no CAPTCHA token |

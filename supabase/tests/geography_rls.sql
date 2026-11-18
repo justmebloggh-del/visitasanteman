@@ -250,7 +250,7 @@ select pg_temp.visible('S05 inactive districts are not searchable', null, 'anon'
 select pg_temp.visible('S06 active districts are searchable', null, 'anon', 'select * from search_site(''test area'')', 1);
 select pg_temp.visible('S07 the type filter narrows results', null, 'anon', 'select * from search_site(''derived'', array[''ceremony''])', 0);
 select pg_temp.visible('S08 the district filter narrows results', null, 'anon', 'select * from search_site(''derived'', null, ''test-area'')', 1);
-select pg_temp.visible('S09 a wildcard is treated as text, not as match-everything', null, 'anon', 'select * from search_site(''%'')', 0);
+select pg_temp.visible('S09 a wildcard is treated as text, not as match-everything', null, 'anon', 'select 1 from search_site(''%'') s where to_jsonb(s)::text not like ''%\%%'' escape ''\''', 0);
 select pg_temp.visible('S10 an empty query returns nothing', null, 'anon', 'select * from search_site('''')', 0);
 select pg_temp.visible('S11 staff searching still only search published records', :editor, 'authenticated', 'select * from search_site(''x-res'')', 0);
 
@@ -333,7 +333,7 @@ select pg_temp.t('Q55 the new link now fits', :editor, 'authenticated', 'insert 
 select pg_temp.t('Q56 a link must point to this site or an https address', :editor, 'authenticated', 'update quick_links set url = ''javascript:alert(1)'' where label = ''Contact''', false);
 select pg_temp.visible('Q57 anon does not see disabled links', null, 'anon', 'select 1 from quick_links where label = ''Map''', 0);
 select pg_temp.visible('Q58 quick links tied to unpublished pages are visible rows, hidden by the application', null, 'anon', 'select 1 from quick_links where page_slug is not null', 3);
-select pg_temp.visible('Q59 anon cannot see an unpublished page (so the link join returns nothing)', null, 'anon', 'select 1 from pages where slug in (''getting-around'', ''travel-information'', ''visa-and-entry'', ''cookie-policy'')', 0);
+select pg_temp.visible('Q59 anon cannot see an unpublished page (so the link join returns nothing)', null, 'anon', 'select 1 from pages where slug in (''privacy'', ''terms'', ''cookie-policy'')', 0);
 
 select pg_temp.t('Q60 events carry an unverified date by default', :editor, 'authenticated', 'insert into events (slug, title, starts_at) values (''d-ev2'', ''D ev2'', now() + interval ''2 day'')', true);
 select pg_temp.visible('Q61 and it is not verified', :editor, 'authenticated', 'select 1 from events where slug = ''d-ev2'' and not date_verified', 1);

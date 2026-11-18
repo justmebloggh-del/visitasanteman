@@ -22,7 +22,7 @@ const registerBusinessSchema = z.object({
   business_name: z.string().trim().min(2, "Enter your business name").max(150),
   account_type: z.enum(ACCOUNT_TYPES, { message: "Choose your business type" }),
   email: z.string().trim().toLowerCase().email("Enter a valid email address"),
-  password: z.string().min(8, "Use at least 8 characters").max(72),
+  password: z.string().min(10, "Use at least 10 characters").max(72),
 });
 
 export async function registerBusiness(_prev: FormState, fd: FormData): Promise<FormState> {
