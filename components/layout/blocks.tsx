@@ -40,7 +40,7 @@ export function PageHeader({ title, intro, crumbs }: { title: string; intro?: st
 export function StaticPhoto({ image, className = "", priority, sizes, decorative }: { image: ImageKey; className?: string; priority?: boolean; sizes?: string; decorative?: boolean }) {
   const i = images[image];
   return (
-    <Image src={i.src} alt={decorative ? "" : i.alt} width={i.width} height={i.height} unoptimized priority={priority} sizes={sizes}
+    <Image src={i.src} alt={decorative ? "" : i.alt} width={i.width} height={i.height} quality={90} priority={priority} sizes={sizes ?? "(min-width:1024px) 22rem, 100vw"}
       className={`h-auto w-auto max-w-full ${className}`} />
   );
 }
@@ -57,7 +57,7 @@ export function Photo({ media, sizes, className, priority, position }: {
       </div>
     );
   }
-  return <Image src={src} alt={media?.alt_text ?? ""} fill sizes={sizes} priority={priority} unoptimized={src.startsWith("/")} className={`object-cover ${className ?? ""}`} style={position ? { objectPosition: position } : undefined} />;
+  return <Image src={src} alt={media?.alt_text ?? ""} fill sizes={sizes} priority={priority} quality={src.startsWith("/") ? 90 : undefined} className={`object-cover ${className ?? ""}`} style={position ? { objectPosition: position } : undefined} />;
 }
 
 /* ── Generic content card ── */
@@ -67,11 +67,12 @@ export function ContentCard({ href, title, summary, media, meta, badge, badgeTon
 }) {
   return (
     <Link href={href} className="group flex flex-col overflow-hidden rounded-2xl border border-line bg-white transition hover:-translate-y-0.5 hover:shadow-lg">
-      <div className="relative aspect-[4/3] overflow-hidden">
+      <div className={`relative aspect-[4/3] overflow-hidden ${media ? "" : "hidden sm:block"}`}>
         <Photo media={media} sizes="(min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw" className="transition duration-500 group-hover:scale-105" />
         {badge && <Badge tone={badgeTone ?? "green"} className="absolute left-3 top-3 bg-white/95">{badge}</Badge>}
       </div>
-      <div className="flex flex-1 flex-col p-5">
+      <div className="flex flex-1 flex-col p-4 sm:p-5">
+        {!media && badge && <Badge tone={badgeTone ?? "green"} className="mb-2 self-start sm:hidden">{badge}</Badge>}
         {meta && <p className="mb-1 text-xs font-medium uppercase tracking-wide text-lake-dark">{meta}</p>}
         <h3 className="text-lg font-semibold text-forest">{title}</h3>
         {summary && <p className="mt-2 line-clamp-3 text-sm text-muted">{summary}</p>}
@@ -218,7 +219,7 @@ export function Block({ title, subtitle, more, tone, children }: {
             {title && <h2 className="text-3xl font-semibold text-forest sm:text-4xl">{title}</h2>}
             {subtitle && <p className="mt-2 max-w-2xl text-muted">{subtitle}</p>}
           </div>
-          {more && <Link href={more.href} className="inline-flex items-center gap-1 text-sm font-medium text-forest hover:underline">{more.label}<ArrowRight className="size-4" /></Link>}
+          {more && <Link href={more.href} className="inline-flex min-h-11 items-center gap-1 text-sm font-medium text-forest hover:underline">{more.label}<ArrowRight className="size-4" /></Link>}
         </div>
         {children}
       </Container>

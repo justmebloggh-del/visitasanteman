@@ -18,7 +18,7 @@ export function HashtagTicker({ text }: { text: string }) {
         </div>
       </div>
       <button type="button" onClick={() => setPaused((p) => !p)} aria-pressed={paused} aria-label={paused ? "Play the hashtag animation" : "Pause the hashtag animation"}
-        className="ticker-control grid size-9 shrink-0 place-items-center rounded-full border border-white/30 text-white hover:bg-white/10">
+        className="ticker-control grid size-11 shrink-0 sm:size-9 place-items-center rounded-full border border-white/30 text-white hover:bg-white/10">
         {paused ? <Play className="size-4" aria-hidden /> : <Pause className="size-4" aria-hidden />}
       </button>
     </div>

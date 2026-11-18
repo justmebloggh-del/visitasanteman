@@ -18,7 +18,7 @@ export function Header({ districts = [] }: { districts?: NavDistrict[] }) {
   }, [open]);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-white/95 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b-2 border-gold bg-white/95 backdrop-blur">
       {/* The top bar (logo, search, account) is coloured with the kente cloth; the menu bar below is unchanged. */}
       <div className="nav-kente">
       <div className="mx-auto flex h-14 max-w-7xl sm:h-[4.75rem] items-center gap-3 px-4 sm:px-6 lg:px-8">

@@ -62,7 +62,8 @@ export function WelcomeSlideshow({ slides, interval = 5500, className }: { slide
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/65 to-transparent" aria-hidden />
 
         <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 p-4 text-white">
-          <div className="flex items-center gap-1.5" role="group" aria-label="Choose a photograph">
+          <p className="rounded-full bg-black/35 px-3 py-1 text-xs font-medium backdrop-blur sm:hidden" aria-hidden>{index + 1} / {count}</p>
+          <div className="hidden items-center gap-1.5 sm:flex" role="group" aria-label="Choose a photograph">
             {slides.map((s, i) => (
               <button key={s.src} type="button" onClick={() => go(i)} aria-label={`Show photograph ${i + 1}`} aria-current={i === index}
                 className={cn("h-2 rounded-full transition-all", i === index ? "w-6 bg-gold" : "w-2 bg-white/60 hover:bg-white")} />
@@ -70,11 +71,11 @@ export function WelcomeSlideshow({ slides, interval = 5500, className }: { slide
           </div>
           <div className="flex items-center gap-1">
             <button type="button" onClick={() => setPlaying((p) => !p)} aria-label={running ? "Pause slideshow" : "Play slideshow"}
-              className="grid size-9 place-items-center rounded-full bg-black/35 backdrop-blur hover:bg-black/55">
+              className="grid size-11 place-items-center rounded-full bg-black/35 backdrop-blur hover:bg-black/55 sm:size-9">
               {running ? <Pause className="size-4" aria-hidden /> : <Play className="size-4" aria-hidden />}
             </button>
-            <button type="button" onClick={() => go(index - 1)} aria-label="Previous photograph" className="grid size-9 place-items-center rounded-full bg-black/35 backdrop-blur hover:bg-black/55"><ChevronLeft className="size-5" aria-hidden /></button>
-            <button type="button" onClick={() => go(index + 1)} aria-label="Next photograph" className="grid size-9 place-items-center rounded-full bg-black/35 backdrop-blur hover:bg-black/55"><ChevronRight className="size-5" aria-hidden /></button>
+            <button type="button" onClick={() => go(index - 1)} aria-label="Previous photograph" className="grid size-11 place-items-center rounded-full bg-black/35 backdrop-blur hover:bg-black/55 sm:size-9"><ChevronLeft className="size-5" aria-hidden /></button>
+            <button type="button" onClick={() => go(index + 1)} aria-label="Next photograph" className="grid size-11 place-items-center rounded-full bg-black/35 backdrop-blur hover:bg-black/55 sm:size-9"><ChevronRight className="size-5" aria-hidden /></button>
           </div>
         </div>
       </div>

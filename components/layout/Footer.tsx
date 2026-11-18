@@ -54,7 +54,7 @@ export async function Footer() {
           {socials.length > 0 && (
             <ul className="mt-4 flex flex-wrap gap-3 text-sm">
               {socials.map(([name, url]) => (
-                <li key={name}><a href={safeUrl(String(url))!} rel="noopener noreferrer" target="_blank" className="underline-offset-4 hover:underline" aria-label={`${socialLabels[name] ?? name} (opens in a new tab)`}>{socialLabels[name] ?? name}</a></li>
+                <li key={name}><a href={safeUrl(String(url))!} rel="noopener noreferrer" target="_blank" className="inline-flex min-h-11 items-center sm:min-h-0 underline-offset-4 hover:underline" aria-label={`${socialLabels[name] ?? name} (opens in a new tab)`}>{socialLabels[name] ?? name}</a></li>
               ))}
             </ul>
           )}
@@ -70,11 +70,11 @@ export async function Footer() {
             {contact.phone && <li className="flex gap-2"><Phone className="mt-0.5 size-4 shrink-0" aria-hidden />{contact.phone}</li>}
             {contact.address && <li className="flex gap-2"><MapPin className="mt-0.5 size-4 shrink-0" aria-hidden />{contact.address}</li>}
             {whatsappLink(String(contact.whatsapp ?? ""), "Hello VisitAsanteman, I would like help planning a visit.") && <li><a href={whatsappLink(String(contact.whatsapp), "Hello VisitAsanteman, I would like help planning a visit.")!} target="_blank" rel="noopener noreferrer" className="hover:underline">Chat on WhatsApp</a></li>}
-            <li><Link href="/contact" className="hover:underline">Contact form</Link></li>
-            <li><Link href="/partner" className="hover:underline">List your business</Link></li>
-            <li><Link href="/advertise" className="hover:underline">Advertise with us</Link></li>
-            <li><Link href="/partner-with-us" className="hover:underline">Partner with us</Link></li>
-            <li><Link href="/contact?kind=partnership" className="hover:underline">Partnership enquiries</Link></li>
+            <li><Link href="/contact" className="inline-flex min-h-11 items-center sm:min-h-0 hover:underline">Contact form</Link></li>
+            <li><Link href="/partner" className="inline-flex min-h-11 items-center sm:min-h-0 hover:underline">List your business</Link></li>
+            <li><Link href="/advertise" className="inline-flex min-h-11 items-center sm:min-h-0 hover:underline">Advertise with us</Link></li>
+            <li><Link href="/partner-with-us" className="inline-flex min-h-11 items-center sm:min-h-0 hover:underline">Partner with us</Link></li>
+            <li><Link href="/contact?kind=partnership" className="inline-flex min-h-11 items-center sm:min-h-0 hover:underline">Partnership enquiries</Link></li>
           </ul>
           <div className="mt-5"><NewsletterForm compact /></div>
         </div>
@@ -85,7 +85,7 @@ export async function Footer() {
       <div className="border-t border-white/10">
         <Container className="flex flex-col gap-2 py-5 text-xs text-white/60 sm:flex-row sm:justify-between">
           <p>© {new Date().getFullYear()} {siteConfig.name}. {siteConfig.tagline}</p>
-          <p className="flex flex-wrap gap-4"><CookieSettingsButton className="hover:text-white" /><Link href="/cookie-policy" className="hover:text-white">Cookie policy</Link><Link href="/about/our-mission" className="hover:text-white">Our mission</Link><Link href="/privacy" className="hover:text-white">Privacy policy</Link><Link href="/terms" className="hover:text-white">Terms and conditions</Link></p>
+          <p className="flex flex-wrap gap-x-4"><CookieSettingsButton className="inline-flex min-h-11 items-center hover:text-white sm:min-h-0" /><Link href="/cookie-policy" className="inline-flex min-h-11 items-center hover:text-white sm:min-h-0">Cookie policy</Link><Link href="/about/our-mission" className="inline-flex min-h-11 items-center hover:text-white sm:min-h-0">Our mission</Link><Link href="/privacy" className="inline-flex min-h-11 items-center hover:text-white sm:min-h-0">Privacy policy</Link><Link href="/terms" className="inline-flex min-h-11 items-center hover:text-white sm:min-h-0">Terms and conditions</Link></p>
         </Container>
       </div>
     </footer>
@@ -96,8 +96,8 @@ function FooterList({ title, links }: { title: string; links: { href: string; la
   return (
     <div>
       <h2 className="font-serif text-lg font-semibold text-white">{title}</h2>
-      <ul className="mt-3 space-y-2 text-sm">
-        {links.map((l) => <li key={l.href}><Link href={l.href} className="hover:text-white hover:underline">{l.label}</Link></li>)}
+      <ul className="mt-2 space-y-0 text-sm sm:mt-3 sm:space-y-2">
+        {links.map((l) => <li key={l.href}><Link href={l.href} className="inline-flex min-h-11 items-center hover:text-white hover:underline sm:min-h-0">{l.label}</Link></li>)}
       </ul>
     </div>
   );

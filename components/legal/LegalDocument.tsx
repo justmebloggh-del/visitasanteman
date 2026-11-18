@@ -8,7 +8,7 @@ export function LegalDocument({ doc }: { doc: LegalDoc }) {
       <p className="mt-3 text-sm text-muted">Last updated: {doc.updated}. This is a draft that is awaiting legal review.</p>
       <nav aria-label="On this page" className="mt-6 rounded-xl bg-mist p-4">
         <ul className="grid gap-1 text-sm sm:grid-cols-2">
-          {doc.sections.map((s) => <li key={s.id}><a href={`#${s.id}`} className="text-lake-dark underline-offset-2 hover:underline">{s.title}</a></li>)}
+          {doc.sections.map((s) => <li key={s.id}><a href={`#${s.id}`} className="inline-flex min-h-11 items-center text-lake-dark underline-offset-2 hover:underline sm:min-h-0">{s.title}</a></li>)}
         </ul>
       </nav>
       <div className="mt-10 space-y-9">

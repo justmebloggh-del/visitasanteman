@@ -9,6 +9,7 @@ import { ButtonLink, Container } from "@/components/ui";
 import { AdSlot } from "@/components/ads/AdSlot";
 import { Map } from "@/components/maps/Map";
 import { SearchBox } from "@/components/layout/SearchBox";
+import { HeroVideo } from "@/components/home/HeroVideo";
 import { WelcomeSlideshow } from "@/components/home/WelcomeSlideshow";
 import { manhyiaSlides } from "@/config/manhyia";
 import { ceremonyKindLabels, stageLabels, eventStatusLabels, experienceCategoryLabels, listingTypeLabels, accommodationTypes, businessTypes, restaurantTypes, planVisit, type ListingType } from "@/config/site";
@@ -57,36 +58,26 @@ export default async function HomePage() {
     <>
       {/* Hero */}
       {on("hero") && (
-        <section className="relative isolate overflow-hidden bg-forest-dark text-white">
+        <section className="relative isolate mt-2 overflow-hidden bg-forest-dark text-white sm:mt-0">
           {/* Fallback layer: shown while the video loads and for visitors who prefer reduced motion */}
           {heroImg ? (
             <Image src={heroImg} alt={String(hero?.config?.image_alt ?? "")} fill priority sizes="100vw" className="-z-20 object-cover opacity-60" />
           ) : (
             <div className="absolute inset-0 -z-20 bg-gradient-to-br from-forest-dark via-forest to-lake-dark" aria-hidden />
           )}
-          <video
-            className="absolute inset-0 -z-10 size-full object-cover opacity-70 motion-reduce:hidden"
-            src="/hero-video.mp4"
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="metadata"
-            aria-hidden
-            tabIndex={-1}
-          />
+          <HeroVideo />
           <div className="absolute inset-0 -z-10 bg-gradient-to-t from-forest-dark/80 via-forest-dark/30 to-forest-dark/40" aria-hidden />
-          <Container className="flex min-h-[78vh] flex-col justify-center py-20">
-            <p className="mb-4 text-sm font-medium uppercase tracking-[0.2em] text-gold">Asanteman, Ghana</p>
-            <h1 className="max-w-3xl text-4xl font-semibold leading-tight sm:text-6xl">
+          <Container className="flex flex-col justify-center py-8 sm:min-h-[78vh] sm:py-20">
+            <p className="mb-2 text-xs font-medium uppercase tracking-[0.18em] text-gold sm:mb-4 sm:text-sm sm:tracking-[0.2em]">Asanteman, Ghana</p>
+            <h1 className="max-w-3xl text-[1.9rem] font-semibold leading-[1.15] sm:text-6xl sm:leading-tight">
               {hero?.title ?? "Discover Asanteman. Experience Our Heritage."}
             </h1>
-            <p className="mt-5 max-w-xl text-lg text-white/85">{hero?.subtitle || "Plan your visit to Asanteman, Ghana: its places, its people and its heritage, district by district."}</p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <ButtonLink href="/explore" variant="accent" size="lg">Explore Asanteman</ButtonLink>
-              <ButtonLink href={planVisit.href} variant="light" size="lg">{planVisit.label}</ButtonLink>
+            <p className="mt-3 line-clamp-3 max-w-xl text-base text-white/85 sm:mt-5 sm:line-clamp-none sm:text-lg">{hero?.subtitle || "Plan your visit to Asanteman, Ghana: its places, its people and its heritage, district by district."}</p>
+            <div className="mt-5 grid grid-cols-2 gap-2 sm:mt-8 sm:flex sm:flex-wrap sm:gap-3">
+              <ButtonLink href="/explore" variant="accent" size="lg" className="px-3 sm:px-8">Explore Asanteman</ButtonLink>
+              <ButtonLink href={planVisit.href} variant="light" size="lg" className="px-3 sm:px-8">{planVisit.label}</ButtonLink>
             </div>
-            <SearchBox className="mt-10 max-w-xl" />
+            <SearchBox className="mt-5 max-w-xl sm:mt-10" />
           </Container>
         </section>
       )}

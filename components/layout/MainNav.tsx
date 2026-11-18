@@ -147,11 +147,11 @@ function MobileDistricts({ item, districts, onNavigate }: { item: NavChild; dist
         {item.label}<ChevronDown className={cn("size-4 transition-transform motion-reduce:transition-none", open && "rotate-180")} aria-hidden />
       </button>
       <div id={id} hidden={!open} className="pb-2 pl-3">
-        <Link href={item.href} onClick={onNavigate} className="block py-2 text-sm font-medium text-forest underline underline-offset-2">All districts of Asanteman</Link>
+        <Link href={item.href} onClick={onNavigate} className="block py-3 text-sm font-medium text-forest underline underline-offset-2">All districts of Asanteman</Link>
         {groupedDistricts(districts).map((g) => (
           <div key={g.kind} className="mt-2">
             <p className="text-xs font-semibold uppercase tracking-wide text-gold-dark">{KIND_HEADINGS[g.kind]} ({g.items.length})</p>
-            <ul>{g.items.map((d) => <li key={d.slug}><Link href={`/districts/${d.slug}`} onClick={onNavigate} className="block py-1.5 text-sm text-ink/90">{d.name}</Link></li>)}</ul>
+            <ul>{g.items.map((d) => <li key={d.slug}><Link href={`/districts/${d.slug}`} onClick={onNavigate} className="block py-3 text-sm text-ink/90">{d.name}</Link></li>)}</ul>
           </div>
         ))}
       </div>

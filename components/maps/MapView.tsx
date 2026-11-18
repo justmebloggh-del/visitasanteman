@@ -127,7 +127,7 @@ export function MapView({ points, center, zoom = 11, filters = false, className 
           ))}
         </div>
       )}
-      <div ref={container} className={cn("h-[420px] w-full overflow-hidden rounded-2xl border border-line sm:h-[560px]", view === "list" && "hidden")} role="region" aria-label="Interactive map" />
+      <div ref={container} className={cn("h-[340px] w-full overflow-hidden rounded-2xl border border-line sm:h-[560px]", view === "list" && "hidden")} role="region" aria-label="Interactive map" />
       {view === "list" && (
         <ul className="divide-y divide-line rounded-2xl border border-line bg-white" aria-label="Places on the map">
           {visible.length === 0 && <li className="p-5 text-sm text-muted">No places match.</li>}

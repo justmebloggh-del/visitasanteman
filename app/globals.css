@@ -222,3 +222,14 @@ h1, h2, h3 {
   .page-crumbs li:last-child { flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
   .page-crumbs svg { width: 0.75rem; height: 0.75rem; }
 }
+
+/* ───────── Phones: comfortable touch and reading (under 640px) ─────────
+   Form fields are 16px so iPhones do not zoom in when one is tapped; pills, chips and links in the page are at least 44px tall;
+   breadcrumb links get a bigger tap area; map buttons are larger. */
+@media (max-width: 639px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]), select, textarea { font-size: 16px; }
+  main a.rounded-full, main button.rounded-full { min-height: 2.75rem; display: inline-flex; align-items: center; }
+  .page-crumbs a { display: inline-block; padding-block: 0.8rem; margin-block: -0.8rem; }
+  .maplibregl-map .maplibregl-ctrl-group button { width: 2.75rem; height: 2.75rem; }
+  .maplibregl-ctrl-attrib-button { width: 2rem; height: 2rem; }
+}

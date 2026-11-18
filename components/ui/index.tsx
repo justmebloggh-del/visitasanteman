@@ -13,7 +13,7 @@ const variants = {
   light: "bg-white text-forest hover:bg-mist",
   danger: "bg-red-700 text-white hover:bg-red-800",
 };
-const sizes = { sm: "h-9 px-4 text-sm", md: "h-11 px-6 text-sm", lg: "h-12 px-8 text-base" };
+const sizes = { sm: "h-11 px-4 text-sm sm:h-9", md: "h-11 px-6 text-sm", lg: "h-12 px-8 text-base" };
 
 export function buttonClasses(variant: keyof typeof variants = "primary", size: keyof typeof sizes = "md", extra?: string) {
   return cn(base, variants[variant], sizes[size], extra);
