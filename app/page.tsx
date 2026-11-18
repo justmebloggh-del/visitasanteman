@@ -84,13 +84,13 @@ export default async function HomePage() {
 
       {/* Quick links: managed in Admin, hidden while their page is unpublished */}
       {quickLinks.length > 0 && (
-        <Container className="relative z-10 -mt-8">
+        <Container className="relative z-10 mt-4 sm:-mt-8">
           <nav aria-label="Quick links">
-            <ul className="grid gap-3 rounded-2xl border border-line bg-white p-3 shadow-lg sm:grid-cols-3 lg:grid-cols-6">
+            <ul className="grid grid-cols-2 gap-2 rounded-2xl border border-line bg-white p-2 shadow-lg sm:grid-cols-3 sm:gap-3 sm:p-3 lg:grid-cols-6">
               {quickLinks.map((q) => {
                 const Icon = QUICK_ICONS[q.icon] ?? Compass;
                 return (
-                  <li key={q.id}><Link href={q.url} className="flex h-14 items-center justify-center gap-2 rounded-xl bg-mist px-3 text-center text-sm font-medium text-forest hover:bg-forest hover:text-white">
+                  <li key={q.id}><Link href={q.url} className="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-mist px-2 py-1 text-center text-[0.9rem] font-medium leading-tight text-forest hover:bg-forest hover:text-white active:bg-forest active:text-white sm:h-14 sm:px-3 sm:text-sm">
                     <Icon className="size-4 shrink-0" aria-hidden />{q.label}</Link></li>
                 );
               })}
