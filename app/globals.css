@@ -208,3 +208,17 @@ h1, h2, h3 {
    search and account buttons stay clear. The menu bar underneath is untouched. */
 .nav-kente { position: relative; isolation: isolate; background: #0d3828 url("/brand/kente-texture.jpg") center / cover no-repeat; }
 .nav-kente::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(10, 46, 33, 0.82) 0%, rgba(10, 46, 33, 0.7) 100%); }
+
+/* Phones: a slimmer header and banner so the page content starts higher. The kente cloth is kept, calmer under a darker veil, and
+   the breadcrumb stays on one line. From 640px up nothing here applies. */
+@media (max-width: 639px) {
+  .kente-strip { height: 10px; background-size: 46px 10px; }
+  .nav-kente::before { background: linear-gradient(90deg, rgba(10, 46, 33, 0.88) 0%, rgba(10, 46, 33, 0.8) 100%); }
+  .banner .kente-veil { background: linear-gradient(180deg, rgba(10, 46, 33, 0.86) 0%, rgba(10, 46, 33, 0.74) 100%); }
+  .page-crumbs { font-size: 0.75rem; }
+  .page-crumbs nav, .page-crumbs ol { max-width: 100%; }
+  .page-crumbs ol { flex-wrap: nowrap; white-space: nowrap; }
+  .page-crumbs li { flex-shrink: 0; }
+  .page-crumbs li:last-child { flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .page-crumbs svg { width: 0.75rem; height: 0.75rem; }
+}

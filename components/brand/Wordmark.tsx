@@ -13,7 +13,7 @@ export function Wordmark({ className, size = "md", animated }: { tone?: "dark" |
       <span className={cn("rounded-full", animated && "logo-anim")}>
         <Image
           src="/brand/logo.png" alt="" width={512} height={512} priority sizes={size === "lg" ? "7rem" : "4rem"}
-          className={cn("shrink-0 rounded-full object-contain", size === "lg" ? "size-28" : "size-12 sm:size-16")}
+          className={cn("shrink-0 rounded-full object-contain", size === "lg" ? "size-28" : "size-11 sm:size-16")}
         />
       </span>
       <span className="sr-only">{siteConfig.name}. {siteConfig.tagline}</span>
