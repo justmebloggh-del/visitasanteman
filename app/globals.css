@@ -29,6 +29,8 @@
 
 html {
   scroll-behavior: smooth;
+  /* Keeps a focused field, an anchor target or a scrolled-to button clear of the sticky header. */
+  scroll-padding-top: 5.5rem;
 }
 
 body {

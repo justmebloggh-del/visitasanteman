@@ -1,78 +1,113 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Briefcase, CalendarDays, ClipboardList, Compass, Map as MapIcon, Ticket } from "lucide-react";
-import { signOutAction } from "@/app/actions/account";
-import { DeleteRequest, PasswordForm, ProfileForm } from "@/components/account/AccountForms";
-import { PageHeader } from "@/components/layout/blocks";
-import { Button, Container } from "@/components/ui";
-import { getSessionUser, isStaff } from "@/lib/auth/session";
-import { landingPath } from "@/lib/auth/landing";
-import { createClient } from "@/lib/supabase/server";
+import { ArrowRight, Briefcase, CalendarDays, Compass, Map as MapIcon } from "lucide-react";
+import { Avatar } from "@/components/account/Avatar";
+import { ButtonLink } from "@/components/ui";
+import { firstName, getAccountSummary, initials } from "@/lib/account/summary";
+import { canManageMedia, getSessionUser, isStaff } from "@/lib/auth/session";
+import { formatDate } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "My account", robots: { index: false } };
-export const dynamic = "force-dynamic";
+const one = <T,>(x: T | T[] | null | undefined): T | null => (Array.isArray(x) ? x[0] ?? null : x ?? null);
 
-export default async function AccountPage() {
+export default async function AccountOverview() {
   const user = await getSessionUser();
   if (!user) redirect("/login?next=/account");
-  const supabase = await createClient();
-  const { data: profile } = await supabase.from("profiles").select("full_name,phone").eq("id", user.id).maybeSingle();
-  const name = profile?.full_name || user.email || "";
+  const { profile, counts, recent } = await getAccountSummary(user.id);
+  const name = profile?.full_name || "";
+  const total = Object.values(counts).reduce((a, b) => a + b, 0);
 
-  const links = [
-    { href: "/account/bookings", icon: Ticket, title: "My bookings", text: "Requests and bookings you have made." },
-    { href: "/account/applications", icon: ClipboardList, title: "Applications and saved jobs", text: "Follow your job applications." },
-    { href: "/travel-planner", icon: MapIcon, title: "My travel plans", text: "Plans you have saved or shared." },
-    { href: "/events", icon: CalendarDays, title: "Events", text: "Find events and register." },
-    { href: "/jobs", icon: Briefcase, title: "Jobs", text: "Browse vacancies in Asanteman." },
-    { href: "/explore", icon: Compass, title: "Explore Asanteman", text: "Places, culture and plans." },
+  const tiles = [
+    { label: "Bookings", value: counts.bookings, href: "/account/bookings" },
+    { label: "Events I registered for", value: counts.events, href: "/account/events" },
+    { label: "Job applications", value: counts.applications, href: "/account/applications" },
+    { label: "Saved jobs", value: counts.saved, href: "/account/saved" },
+    { label: "Travel plans", value: counts.plans, href: "/account/plans" },
   ];
-  const extra = [
-    ...(isStaff(user.role) || user.role === "media_manager" ? [{ href: "/admin", title: "Admin dashboard" }] : []),
+
+  type Activity = { id: string; when: string; label: string; text: string; href: string };
+  const activity: Activity[] = [
+    ...recent.bookings.map((b) => ({ id: "b" + b.reference, when: b.created_at, label: "Booking", text: `${b.reference} · ${String(b.status).replace("_", " ")}`, href: "/account/bookings" })),
+    ...recent.applications.map((a) => ({ id: "a" + a.id, when: a.created_at, label: "Application", text: `${one(a.vacancy)?.title ?? "Vacancy"} · ${a.status}`, href: "/account/applications" })),
+    ...recent.events.map((e) => ({ id: "e" + e.id, when: e.created_at, label: "Event", text: `Registered for ${one(e.event)?.title ?? "an event"}`, href: "/account/events" })),
+    ...recent.plans.map((p) => ({ id: "p" + p.id, when: p.updated_at, label: "Plan", text: p.title, href: `/travel-planner/${p.id}` })),
+  ].sort((x, y) => +new Date(y.when) - +new Date(x.when)).slice(0, 6);
+
+  const next = [
+    { href: "/travel-planner", icon: MapIcon, title: "Plan a trip", text: "Build a day-by-day plan from real places." },
+    { href: "/events", icon: CalendarDays, title: "Find an event", text: "Register for free events." },
+    { href: "/jobs", icon: Briefcase, title: "Find a job", text: "Apply without paying a fee." },
+    { href: "/explore", icon: Compass, title: "Explore Asanteman", text: "Places, culture and districts." },
+  ];
+  const shortcuts = [
+    ...(isStaff(user.role) || canManageMedia(user.role) ? [{ href: "/admin", title: "Admin dashboard" }] : []),
     ...(user.role === "partner" ? [{ href: "/partner/dashboard", title: "Business portal" }] : []),
-    { href: "/employer", title: "Employer area (post vacancies)" },
+    { href: "/employer", title: "Post a vacancy (employer area)" },
   ];
 
   return (
-    <>
-      <PageHeader title="My account" intro={`Welcome, ${name}.`} crumbs={[{ label: "My account" }]} />
-      <Container className="max-w-5xl space-y-12 py-10">
-        <section aria-labelledby="quick-h">
-          <h2 id="quick-h" className="sr-only">Your activity</h2>
-          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {links.map(({ href, icon: Icon, title, text }) => (
-              <li key={href}><Link href={href} className="flex h-full items-start gap-3 rounded-2xl border border-line bg-white p-4 transition hover:shadow-md">
-                <Icon className="mt-0.5 size-5 shrink-0 text-forest" aria-hidden /><span><span className="block font-medium text-forest">{title}</span><span className="block text-sm text-muted">{text}</span></span>
+    <div className="space-y-8">
+      <section className="flex flex-wrap items-center gap-4 rounded-2xl border border-line bg-white p-5 sm:p-6">
+        <Avatar text={initials(name, user.email)} />
+        <div className="min-w-0 flex-1 basis-40">
+          <h2 className="font-serif text-xl font-semibold text-forest sm:text-2xl">Welcome back, {firstName(name, user.email)}</h2>
+          <p className="truncate text-sm text-muted">{user.email}{profile?.created_at ? ` · member since ${formatDate(profile.created_at)}` : ""}</p>
+        </div>
+        <ButtonLink href="/travel-planner" variant="accent" className="w-full sm:w-auto">Plan a trip</ButtonLink>
+      </section>
+
+      {!profile?.phone && (
+        <p className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-gold-soft p-4 text-sm">
+          <span><strong>Finish your profile.</strong> Add a phone number so organisers and employers can reach you.</span>
+          <Link href="/account/profile" className="inline-flex min-h-11 items-center font-medium text-forest underline underline-offset-2">Add it now</Link>
+        </p>
+      )}
+
+      <section aria-labelledby="tiles-h">
+        <h2 id="tiles-h" className="sr-only">At a glance</h2>
+        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
+          {tiles.map((t) => (
+            <li key={t.label}><Link href={t.href} className="block h-full rounded-2xl border border-line bg-white p-4 transition hover:shadow-md">
+              <span className="block font-serif text-3xl font-semibold text-forest">{t.value}</span><span className="text-sm text-muted">{t.label}</span>
+            </Link></li>
+          ))}
+        </ul>
+      </section>
+
+      <section aria-labelledby="act-h">
+        <h2 id="act-h" className="mb-3 font-serif text-xl font-semibold text-forest">{total === 0 ? "Get started" : "Recent activity"}</h2>
+        {total === 0 ? (
+          <div className="rounded-2xl border border-dashed border-line bg-white p-6">
+            <p className="text-muted">Nothing here yet. Your bookings, event registrations, job applications and saved plans will appear in this account as you use the site.</p>
+          </div>
+        ) : (
+          <ul className="divide-y divide-line rounded-2xl border border-line bg-white">
+            {activity.map((a) => (
+              <li key={a.id}><Link href={a.href} className="flex min-h-14 flex-wrap items-center justify-between gap-2 px-4 py-3 hover:bg-mist">
+                <span className="min-w-0"><span className="mr-2 inline-block rounded-full bg-forest-soft px-2.5 py-0.5 text-xs font-medium text-forest">{a.label}</span><span className="text-sm">{a.text}</span></span>
+                <span className="text-xs text-muted">{formatDate(a.when)}</span>
               </Link></li>
             ))}
           </ul>
-          <p className="mt-4 flex flex-wrap gap-x-6 text-sm">
-            {extra.map((e) => <Link key={e.href} href={e.href} className="inline-flex min-h-11 items-center font-medium text-lake-dark underline underline-offset-2 hover:no-underline">{e.title}</Link>)}
-          </p>
-        </section>
+        )}
+      </section>
 
-        <div className="grid gap-10 lg:grid-cols-2">
-          <section aria-labelledby="profile-h">
-            <h2 id="profile-h" className="mb-4 font-serif text-xl font-semibold text-forest">Your details</h2>
-            <ProfileForm fullName={profile?.full_name ?? ""} phone={profile?.phone ?? ""} email={user.email ?? ""} />
-          </section>
-          <section aria-labelledby="pw-h">
-            <h2 id="pw-h" className="mb-4 font-serif text-xl font-semibold text-forest">Change your password</h2>
-            <PasswordForm />
-          </section>
-        </div>
-
-        <section aria-labelledby="out-h" className="flex flex-wrap items-center justify-between gap-4 border-t border-line pt-8">
-          <div><h2 id="out-h" className="font-serif text-xl font-semibold text-forest">Sign out</h2><p className="text-sm text-muted">Signed in as {user.email}.</p></div>
-          <form action={signOutAction}><Button variant="outline">Sign out</Button></form>
-        </section>
-
-        <section aria-labelledby="del-h" className="rounded-2xl border border-line bg-mist p-6">
-          <h2 id="del-h" className="mb-3 font-serif text-xl font-semibold text-forest">Delete your account</h2>
-          <DeleteRequest />
-        </section>
-      </Container>
-    </>
+      <section aria-labelledby="next-h">
+        <h2 id="next-h" className="mb-3 font-serif text-xl font-semibold text-forest">What would you like to do?</h2>
+        <ul className="grid gap-3 sm:grid-cols-2">
+          {next.map(({ href, icon: Icon, title, text }) => (
+            <li key={href}><Link href={href} className="group flex min-h-16 items-center gap-3 rounded-2xl border border-line bg-white p-4 transition hover:shadow-md">
+              <span className="grid size-10 shrink-0 place-items-center rounded-full bg-forest-soft text-forest"><Icon className="size-5" aria-hidden /></span>
+              <span className="min-w-0 flex-1"><span className="block font-medium text-forest">{title}</span><span className="block text-sm text-muted">{text}</span></span>
+              <ArrowRight className="size-4 text-forest/60 transition group-hover:translate-x-0.5" aria-hidden />
+            </Link></li>
+          ))}
+        </ul>
+        <p className="mt-4 flex flex-wrap gap-x-6 text-sm">
+          {shortcuts.map((s) => <Link key={s.href} href={s.href} className="inline-flex min-h-11 items-center font-medium text-lake-dark underline underline-offset-2 hover:no-underline">{s.title}</Link>)}
+        </p>
+      </section>
+    </div>
   );
 }

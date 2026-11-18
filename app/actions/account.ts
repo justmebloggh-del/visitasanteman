@@ -67,3 +67,20 @@ export async function requestAccountDeletion(_prev: FormState): Promise<FormStat
   if (error) { console.error("[delete request]", error.message); return { ok: false, message: "We could not send your request. Please try again." }; }
   return { ok: true, message: "Your request has been sent. We will confirm by email once your account is deleted." };
 }
+
+/** Ends every session on every device, not only this one. */
+export async function signOutEverywhere(): Promise<void> {
+  const supabase = await createClient();
+  await supabase.auth.signOut({ scope: "global" });
+  redirect("/?signedout=1");
+}
+
+/** Cancels one of the signed-in person's own event registrations (the database checks it is theirs). */
+export async function cancelRegistration(id: string): Promise<void> {
+  await me();
+  if (!/^[0-9a-f-]{36}$/i.test(id)) redirect("/account/events?error=1");
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("cancel_my_registration", { p_id: id });
+  if (error) console.error("[cancel registration]", error.message);
+  redirect(`/account/events?${data ? "cancelled=1" : "error=1"}`);
+}

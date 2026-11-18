@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { buttonClasses } from "@/components/ui";
 import { supabaseConfigured } from "@/lib/env";
@@ -17,6 +17,7 @@ type State = { loading: true } | { loading: false; signedIn: boolean; staff: boo
 export function AccountMenu({ stacked, onDark }: { stacked?: boolean; /** Sits on the dark kente top bar. */ onDark?: boolean }) {
   const [state, setState] = useState<State>(supabaseConfigured ? { loading: true } : { loading: false, signedIn: false, staff: false });
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     if (!supabaseConfigured) return;
@@ -32,7 +33,8 @@ export function AccountMenu({ stacked, onDark }: { stacked?: boolean; /** Sits o
     load();
     const { data: sub } = supabase.auth.onAuthStateChange(() => load());
     return () => { active = false; sub.subscription.unsubscribe(); };
-  }, []);
+    // pathname: signing in or out happens on the server, so the menu checks again whenever the page changes.
+  }, [pathname]);
 
   if (state.loading) return <div className="h-10 w-28" aria-hidden />;
 

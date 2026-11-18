@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { deleteApplication, toggleSavedJob, withdrawApplication } from "@/app/actions/jobs";
-import { PageHeader } from "@/components/layout/blocks";
-import { Badge, Button, Container } from "@/components/ui";
+import { deleteApplication, withdrawApplication } from "@/app/actions/jobs";
+import { Badge, Button, ButtonLink } from "@/components/ui";
 import { applicationStatusLabels, type ApplicationStatus } from "@/config/jobs";
 import { getSessionUser } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
@@ -15,18 +14,14 @@ export default async function MyApplications() {
   const user = await getSessionUser();
   if (!user) redirect("/login?next=/account/applications");
   const supabase = await createClient();
-  const [{ data: apps }, { data: saved }] = await Promise.all([
-    supabase.from("job_applications").select("id,status,interview_at,created_at,cv_path,vacancy:job_vacancies(title,slug)").eq("applicant_id", user.id).order("created_at", { ascending: false }),
-    supabase.from("saved_jobs").select("vacancy:job_vacancies(id,title,slug)").eq("user_id", user.id).order("created_at", { ascending: false }),
-  ]);
+  const { data: apps } = await supabase.from("job_applications").select("id,status,interview_at,created_at,cv_path,vacancy:job_vacancies(title,slug)").eq("applicant_id", user.id).order("created_at", { ascending: false });
   type V = { title: string; slug: string } | null;
   const one = <T,>(x: T | T[] | null): T | null => (Array.isArray(x) ? x[0] ?? null : x);
   return (
     <>
-      <PageHeader title="My applications" crumbs={[{ label: "Jobs", href: "/jobs" }, { label: "My applications" }]} />
-      <Container className="max-w-3xl space-y-10 py-10">
+      <div className="max-w-3xl space-y-5">
         <section aria-labelledby="ap-h">
-          <h2 id="ap-h" className="mb-3 text-lg font-semibold text-forest">Applications</h2>
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-3"><h2 id="ap-h" className="font-serif text-2xl font-semibold text-forest">My applications</h2><ButtonLink href="/jobs" variant="accent">Browse jobs</ButtonLink></div>
           {(apps ?? []).length === 0 ? <p className="rounded-2xl bg-mist p-8 text-center text-muted">You have not applied for any jobs yet. <Link className="font-medium text-forest underline" href="/jobs">Browse vacancies</Link>.</p> : (
             <ul className="space-y-3">
               {apps!.map((a) => {
@@ -48,18 +43,7 @@ export default async function MyApplications() {
             </ul>
           )}
         </section>
-        <section aria-labelledby="sv-h">
-          <h2 id="sv-h" className="mb-3 text-lg font-semibold text-forest">Saved jobs</h2>
-          {(saved ?? []).length === 0 ? <p className="text-sm text-muted">No saved jobs.</p> : (
-            <ul className="space-y-2">
-              {saved!.map((s) => {
-                const v = one(s.vacancy as unknown as { id: string; title: string; slug: string } | { id: string; title: string; slug: string }[]);
-                return v ? <li key={v.id} className="flex items-center justify-between rounded-xl border border-line bg-white px-4 py-2"><Link className="text-forest hover:underline" href={`/jobs/${v.slug}`}>{v.title}</Link><form action={toggleSavedJob.bind(null, v.id, v.slug)}><Button type="submit" size="sm" variant="ghost">Remove</Button></form></li> : null;
-              })}
-            </ul>
-          )}
-        </section>
-      </Container>
+      </div>
     </>
   );
 }

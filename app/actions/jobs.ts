@@ -182,6 +182,8 @@ export async function toggleSavedJob(vacancyId: string, slug: string): Promise<v
   else await supabase.from("saved_jobs").insert({ vacancy_id: vacancyId, user_id: user.id });
   revalidatePath(`/jobs/${slug}`);
   revalidatePath("/account/applications");
+  revalidatePath("/account/saved");
+  revalidatePath("/account");
 }
 
 export async function reportVacancy(_prev: FormState, fd: FormData): Promise<FormState> {
