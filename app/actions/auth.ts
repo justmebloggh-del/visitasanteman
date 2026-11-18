@@ -27,6 +27,12 @@ export async function login(_prev: FormState, formData: FormData): Promise<FormS
   const { error } = await supabase.auth.signInWithPassword(parsed.data);
   if (error) {
     // Do not reveal whether the account exists.
+    // A CAPTCHA switched on in the Supabase dashboard rejects every sign-in that carries no CAPTCHA token (this site sends none).
+    // Say so plainly instead of blaming the password.
+    if (error.code === "captcha_failed" || /captcha/i.test(error.message)) {
+      console.error("[login] blocked by Supabase CAPTCHA protection:", error.message);
+      return { ok: false, message: "Sign-in is temporarily unavailable because of a security setting on the service. Please try again later or contact the site team." };
+    }
     const unconfirmed = /confirm/i.test(error.message);
     return { ok: false, message: unconfirmed ? "Please verify your email address first. Check your inbox." : "Incorrect email or password." };
   }
