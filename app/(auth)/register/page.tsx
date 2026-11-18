@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { register } from "@/app/actions/auth";
+import { redirect } from "next/navigation";
 import { AuthForm } from "@/components/forms/AuthForm";
+import { getSessionUser } from "@/lib/auth/session";
+import { landingPath } from "@/lib/auth/landing";
 
 export const metadata: Metadata = { title: "Create an account", robots: { index: false } };
 
-export default function RegisterPage() {
+export default async function RegisterPage() {
+  const user = await getSessionUser();
+  if (user) redirect(landingPath(user.role));
   return (
     <>
       <h1 className="mb-5 text-center text-2xl font-semibold text-forest">Create your account</h1>

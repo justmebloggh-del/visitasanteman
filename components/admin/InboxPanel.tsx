@@ -35,7 +35,7 @@ export async function InboxPanel() {
 
   // Latest activity: the five newest of each kind, merged by date.
   const [aEnq, aReg, aNom, aSub, aUser] = await Promise.all([
-    supabase.from("enquiries").select("id,name,kind,created_at").order("created_at", { ascending: false }).limit(5),
+    supabase.from("enquiries").select("id,name,kind,details,created_at").order("created_at", { ascending: false }).limit(5),
     supabase.from("event_registrations").select("id,name,created_at, event:event_id(title)").order("created_at", { ascending: false }).limit(5),
     supabase.from("award_nominations").select("id,nominee_name,created_at").order("created_at", { ascending: false }).limit(5),
     supabase.from("newsletter_subscribers").select("id,email,subscribed_at").order("subscribed_at", { ascending: false }).limit(5),
@@ -43,7 +43,7 @@ export async function InboxPanel() {
   ]);
   type Item = { id: string; when: string; label: string; text: string; href: string };
   const items: Item[] = [
-    ...(aEnq.data ?? []).map((r) => ({ id: "e" + r.id, when: r.created_at, label: "Enquiry", text: `${r.name} (${String(r.kind).replace("_", " ")})`, href: "/admin/enquiries" })),
+    ...(aEnq.data ?? []).map((r) => ({ id: "e" + r.id, when: r.created_at, label: "Enquiry", text: (r.details as { type?: string } | null)?.type === "account_deletion" ? `${r.name}: account deletion request` : `${r.name} (${String(r.kind).replace("_", " ")})`, href: "/admin/enquiries" })),
     ...((aReg.data ?? []) as unknown as { id: string; name: string; created_at: string; event: { title: string } | null }[]).map((r) => ({ id: "r" + r.id, when: r.created_at, label: "Registration", text: `${r.name}${r.event ? ` for ${r.event.title}` : ""}`, href: "/admin/registrations" })),
     ...(aNom.data ?? []).map((r) => ({ id: "n" + r.id, when: r.created_at, label: "Nomination", text: r.nominee_name, href: "/admin/nominations" })),
     ...(aSub.data ?? []).map((r) => ({ id: "s" + r.id, when: r.subscribed_at, label: "Subscriber", text: r.email, href: "/admin/newsletter" })),

@@ -2,7 +2,8 @@
 
 import { redirect } from "next/navigation";
 import { SITE_URL, supabaseConfigured } from "@/lib/env";
-import { canManageMedia, getSessionUser, isStaff } from "@/lib/auth/session";
+import { getSessionUser, isStaff, canManageMedia } from "@/lib/auth/session";
+import { landingPath } from "@/lib/auth/landing";
 import { createClient } from "@/lib/supabase/server";
 import { rateLimit } from "@/lib/utils/rate-limit";
 import {
@@ -38,7 +39,7 @@ export async function login(_prev: FormState, formData: FormData): Promise<FormS
     }
     console.error("[login] rejected:", error.code ?? error.status, error.message);
     const unconfirmed = /confirm/i.test(error.message);
-    return { ok: false, message: unconfirmed ? "Please verify your email address first. Check your inbox." : "Incorrect email or password." };
+    return { ok: false, message: unconfirmed ? "Please verify your email address first. Check your inbox, or ask for a new link on the Check your inbox page." : "Incorrect email or password." };
   }
   // No specific page requested: staff go straight to the admin dashboard.
   const target = safeNext(formData.get("next"), "");
@@ -49,7 +50,7 @@ export async function login(_prev: FormState, formData: FormData): Promise<FormS
     return { ok: false, message: "You are signed in, but this account does not have administrator access yet. A super administrator must give it the admin role." };
   }
   if (target) redirect(target);
-  redirect(hasAdminAccess ? "/admin" : "/");
+  redirect(landingPath(user?.role));
 }
 
 export async function register(_prev: FormState, formData: FormData): Promise<FormState> {
@@ -59,7 +60,7 @@ export async function register(_prev: FormState, formData: FormData): Promise<Fo
   if (!(await rateLimit("register", 5, 60 * 60_000))) return { ok: false, message: "Too many attempts. Please try again later." };
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signUp({
+  const { data: created, error } = await supabase.auth.signUp({
     email: parsed.data.email,
     password: parsed.data.password,
     // Role is NOT sent from here; the database trigger always assigns 'visitor'.
@@ -69,7 +70,20 @@ export async function register(_prev: FormState, formData: FormData): Promise<Fo
     console.error("[register]", error.message);
     return { ok: false, message: "We could not create that account. If you already have one, try logging in." };
   }
-  redirect("/verify-email");
+  // With email confirmation switched off Supabase signs the new account in at once; otherwise they must open the emailed link first.
+  redirect(created.session ? "/account" : "/verify-email");
+}
+
+/** Sends the verification email again. The answer is the same whether or not the address has an account. */
+export async function resendVerification(_prev: FormState, formData: FormData): Promise<FormState> {
+  const parsed = forgotSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return { ok: false, errors: zodErrors(parsed.error) };
+  if (!supabaseConfigured) return NOT_CONFIGURED;
+  if (!(await rateLimit("resend-verify", 4, 60 * 60_000))) return { ok: false, message: "Too many attempts. Please try again later." };
+  const supabase = await createClient();
+  const { error } = await supabase.auth.resend({ type: "signup", email: parsed.data.email, options: { emailRedirectTo: `${SITE_URL}/auth/callback`, captchaToken: captchaToken(formData) } });
+  if (error) console.error("[resend]", error.message);
+  return { ok: true, message: "If that address has an account waiting to be verified, a new link is on its way." };
 }
 
 export async function requestPasswordReset(_prev: FormState, formData: FormData): Promise<FormState> {

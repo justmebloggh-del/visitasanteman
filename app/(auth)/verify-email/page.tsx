@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { MailCheck } from "lucide-react";
+import { ResendVerification } from "@/components/forms/ResendVerification";
 import { ButtonLink } from "@/components/ui";
 
 export const metadata: Metadata = { title: "Verify your email", robots: { index: false } };
@@ -11,6 +12,7 @@ export default function VerifyEmailPage() {
       <h1 className="mt-3 text-2xl font-semibold text-forest">Check your inbox</h1>
       <p className="mt-2 text-sm text-muted">We have sent a verification link to your email address. Open it to activate your account, then log in.</p>
       <ButtonLink href="/login" className="mt-6">Go to log in</ButtonLink>
+      <div className="mt-8 border-t border-line pt-6"><ResendVerification /></div>
     </div>
   );
 }

@@ -50,7 +50,7 @@ export function AccountMenu({ stacked, onDark }: { stacked?: boolean; /** Sits o
   return (
     <div className={wrap}>
       {state.staff && <Link href="/admin" className={buttonClasses(onDark ? "light" : "outline", "sm")}>Admin</Link>}
-      {!state.staff && <Link href="/account/bookings" className={buttonClasses("ghost", "sm", ghost)}>My bookings</Link>}
+      <Link href="/account" className={buttonClasses("ghost", "sm", stacked ? "border border-line" : ghost)}>My account</Link>
       {state.partner && <Link href="/partner/dashboard" className={buttonClasses(onDark ? "light" : "outline", "sm")}>Partner portal</Link>}
       <button
         type="button"
