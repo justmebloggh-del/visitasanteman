@@ -4,7 +4,6 @@ import Link from "next/link";
 import { ArrowRight, Bed, Calendar, Camera, Car, Compass, FileText, Info, Map as MapIcon, Phone, Quote, Star, Ticket, Users, Utensils } from "lucide-react";
 import { Block, CardGrid, ContentCard, Photo } from "@/components/layout/blocks";
 import { asMedia, themeImages } from "@/config/images";
-import { NewsletterForm } from "@/components/forms/NewsletterForm";
 import { ButtonLink, Container } from "@/components/ui";
 import { AdSlot } from "@/components/ads/AdSlot";
 import { Map } from "@/components/maps/Map";
@@ -154,7 +153,7 @@ export default async function HomePage() {
             <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {live.map((t) => (
                 <li key={t.id}><Link href={`/themes/${t.slug}`} className="group relative block aspect-[4/3] overflow-hidden rounded-2xl bg-forest">
-                  <Photo media={t.cover ?? asMedia(themeImages[t.slug])} sizes="(min-width:1024px) 25vw, 50vw" className="opacity-80 transition duration-500 group-hover:scale-105 motion-reduce:transition-none" />
+                  <Photo media={t.cover ?? asMedia(themeImages[t.slug])} alt={t.name} sizes="(min-width:1024px) 25vw, 50vw" className="opacity-80 transition duration-500 group-hover:scale-105 motion-reduce:transition-none" />
                   <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent p-4 text-white"><span className="block font-serif text-xl font-semibold">{t.name}</span><span className="text-sm text-white/85">{themeCounts[t.slug]} {themeCounts[t.slug] === 1 ? "place or experience" : "places and experiences"}</span></span>
                 </Link></li>
               ))}
@@ -304,8 +303,8 @@ export default async function HomePage() {
         </Block>
       )}
 
-      {/* Partner CTA + newsletter */}
-      <Container className="mt-20 grid gap-6 lg:grid-cols-2">
+      {/* Partner CTA. The newsletter sign-up lives once, in the footer, on every page. */}
+      <Container className="mt-20">
         <div className="rounded-3xl bg-forest p-8 text-white sm:p-10">
           <h2 className="text-2xl font-semibold sm:text-3xl">Partnerships and investment</h2>
           <p className="mt-3 text-white/85">Organisations that want to support tourism in the region can talk to us, and tourism businesses can ask to be listed. Every listing is reviewed before it is published.</p>
@@ -314,13 +313,6 @@ export default async function HomePage() {
             <ButtonLink href="/partner" variant="light">List your business</ButtonLink>
           </div>
         </div>
-        {on("newsletter") && (
-          <div className="rounded-3xl border border-line bg-mist p-8 sm:p-10">
-            <h2 className="text-2xl font-semibold text-forest sm:text-3xl">{sections.newsletter?.title ?? "Stay in the loop"}</h2>
-            <p className="mb-5 mt-3 text-muted">{sections.newsletter?.subtitle}</p>
-            <NewsletterForm />
-          </div>
-        )}
       </Container>
     </>
   );

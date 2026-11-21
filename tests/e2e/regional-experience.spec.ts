@@ -227,30 +227,19 @@ test("WhatsApp button: shown only with a number, plain link, hidden on admin and
   sql(`update site_settings set value = jsonb_set(value, '{whatsapp}', to_jsonb('${old}'::text)) where key='contact'`);
 });
 
-test("footer: social links only when set, newsletter, pausable hashtag ticker, static with reduced motion", async ({ page, isMobile }) => {
+test("footer: social links only when set, one newsletter form on the page, a single hashtag", async ({ page, isMobile }) => {
   desktopOnly(isMobile);
   await page.goto("/");
   const footer = page.getByRole("contentinfo");
   await expect(footer.getByLabel("Newsletter email")).toBeVisible();
-  const ticker = footer.getByTestId("hashtag-ticker");
-  await expect(ticker).toContainText("#VisitAsanteman");
-  expect(await ticker.locator("[aria-hidden]").count()).toBeGreaterThan(0);          // the moving copy is hidden from screen readers
-  const pause = ticker.getByRole("button", { name: "Pause the hashtag animation" });
-  await pause.click();
-  await expect(ticker.getByRole("button", { name: "Play the hashtag animation" })).toHaveAttribute("aria-pressed", "true");
-  expect(await ticker.locator(".ticker-track").evaluate((el) => getComputedStyle(el).animationPlayState)).toBe("paused");
-  await ticker.getByRole("button", { name: "Play the hashtag animation" }).click();
-  expect(await ticker.locator(".ticker-track").evaluate((el) => getComputedStyle(el).animationPlayState)).toBe("running");
+  await expect(page.getByLabel("Newsletter email")).toHaveCount(1);                       // one sign-up form, in the footer
+  const hashtag = footer.getByTestId("hashtag-cta");
+  await expect(hashtag).toContainText("#VisitAsanteman");
+  expect(((await page.locator("body").innerText()).match(/#VisitAsanteman/g) ?? []).length).toBe(1);   // said once, not repeated
 
   // social links appear only for networks with a URL
   await expect(footer.getByRole("link", { name: "facebook" })).toHaveCount(0);
   sql(`update site_settings set value = jsonb_set(value, '{facebook}', '"https://facebook.com/visitasanteman-test"') where key='social'`);
   await expect.poll(async () => { await page.goto("/"); return await page.getByRole("contentinfo").getByRole("link", { name: "facebook" }).count(); }, wait).toBe(1);
   sql(`update site_settings set value = jsonb_set(value, '{facebook}', '""') where key='social'`);
-
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/");
-  expect(await footer.getByTestId("hashtag-ticker").locator(".ticker-track").evaluate((el) => getComputedStyle(el).animationName)).toBe("none");
-  await expect(footer.getByRole("button", { name: /hashtag animation/ })).toBeHidden();        // nothing to pause
-  expect(await footer.getByTestId("hashtag-ticker").locator(".ticker-track > span:visible").count()).toBe(1);
 });

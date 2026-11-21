@@ -72,17 +72,6 @@ h1, h2, h3 {
   body { background: #fff; }
 }
 
-/* Footer hashtag ticker: slow, pausable, and static for people who prefer reduced motion. */
-.ticker-track { animation: ticker-scroll 60s linear infinite; }
-.ticker-paused { animation-play-state: paused; }
-.ticker-window:hover .ticker-track { animation-play-state: paused; }
-@keyframes ticker-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-@media (prefers-reduced-motion: reduce) {
-  .ticker-track { animation: none; }
-  .ticker-track > span:not(:first-child) { display: none; }
-  .ticker-control { display: none; }
-}
-
 /* Justified body text across the public site (from the small breakpoint up; phone columns are too narrow).
    Not applied inside cards and links (they are short previews), the staff/partner/employer portals, or centred text.
    Hyphenation (html lang="en") keeps word gaps even. */
@@ -231,7 +220,20 @@ h1, h2, h3 {
 @media (max-width: 639px) {
   input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]), select, textarea { font-size: 16px; }
   main a.rounded-full, main button.rounded-full { min-height: 2.75rem; display: inline-flex; align-items: center; }
-  .page-crumbs a { display: inline-block; padding-block: 0.8rem; margin-block: -0.8rem; }
+  .page-crumbs a { display: inline-block; min-width: 2.75rem; padding-block: 0.8rem; margin-block: -0.8rem; }
   .maplibregl-map .maplibregl-ctrl-group button { width: 2.75rem; height: 2.75rem; }
-  .maplibregl-ctrl-attrib-button { width: 2rem; height: 2rem; }
+  .maplibregl-map .maplibregl-ctrl-group button { width: 2.75rem; height: 2.75rem; }
+  .maplibregl-ctrl-attrib.maplibregl-compact .maplibregl-ctrl-attrib-button, .maplibregl-ctrl-attrib-button { width: 2.75rem !important; height: 2.75rem !important; }
+}
+
+/* ───────── Touch screens of any width (phones and tablets) ─────────
+   Header, footer and menu controls are at least 44px tall and wide wherever the visitor taps, not only under 640px. A mouse keeps
+   the compact desktop sizes. */
+@media (pointer: coarse) {
+  :is(header, footer) :is(a, button, summary) { min-height: 2.75rem !important; min-width: 2.75rem; }
+  footer a { display: inline-flex; align-items: center; }
+  main :is(button, summary, select) { min-height: 2.75rem; }
+  .page-crumbs a { display: inline-block; min-width: 2.75rem; padding-block: 0.8rem; margin-block: -0.8rem; }
+  .maplibregl-map .maplibregl-ctrl-group button { width: 2.75rem; height: 2.75rem; }
+  .maplibregl-ctrl-attrib.maplibregl-compact .maplibregl-ctrl-attrib-button, .maplibregl-ctrl-attrib-button { width: 2.75rem !important; height: 2.75rem !important; }
 }

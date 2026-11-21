@@ -76,11 +76,11 @@ export function WelcomeSlideshow({ slides, interval = 5500, className }: { slide
           </div>
           <div className="flex items-center gap-1">
             <button type="button" onClick={() => setPlaying((p) => !p)} aria-label={running ? "Pause slideshow" : "Play slideshow"}
-              className="grid size-11 place-items-center rounded-full bg-black/35 backdrop-blur hover:bg-black/55 sm:size-9">
+              className="grid size-11 place-items-center rounded-full bg-black/35 backdrop-blur hover:bg-black/55 sm:size-9 [@media(pointer:coarse)]:size-11">
               {running ? <Pause className="size-4" aria-hidden /> : <Play className="size-4" aria-hidden />}
             </button>
-            <button type="button" onClick={() => go(index - 1)} aria-label="Previous photograph" className="grid size-11 place-items-center rounded-full bg-black/35 backdrop-blur hover:bg-black/55 sm:size-9"><ChevronLeft className="size-5" aria-hidden /></button>
-            <button type="button" onClick={() => go(index + 1)} aria-label="Next photograph" className="grid size-11 place-items-center rounded-full bg-black/35 backdrop-blur hover:bg-black/55 sm:size-9"><ChevronRight className="size-5" aria-hidden /></button>
+            <button type="button" onClick={() => go(index - 1)} aria-label="Previous photograph" className="grid size-11 place-items-center rounded-full bg-black/35 backdrop-blur hover:bg-black/55 sm:size-9 [@media(pointer:coarse)]:size-11"><ChevronLeft className="size-5" aria-hidden /></button>
+            <button type="button" onClick={() => go(index + 1)} aria-label="Next photograph" className="grid size-11 place-items-center rounded-full bg-black/35 backdrop-blur hover:bg-black/55 sm:size-9 [@media(pointer:coarse)]:size-11"><ChevronRight className="size-5" aria-hidden /></button>
           </div>
         </div>
       </div>

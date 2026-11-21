@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { CookieSettingsButton } from "@/components/consent/ConsentManager";
-import { HashtagTicker } from "@/components/layout/HashtagTicker";
 import { Wordmark } from "@/components/brand/Wordmark";
 import { Container } from "@/components/ui";
 import { NewsletterForm } from "@/components/forms/NewsletterForm";
@@ -26,7 +25,7 @@ const plan = [
   { href: "/venues", label: "Event venues" },
   { href: "/education", label: "Education" },
   { href: "/sports", label: "Sports" },
-  { href: "/transport", label: "Getting around" },
+  { href: "/transport", label: "Transport providers" },
   { href: "/markets", label: "Markets and shopping" },
   { href: "/business-directory", label: "Business directory" },
   { href: "/travel-guide", label: "Travel guide" },
@@ -43,6 +42,7 @@ export async function Footer() {
   const social = settings.social ?? {};
   const merged: Record<string, string> = { ...socialDefaults };
   for (const [k, v] of Object.entries(social)) if (typeof v === "string" && v.trim()) merged[k] = v.trim();
+  const hashtag = String(settings.general?.hashtag ?? "#VisitAsanteman").trim();
   const socials = Object.entries(merged).filter(([, v]) => safeUrl(String(v)));
 
   return (
@@ -54,7 +54,7 @@ export async function Footer() {
           {socials.length > 0 && (
             <ul className="mt-4 flex flex-wrap gap-3 text-sm">
               {socials.map(([name, url]) => (
-                <li key={name}><a href={safeUrl(String(url))!} rel="noopener noreferrer" target="_blank" className="inline-flex min-h-11 items-center sm:min-h-0 underline-offset-4 hover:underline" aria-label={`${socialLabels[name] ?? name} (opens in a new tab)`}>{socialLabels[name] ?? name}</a></li>
+                <li key={name}><a href={safeUrl(String(url))!} rel="noopener noreferrer" target="_blank" className="inline-flex min-h-11 min-w-11 items-center sm:min-h-0 underline-offset-4 hover:underline" aria-label={`${socialLabels[name] ?? name} (opens in a new tab)`}>{socialLabels[name] ?? name}</a></li>
               ))}
             </ul>
           )}
@@ -79,8 +79,8 @@ export async function Footer() {
           <div className="mt-5"><NewsletterForm compact /></div>
         </div>
       </Container>
-      {(settings.general?.hashtag ?? "#VisitAsanteman") && (
-        <Container><HashtagTicker text={String(settings.general?.hashtag ?? "#VisitAsanteman")} /></Container>
+      {hashtag && (
+        <Container><p className="border-t border-white/10 py-4 text-center text-sm text-white/80" data-testid="hashtag-cta">Share your Asanteman moments with <span className="font-semibold text-gold">{hashtag}</span></p></Container>
       )}
       <div className="border-t border-white/10">
         <Container className="flex flex-col gap-2 py-5 text-xs text-white/60 sm:flex-row sm:justify-between">
@@ -97,7 +97,7 @@ function FooterList({ title, links }: { title: string; links: { href: string; la
     <div>
       <h2 className="font-serif text-lg font-semibold text-white">{title}</h2>
       <ul className="mt-2 space-y-0 text-sm sm:mt-3 sm:space-y-2">
-        {links.map((l) => <li key={l.href}><Link href={l.href} className="inline-flex min-h-11 items-center hover:text-white hover:underline sm:min-h-0">{l.label}</Link></li>)}
+        {links.map((l) => <li key={l.href}><Link href={l.href} className="inline-flex min-h-11 min-w-11 items-center hover:text-white hover:underline sm:min-h-0">{l.label}</Link></li>)}
       </ul>
     </div>
   );
