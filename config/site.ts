@@ -15,7 +15,7 @@ export const socialDefaults: Record<string, string> = {
   facebook: "https://www.facebook.com/profile.php?id=61596528336030",
   instagram: "https://www.instagram.com/visitasanteman",
   tiktok: "https://www.tiktok.com/@visit_asanteman",
-  youtube: "https://www.youtube.com/@visitasanteman",
+  youtube: "https://www.youtube.com/channel/UCdj_jbRP2V-fA6q8o-9vLyQ",
 };
 export const socialLabels: Record<string, string> = { facebook: "Facebook", instagram: "Instagram", tiktok: "TikTok", youtube: "YouTube", x: "X" };
 
