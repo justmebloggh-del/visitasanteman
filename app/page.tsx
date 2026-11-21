@@ -283,7 +283,7 @@ export default async function HomePage() {
       </Block>
 
       {/* J. Local tourism businesses */}
-      <Block tone="mist" title={sections.businesses?.title ?? "Local tourism businesses"} subtitle={sections.businesses?.subtitle ?? "Tour operators, guides, makers and other businesses. Every listing is reviewed before it is published."} more={{ href: "/business-directory", label: "Business directory" }}>
+      <Block tone="mist" title={sections.businesses?.title ?? "Local tourism businesses"} subtitle={sections.businesses?.subtitle ?? "Tour operators, guides, makers and other businesses. Every listing is reviewed before it is published."} more={{ href: "/business-directory", label: "Browse all businesses" }}>
         {businesses.items.length > 0 && (
           <div className="mb-8"><CardGrid>
             {businesses.items.map((l) => <ContentCard key={l.id} href={`/business/${l.slug}`} title={l.name} summary={l.summary} media={l.cover} meta={listingTypeLabels[l.type as ListingType]} badge={l.is_verified ? "Verified" : null} />)}
@@ -309,8 +309,8 @@ export default async function HomePage() {
           <h2 className="text-2xl font-semibold sm:text-3xl">Partnerships and investment</h2>
           <p className="mt-3 text-white/85">Organisations that want to support tourism in the region can talk to us, and tourism businesses can ask to be listed. Every listing is reviewed before it is published.</p>
           <div className="mt-6 flex flex-wrap gap-3">
-            <ButtonLink href="/partner-with-us" variant="accent">Partner with us <ArrowRight className="size-4" /></ButtonLink>
-            <ButtonLink href="/partner" variant="light">List your business</ButtonLink>
+            <ButtonLink href="/partner-with-us" variant="accent">Support tourism with us <ArrowRight className="size-4" /></ButtonLink>
+            <ButtonLink href="/partner" variant="light">Get your business listed</ButtonLink>
           </div>
         </div>
       </Container>
