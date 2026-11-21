@@ -27,7 +27,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const awards = await listAwardProgrammes();
   const base = (p: string) => `${SITE_URL}${p}`;
   const count = (t: string) => s.listings.filter((l) => listingSection(l.type) === t).length;
-  const always = ["", "/manhyia", "/map", "/contact", "/partner", "/partner-with-us", "/advertise", "/travel-planner"];
+  // /gallery always shows the built-in photographs, so it is always worth indexing.
+  const always = ["", "/manhyia", "/map", "/contact", "/partner", "/partner-with-us", "/advertise", "/travel-planner", "/gallery"];
   const sections: [string, number][] = [
     ["/attractions", s.attractions.length], ["/districts", s.districts.length], ["/destinations", s.destinations.length], ["/communities", s.communities.length],
     ["/accommodation", count("accommodation")], ["/restaurants", count("restaurants")], ["/venues", count("venues")], ["/markets", count("markets")],
@@ -35,11 +36,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ["/education", s.institutions.length], ["/sports", s.sportsVenues.length], ["/sports/clubs", s.sportsClubs.length], ["/transport", s.transport.length],
     ["/culture/ceremonies", s.ceremonies.length], ["/jobs", jobs.length], ["/awards", awards.length], ["/gallery", s.gallery.length], ["/investment", s.investments.length],
   ];
+  // CMS pages carry their last edit date; the rest have none to report, so they are listed without a date rather than a made-up one.
+  const modified = new Map(s.pages.map((r) => [PAGE_PATHS[r.slug], r.updated_at] as const));
   const fixed = [...always, ...sections.filter(([, n]) => n > 0).map(([p]) => p), ...s.pages.map((r) => PAGE_PATHS[r.slug]).filter(Boolean)];
   const list = (rows: { slug: string; updated_at: string }[], prefix: string) =>
     rows.map((r) => ({ url: base(`${prefix}/${r.slug}`), lastModified: r.updated_at }));
   return [
-    ...fixed.map((p) => ({ url: base(p), changeFrequency: "weekly" as const, priority: p === "" ? 1 : 0.7 })),
+    ...fixed.map((p) => ({ url: base(p), lastModified: modified.get(p), changeFrequency: "weekly" as const, priority: p === "" ? 1 : 0.7 })),
     ...list(s.attractions, "/attractions"), ...list(s.districts, "/districts"), ...list(s.destinations, "/destinations"), ...list(s.communities, "/communities"),
     ...list(s.ceremonies, "/culture/ceremonies"), ...list(s.institutions, "/education"), ...list(s.sportsVenues, "/sports"), ...list(s.sportsClubs, "/sports/clubs"), ...list(s.transport, "/transport"),
     ...list(s.experiences, "/experiences"), ...list(s.events, "/events"), ...list(s.articles, "/articles"), ...list(s.investments, "/investment"),
