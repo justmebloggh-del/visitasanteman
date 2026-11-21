@@ -22,7 +22,7 @@ export function Header({ districts = [] }: { districts?: NavDistrict[] }) {
       {/* The top bar (logo, search, account) is coloured with the kente cloth; the menu bar below is unchanged. */}
       <div className="nav-kente">
       <div className="mx-auto flex h-14 max-w-7xl sm:h-[4.75rem] items-center gap-3 px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="shrink-0" aria-label="Visit Asanteman Homepage">
+        <Link href="/" className="shrink-0" aria-label="VisitAsanteman home page">
           <Wordmark animated />
         </Link>
 

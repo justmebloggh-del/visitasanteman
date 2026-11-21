@@ -17,9 +17,10 @@ const fraunces = Fraunces({ subsets: ["latin"], variable: "--font-fraunces", dis
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: { default: `${siteConfig.name} | ${siteConfig.tagline}`, template: `%s | ${siteConfig.name}` },
-  description: siteConfig.description,
-  openGraph: { siteName: siteConfig.name, type: "website", locale: "en_GH" },
-  appleWebApp: { capable: true, title: siteConfig.displayName, statusBarStyle: "default" },
+  description: siteConfig.metaDescription,
+  openGraph: { siteName: siteConfig.name, type: "website", locale: "en_GH", title: `${siteConfig.name} | ${siteConfig.tagline}`, description: siteConfig.metaDescription },
+  twitter: { card: "summary", title: `${siteConfig.name} | ${siteConfig.tagline}`, description: siteConfig.metaDescription },
+  appleWebApp: { capable: true, title: siteConfig.name, statusBarStyle: "default" },
   // Google Search Console ownership tag (public by design). NEXT_PUBLIC_GSC_VERIFICATION overrides it if the property is ever re-verified.
   verification: { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION || "USM5rFk06MJdrPtG7I0vmbncreECrMRxWGwtZ8t0jps" },
 };
@@ -37,7 +38,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-white focus:px-4 focus:py-2">
           Skip to content
         </a>
-        <JsonLd data={{ "@context": "https://schema.org", "@type": "Organization", name: siteConfig.name, url: SITE_URL, sameAs: Object.values({ ...socialDefaults, ...Object.fromEntries(Object.entries(settings.social ?? {}).filter(([, v]) => typeof v === "string" && v.trim())) }).map(String).filter((u) => /^https:\/\//.test(u)) }} />
+        <JsonLd data={{ "@context": "https://schema.org", "@type": "Organization", name: siteConfig.name, slogan: siteConfig.tagline, url: SITE_URL, sameAs: Object.values({ ...socialDefaults, ...Object.fromEntries(Object.entries(settings.social ?? {}).filter(([, v]) => typeof v === "string" && v.trim())) }).map(String).filter((u) => /^https:\/\//.test(u)) }} />
         <Header districts={navDistricts} />
         <main id="main" className="flex-1">{children}</main>
         <Footer />

@@ -1,12 +1,15 @@
 export const siteConfig = {
   /** Brand name, always written exactly like this. */
   name: "VisitAsanteman",
-  /** Spoken / spaced form, for sentences. */
+  /** Spaced form, only for running prose. The brand wordmark (titles, app names, manifest, structured data) is always `name`. */
   displayName: "Visit Asanteman",
   shortName: "Asanteman",
   tagline: "Discover Asanteman. Experience Our Heritage.",
   description:
     "Plan your visit to Asanteman, Ghana: attractions, culture and heritage, places to stay, food, experiences and events across every district.",
+  /** Search and social description: leads with the official tagline, short enough not to be cut off in results. */
+  metaDescription:
+    "Discover Asanteman. Experience Our Heritage. Plan your visit to Asanteman, Ghana: attractions, culture and heritage, places to stay, food and events.",
   region: "Ashanti Region",
 };
 
