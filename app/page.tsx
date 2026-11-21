@@ -9,6 +9,7 @@ import { ButtonLink, Container } from "@/components/ui";
 import { AdSlot } from "@/components/ads/AdSlot";
 import { Map } from "@/components/maps/Map";
 import { SearchBox } from "@/components/layout/SearchBox";
+import { SikaDwaEmblem } from "@/components/banners/SikaDwaEmblem";
 import { HeroVideo } from "@/components/home/HeroVideo";
 import { WelcomeSlideshow } from "@/components/home/WelcomeSlideshow";
 import { manhyiaSlides } from "@/config/manhyia";
@@ -67,17 +68,23 @@ export default async function HomePage() {
           )}
           <HeroVideo />
           <div className="absolute inset-0 -z-10 bg-gradient-to-t from-forest-dark/80 via-forest-dark/30 to-forest-dark/40" aria-hidden />
-          <Container className="flex flex-col justify-center py-8 sm:min-h-[78vh] sm:py-20">
-            <p className="mb-2 text-xs font-medium uppercase tracking-[0.18em] text-gold sm:mb-4 sm:text-sm sm:tracking-[0.2em]">Asanteman, Ghana</p>
-            <h1 className="max-w-3xl text-[1.9rem] font-semibold leading-[1.15] sm:text-6xl sm:leading-tight">
-              {hero?.title ?? "Discover Asanteman. Experience Our Heritage."}
-            </h1>
-            <p className="mt-3 line-clamp-3 max-w-xl text-base text-white/85 sm:mt-5 sm:line-clamp-none sm:text-lg">{hero?.subtitle || "Plan your visit to Asanteman, Ghana: its places, its people and its heritage, district by district."}</p>
-            <div className="mt-5 grid grid-cols-2 gap-2 sm:mt-8 sm:flex sm:flex-wrap sm:gap-3">
-              <ButtonLink href="/explore" variant="accent" size="lg" className="px-3 sm:px-8">Explore Asanteman</ButtonLink>
-              <ButtonLink href={planVisit.href} variant="light" size="lg" className="px-3 sm:px-8">{planVisit.label}</ButtonLink>
+          <Container className="relative flex flex-col justify-center py-4 sm:min-h-[78vh] sm:py-20">
+            {/* Sika Dwa emblem, far right of the banner: in the first row on phones, centred at the right edge from 640px */}
+            <div className="flex items-center justify-between gap-3 sm:block sm:pr-32 lg:pr-0">
+              <p className="text-xs font-medium uppercase tracking-[0.18em] text-gold sm:mb-4 sm:text-sm sm:tracking-[0.2em]">Asanteman, Ghana</p>
+              <SikaDwaEmblem className="w-12 shrink-0 sm:absolute sm:right-6 sm:top-1/2 sm:w-[6.65rem] sm:-translate-y-1/2 lg:w-[8.55rem]" />
             </div>
-            <SearchBox className="mt-5 max-w-xl sm:mt-10" />
+            <div className="sm:pr-32 lg:pr-0">
+              <h1 className="mt-1 max-w-3xl text-[1.625rem] font-semibold leading-[1.15] sm:mt-0 sm:text-5xl sm:leading-tight lg:text-6xl">
+                {hero?.title ?? "Discover Asanteman. Experience Our Heritage."}
+              </h1>
+              <p className="mt-2 line-clamp-2 max-w-xl text-[0.95rem] leading-snug text-white/85 sm:mt-5 sm:line-clamp-none sm:text-lg sm:leading-normal">{hero?.subtitle || "Plan your visit to Asanteman, Ghana: its places, its people and its heritage, district by district."}</p>
+            </div>
+            <div className="mt-3 grid grid-cols-2 gap-2 sm:mt-8 sm:flex sm:flex-wrap sm:gap-3">
+              <ButtonLink href="/explore" variant="accent" size="lg" className="whitespace-nowrap px-2 text-[0.95rem] sm:px-8 sm:text-base">Explore Asanteman</ButtonLink>
+              <ButtonLink href={planVisit.href} variant="light" size="lg" className="whitespace-nowrap px-2 text-[0.95rem] sm:px-8 sm:text-base">{planVisit.label}</ButtonLink>
+            </div>
+            <SearchBox className="mt-3 max-w-xl sm:mt-10" />
           </Container>
         </section>
       )}
