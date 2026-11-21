@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image, { getImageProps } from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -48,22 +48,27 @@ export function WelcomeSlideshow({ slides, interval = 5500, className }: { slide
       {/* Offset gold frame behind the photograph */}
       <div className="absolute -bottom-3 -right-3 h-full w-full rounded-3xl border-2 border-gold/70" aria-hidden />
       <div className="relative aspect-[4/5] overflow-hidden rounded-3xl bg-forest-dark shadow-2xl ring-1 ring-gold/30">
-        {slides.map((s, i) => (
-          <div key={s.src} role="group" aria-roledescription="slide" aria-label={`${i + 1} of ${count}`} aria-hidden={i !== index}
-            className={cn("absolute inset-0 transition-opacity duration-1000 ease-in-out motion-reduce:transition-none", i === index ? "opacity-100" : "opacity-0")}>
-            {/* Blurred copy fills the frame behind the photograph so nothing is cropped and there are no bare bars */}
-            <Image src={encodeURI(s.src)} alt="" fill sizes="(min-width:1024px) 8rem, 20vw" quality={40} aria-hidden
-              className="scale-125 object-cover opacity-45 blur-3xl saturate-125" />
-            <Image src={encodeURI(s.src)} alt={s.alt} fill priority={i === 0} loading={i === 0 ? undefined : "lazy"}
-              sizes="(min-width:1024px) 27rem, (min-width:640px) 72vw, 100vw" quality={90}
-              className="object-contain drop-shadow-[0_8px_24px_rgba(0,0,0,0.35)]" />
-          </div>
-        ))}
+        {slides.map((s, i) => {
+          // Only the slide on show and its two neighbours are mounted, so a phone downloads three photographs, not all twelve.
+          const near = i === index || i === (index + 1) % count || i === (index - 1 + count) % count;
+          if (!near) return null;
+          // The blurred backdrop is a small CSS background (decorative, so it needs no alt text), clipped inside its own slide.
+          const backdrop = getImageProps({ src: encodeURI(s.src), alt: "", width: 256, height: 320, quality: 40 }).props.src;
+          return (
+            <div key={s.src} role="group" aria-roledescription="slide" aria-label={`${i + 1} of ${count}`} aria-hidden={i !== index}
+              className={cn("absolute inset-0 overflow-hidden transition-opacity duration-1000 ease-in-out motion-reduce:transition-none", i === index ? "opacity-100" : "opacity-0")}>
+              <div className="absolute inset-0 scale-125 bg-cover bg-center opacity-45 blur-3xl saturate-125" style={{ backgroundImage: `url("${backdrop}")` }} aria-hidden />
+              <Image src={encodeURI(s.src)} alt={s.alt} fill priority={i === 0 && index === 0} loading={i === 0 && index === 0 ? undefined : "lazy"}
+                sizes="(min-width:1024px) 27rem, (min-width:640px) 72vw, 100vw" quality={90}
+                className="object-contain drop-shadow-[0_8px_24px_rgba(0,0,0,0.35)]" />
+            </div>
+          );
+        })}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/65 to-transparent" aria-hidden />
 
         <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 p-4 text-white">
-          <p className="rounded-full bg-black/35 px-3 py-1 text-xs font-medium backdrop-blur sm:hidden" aria-hidden>{index + 1} / {count}</p>
-          <div className="hidden items-center gap-1.5 sm:flex" role="group" aria-label="Choose a photograph">
+          <p className="rounded-full bg-black/35 px-3 py-1 text-xs font-medium backdrop-blur sm:hidden [@media(pointer:coarse)]:block" aria-hidden>{index + 1} / {count}</p>
+          <div className="hidden items-center gap-1.5 sm:flex [@media(pointer:coarse)]:hidden" role="group" aria-label="Choose a photograph">
             {slides.map((s, i) => (
               <button key={s.src} type="button" onClick={() => go(i)} aria-label={`Show photograph ${i + 1}`} aria-current={i === index}
                 className={cn("h-2 rounded-full transition-all", i === index ? "w-6 bg-gold" : "w-2 bg-white/60 hover:bg-white")} />

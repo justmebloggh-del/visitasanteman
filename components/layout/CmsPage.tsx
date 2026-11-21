@@ -29,7 +29,7 @@ export async function CmsPage({ slug, fallbackTitle, crumbs, children, banner, f
         {hasImage && (
           <figure className="order-1 lg:order-2">
             {page?.cover ? (
-              <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-line bg-forest-soft shadow-md"><Photo media={page.cover} sizes="(min-width:1024px) 22rem, 100vw" priority /></div>
+              <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-line bg-forest-soft shadow-md"><Photo media={page.cover} alt={page.title} sizes="(min-width:1024px) 22rem, 100vw" priority /></div>
             ) : (
               <StaticPhoto image={fallbackKey!} priority className="max-h-[26rem] rounded-2xl border border-line shadow-md" />
             )}

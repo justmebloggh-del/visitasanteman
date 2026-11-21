@@ -46,8 +46,9 @@ export function StaticPhoto({ image, className = "", priority, sizes, decorative
 }
 
 /* ── Images ── */
-export function Photo({ media, sizes, className, priority, position }: {
-  media: MediaRef | null | undefined; sizes: string; className?: string; priority?: boolean; position?: string;
+/** The alternative text is the photograph's own description, then the subject the caller names (never invented). */
+export function Photo({ media, sizes, className, priority, position, alt }: {
+  media: MediaRef | null | undefined; sizes: string; className?: string; priority?: boolean; position?: string; alt?: string;
 }) {
   const src = mediaUrl(media?.path);
   if (!src) {
@@ -57,7 +58,7 @@ export function Photo({ media, sizes, className, priority, position }: {
       </div>
     );
   }
-  return <Image src={src} alt={media?.alt_text ?? ""} fill sizes={sizes} priority={priority} quality={src.startsWith("/") ? 90 : undefined} className={`object-cover ${className ?? ""}`} style={position ? { objectPosition: position } : undefined} />;
+  return <Image src={src} alt={media?.alt_text || alt || ""} fill sizes={sizes} priority={priority} quality={src.startsWith("/") ? 90 : undefined} className={`object-cover ${className ?? ""}`} style={position ? { objectPosition: position } : undefined} />;
 }
 
 /* ── Generic content card ── */
@@ -68,7 +69,7 @@ export function ContentCard({ href, title, summary, media, meta, badge, badgeTon
   return (
     <Link href={href} className="group flex flex-col overflow-hidden rounded-2xl border border-line bg-white transition hover:-translate-y-0.5 hover:shadow-lg">
       <div className={`relative aspect-[4/3] overflow-hidden ${media ? "" : "hidden sm:block"}`}>
-        <Photo media={media} sizes="(min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw" className="transition duration-500 group-hover:scale-105" />
+        <Photo media={media} alt={title} sizes="(min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw" className="transition duration-500 group-hover:scale-105" />
         {badge && <Badge tone={badgeTone ?? "green"} className="absolute left-3 top-3 bg-white/95">{badge}</Badge>}
       </div>
       <div className="flex flex-1 flex-col p-4 sm:p-5">

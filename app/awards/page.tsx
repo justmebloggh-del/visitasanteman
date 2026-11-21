@@ -20,7 +20,7 @@ export default async function AwardsPage() {
           <ul className="grid gap-6 sm:grid-cols-2">
             {programmes.map((p) => (
               <li key={p.id} className="overflow-hidden rounded-2xl border border-line bg-white">
-                {p.cover && <div className="relative aspect-[16/9]"><Photo media={p.cover} sizes="(min-width: 640px) 50vw, 100vw" /></div>}
+                {p.cover && <div className="relative aspect-[16/9]"><Photo media={p.cover} alt={p.title} sizes="(min-width: 640px) 50vw, 100vw" /></div>}
                 <div className="p-5">
                   <h2 className="text-xl font-semibold text-forest"><Link href={`/awards/${p.slug}`} className="hover:underline">{p.title}</Link></h2>
                   {p.year && <p className="text-sm text-muted">{p.year}</p>}

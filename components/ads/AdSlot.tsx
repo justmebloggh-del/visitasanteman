@@ -12,7 +12,7 @@ export async function AdSlot({ placement }: { placement: "homepage_banner" | "di
     <Container className="mt-8">
       <aside aria-label="Sponsored" className="relative flex flex-col gap-4 overflow-hidden rounded-2xl border border-gold/40 bg-gold-soft p-4 sm:flex-row sm:items-center">
         <AdImpression adId={ad.id} />
-        {ad.cover && <div className="relative h-28 w-full shrink-0 overflow-hidden rounded-xl sm:h-24 sm:w-40"><Photo media={ad.cover} sizes="160px" /></div>}
+        {ad.cover && <div className="relative h-28 w-full shrink-0 overflow-hidden rounded-xl sm:h-24 sm:w-40"><Photo media={ad.cover} alt={ad.headline ?? `Sponsored by ${ad.advertiser_name}`} sizes="160px" /></div>}
         <div className="min-w-0 flex-1">
           <p className="text-xs font-semibold uppercase tracking-wide text-ink/80">Sponsored · {ad.advertiser_name}</p>
           {ad.headline && <h2 className="font-serif text-lg font-semibold text-forest">{ad.headline}</h2>}
