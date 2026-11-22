@@ -88,7 +88,9 @@ export async function setStatus(resourceKey: string, id: string, status: string)
   const { error } = await supabase.from(def.table).update(patch).eq(def.slugField ?? "id", id);
   if (error) console.error("[admin status]", error.message);
   flush();
-  redirect(`/admin/${def.key}?${error ? "error=1" : "saved=1"}`);
+  // The database refuses to publish content that has no active district, municipality or metropolis: say so.
+  const reason = error && /administrative area/i.test(error.message) ? "area" : "1";
+  redirect(`/admin/${def.key}?${error ? `error=${reason}` : "saved=1"}`);
 }
 
 export async function deleteResource(resourceKey: string, id: string) {

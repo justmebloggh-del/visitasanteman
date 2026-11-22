@@ -19,6 +19,7 @@ export function Flash({ sp }: { sp: Record<string, string | undefined> }) {
   if (sp.saved) return <div className="mb-4"><Notice tone="success">Saved.</Notice></div>;
   if (sp.deleted) return <div className="mb-4"><Notice tone="success">Deleted.</Notice></div>;
   if (sp.error === "in-use") return <div className="mb-4"><Notice tone="error">That file is still used by content. Remove it from there first.</Notice></div>;
+  if (sp.error === "area") return <div className="mb-4"><Notice tone="error">This cannot be published yet: it has no active district, municipality or metropolis. Edit it, choose the area (or its community or destination), and make sure that area and its region are switched on (Admin, Districts and municipalities, and its region).</Notice></div>;
   if (sp.error) return <div className="mb-4"><Notice tone="error">That did not work. Please try again, or check you have permission.</Notice></div>;
   return null;
 }
