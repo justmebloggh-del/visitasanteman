@@ -1,8 +1,8 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
-const QUERY = "(min-width: 768px) and (prefers-reduced-motion: no-preference)";
+const QUERY = "(prefers-reduced-motion: no-preference)";
 const subscribe = (cb: () => void) => {
   const mq = window.matchMedia(QUERY);
   mq.addEventListener("change", cb);
@@ -15,13 +15,49 @@ const canPlay = () => {
 };
 
 /**
- * The hero film (about 8 MB). Phones, visitors who prefer reduced motion, Data Saver users and slow connections never download it;
- * they see the hero photograph instead. Tablets and larger screens stream it.
+ * The hero film (about 8 MB), on every screen size including phones. Visitors who prefer reduced motion, Data Saver users and
+ * slow connections never download it; they keep the hero photograph. The film is only added once the page has finished loading,
+ * so it never delays the first paint, and the photograph shows underneath until the first frame is ready.
  */
 export function HeroVideo() {
-  const play = useSyncExternalStore(subscribe, canPlay, () => false);
-  if (!play) return null;
+  const allowed = useSyncExternalStore(subscribe, canPlay, () => false);
+  const [ready, setReady] = useState(false);
+  const ref = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (!allowed) return;
+    const go = () => setReady(true);
+    if (document.readyState === "complete") {
+      const t = window.setTimeout(go, 300);
+      return () => window.clearTimeout(t);
+    }
+    window.addEventListener("load", go, { once: true });
+    return () => window.removeEventListener("load", go);
+  }, [allowed]);
+
+  // Mobile browsers sometimes ignore the autoplay attribute; ask explicitly (muted and inline playback is always permitted).
+  useEffect(() => {
+    if (!ready) return;
+    const v = ref.current;
+    if (!v) return;
+    v.muted = true;
+    v.play().catch(() => {});
+  }, [ready]);
+
+  if (!allowed || !ready) return null;
   return (
-    <video className="absolute inset-0 -z-10 size-full object-cover opacity-70" src="/hero-video.mp4" autoPlay muted loop playsInline preload="metadata" aria-hidden tabIndex={-1} />
+    <video
+      ref={ref}
+      className="absolute inset-0 -z-10 size-full object-cover opacity-70"
+      src="/hero-video.mp4"
+      autoPlay
+      muted
+      loop
+      playsInline
+      preload="auto"
+      disablePictureInPicture
+      aria-hidden
+      tabIndex={-1}
+    />
   );
 }
